@@ -1,0 +1,56 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/roboto';
+@import './tokens.css';
+
+/* Expose the semantic tokens as Tailwind utilities (bg-surface, text-secondary, …). */
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Roboto Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-app: var(--app);
+  --color-surface: var(--surface);
+  --color-popup: var(--popup);
+  --color-fill-subtle: var(--fill-subtle);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-input: var(--border-input);
+
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+
+  --color-nav-selected: var(--nav-selected);
+  --color-nav-unselected: var(--nav-unselected);
+
+  --color-tag-bg: var(--tag-bg);
+  --color-tag-border: var(--tag-border);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-text: var(--accent-text);
+
+  --color-priority: var(--priority);
+  --color-priority-unchecked: var(--priority-unchecked);
+
+  --color-platform-playstation: var(--platform-playstation);
+  --color-platform-xbox: var(--platform-xbox);
+  --color-platform-pc: var(--platform-pc);
+  --color-platform-switch: var(--platform-switch);
+
+  --color-diff-added: var(--diff-added);
+  --color-diff-removed: var(--diff-removed);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-app font-sans text-text antialiased;
+  }
+}

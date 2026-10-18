@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+*.local
+.env
+.env.*
+!.env.example
+.vercel
+.DS_Store
+
+# Design screenshots contain commercial game art (Final Fantasy VII): local reference only, never in the repo.
+docs/design/

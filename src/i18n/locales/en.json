@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "label": "Main navigation",
+    "projects": "Projects",
+    "notifications": "Notifications",
+    "assignedToMe": "Assigned to me",
+    "comments": "Comments",
+    "settings": "Settings",
+    "notAvailable": "Not available yet"
+  },
+  "settingsNav": {
+    "label": "Settings navigation",
+    "back": "Back to translation space",
+    "general": "General settings",
+    "members": "Members",
+    "workspaceProjects": "Workspace projects"
+  },
+  "userMenu": {
+    "open": "Open user menu",
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "language": "Language"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español"
+  },
+  "projects": {
+    "title": "List of projects"
+  },
+  "settings": {
+    "title": "Settings"
+  },
+  "common": {
+    "comingSoon": "This screen is built in a later phase."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "back": "Go to projects"
+  }
+}

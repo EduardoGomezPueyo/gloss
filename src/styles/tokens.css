@@ -1,0 +1,98 @@
+/*
+ * Design tokens.
+ *
+ * Dark theme values come from the Figma variables (file "Exercises - Portfolio",
+ * section "Final Screens"); the Figma variable name is noted next to each one.
+ * The light theme has no design yet: its values are a proposal derived from the
+ * same semantic roles (see docs/DECISIONS.md).
+ *
+ * Components must use these semantic tokens (through the Tailwind theme in
+ * index.css), never raw colour values.
+ */
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Backgrounds */
+  --app: #09090a; /* Background/Application */
+  --surface: #121213; /* Background/Primary */
+  --popup: #18181b; /* Background/Popups */
+  --fill-subtle: rgb(255 255 255 / 0.1); /* neutral buttons, selected nav item */
+
+  /* Borders */
+  --border: #1d1d20; /* Border/Primary */
+  --border-strong: #2a2a2e; /* Border/Secondary */
+  --border-input: rgb(255 255 255 / 0.1);
+
+  /* Text */
+  --text: #f9fafb; /* Text/Primary */
+  --text-secondary: #d1d5db; /* Text/Secondary */
+  --text-tertiary: #a1a1aa; /* Text/Tertiary */
+
+  /* Navigation */
+  --nav-selected: #d4d4d4; /* Navigation/Selected */
+  --nav-unselected: #69696b; /* Navigation/Unselected */
+
+  /* Tags */
+  --tag-bg: rgb(255 255 255 / 0.07); /* Tag/Background #ffffff12 */
+  --tag-border: rgb(255 255 255 / 0.12); /* Tag/Border #ffffff1f */
+
+  /* Accent (primary buttons in the editor and settings) */
+  --accent: #e9ca1b; /* Main/Accent */
+  --accent-foreground: #09090a;
+  --accent-text: #e9ca1b; /* accent used as text colour (links, active tabs) */
+
+  /* Priority icon */
+  --priority: #b0b0b0; /* Accent/Priority */
+  --priority-unchecked: #262626; /* Accent/Priority-unchecked */
+
+  /* Platforms */
+  --platform-playstation: #3e69f6; /* Platforms/Playstation */
+  --platform-xbox: #22c55e; /* Platforms/Xbox */
+  --platform-pc: #c5ecf3; /* Platforms/PC */
+  --platform-switch: #ef3d3d; /* Platforms/Switch */
+
+  /* Glossary version diff (from the design notes) */
+  --diff-added: #353967;
+  --diff-removed: #272729;
+}
+
+/* Proposal: light theme (no Figma design yet). */
+[data-theme='light'] {
+  color-scheme: light;
+
+  --app: #f4f4f5;
+  --surface: #ffffff;
+  --popup: #ffffff;
+  --fill-subtle: rgb(0 0 0 / 0.06);
+
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --border-input: rgb(0 0 0 / 0.12);
+
+  --text: #09090b;
+  --text-secondary: #3f3f46;
+  --text-tertiary: #71717a;
+
+  --nav-selected: #18181b;
+  --nav-unselected: #8b8b91;
+
+  --tag-bg: rgb(0 0 0 / 0.04);
+  --tag-border: rgb(0 0 0 / 0.12);
+
+  --accent: #e9ca1b;
+  --accent-foreground: #09090a;
+  --accent-text: #8a7400;
+
+  --priority: #52525b;
+  --priority-unchecked: #d4d4d8;
+
+  --platform-playstation: #3e69f6;
+  --platform-xbox: #16a34a;
+  --platform-pc: #38a3b8;
+  --platform-switch: #e02f2f;
+
+  --diff-added: #dcdcf7;
+  --diff-removed: #ececee;
+}
