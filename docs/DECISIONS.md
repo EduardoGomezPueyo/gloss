@@ -76,6 +76,26 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Decision:** `CLAUDE.md`, `docs/SPEC.md` and `docs/DECISIONS.md` are translated to English; the roadmap lives in `docs/ROADMAP.md`. Decision numbering is unchanged, and design file names (in Spanish) keep their names.
 - **Reason:** English uses fewer tokens in files that are loaded often (CLAUDE.md in every session), and the repo will be open source.
 
+## Data model (phase 1)
+
+### D18. Progress and status are derived, never stored (2026-10-19) — *confirmed by the author*
+- **Decision:** progress follows the SPEC 6 proposal (item = completed ÷ (images × target languages); section = average of items; project = average of sections; language = completed in that language ÷ images). Statuses of items, sections, languages and projects are also **derived** from the statuses of their translations (a missing translation counts as *Not started*):
+  - nothing started → *Not started*; everything completed → *Completed*;
+  - only *Under Review* and *Completed* → *Under Review*; any other mix → *In progress*.
+- **Reason:** the design shows a status on projects, sections, items and languages but the spec never says who sets it. Deriving it keeps every screen consistent (CLAUDE.md requires consistent data) and avoids statuses drifting from the real work. Implemented in `src/domain/status.ts` and `src/domain/progress.ts`, with tests.
+- Word counts are also derived from the source texts (`countWords`).
+
+### D19. Placeholder demo content (2026-10-19)
+- **Decision:** until the demo world is chosen (SPEC open decision 9), the seed uses neutral placeholder content: "Sample Project Alpha…Theta", "Act 1 - Opening", "Scene 1.1", "Placeholder line…", fictional members with `@example.com` emails.
+- **How:** `createDemoData()` in `src/data/seed/demoSeed.ts` is pure and deterministic (seeded PRNG), so a backend seeder could reuse it. Each section has a progress profile so the list shows every status. Images have no file yet (`fileId: null`); scene art arrives with phase 4 / the demo world.
+
+### D20. Simulated current user and demo reset in the avatar menu (2026-10-19) — *extends D6*
+- **Decision:** the avatar menu adds **Current user** (active members only; invited members cannot be selected) and **Reset demo data** (after a browser confirmation, deletes the sandbox and seeds it again). The default current user is the first manager, so the demo opens with the full view. The selection is stored in localStorage.
+- **Spanish labels (confirmed):** *Manager* stays "Manager" in Spanish; *Worker* → "Colaborador".
+
+### D21. Removing a member is a soft delete (2026-10-19) — *confirmed by the author*
+- **Decision:** members have `removedAt`; removed members disappear from lists but stay in the store, so their translations remain attributed (SPEC 6: "Removing a member keeps their translations").
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
@@ -85,7 +105,7 @@ Decisions that are still open, with the phase they block:
 | Repository license | Open-source release | Undecided (none declared in `package.json`) |
 | `docs/design/` screenshots (FFVII art) | Public repo | Excluded from git (D16); replace with original material if they should be versioned |
 | Light theme review (D5) | — | Proposal, pending the author's review |
-| User menu on the avatar (D6) | — | Proposal, pending confirmation |
+| User menu on the avatar (D6, D20) | — | Proposal, pending confirmation |
 | Pages without a design (SPEC open 6) | — | Proposal D11: disabled |
 | Incomplete "Add content to section" modal (SPEC open 3) | Phase 4 | To be proposed before the phase |
 | Review transitions (SPEC open 1) | Phase 5 | To be proposed before the phase |

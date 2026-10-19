@@ -35,7 +35,9 @@ The interface is available in **English** and **Spanish** (`src/i18n/locales`), 
 
 ```
 src/
-  app/        router, layouts, providers (theme)
+  app/        router, layouts, providers (theme, data source, current user)
+  domain/     pure types and logic (progress, statuses, sorting) – no browser APIs
+  data/       repository interfaces, local IndexedDB implementation, demo seed
   features/   one folder per screen area (projects, settings, …)
   ui/         small reusable components
   i18n/       interface translations (en, es)

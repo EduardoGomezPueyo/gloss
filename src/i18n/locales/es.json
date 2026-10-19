@@ -21,7 +21,10 @@
     "themeSystem": "Sistema",
     "themeLight": "Claro",
     "themeDark": "Oscuro",
-    "language": "Idioma"
+    "language": "Idioma",
+    "currentUser": "Usuario actual",
+    "resetDemo": "Restablecer datos de demo",
+    "resetDemoConfirm": "Esto borra todos tus cambios y restaura los datos de demo. ¿Continuar?"
   },
   "languages": {
     "en": "English",
@@ -39,5 +42,12 @@
   "notFound": {
     "title": "Página no encontrada",
     "back": "Ir a proyectos"
+  },
+  "memberCategory": {
+    "manager": "Manager",
+    "worker": "Colaborador"
+  },
+  "data": {
+    "loadError": "No se pudieron cargar los datos locales. Prueba a recargar la página."
   }
 }

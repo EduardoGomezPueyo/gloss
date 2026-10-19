@@ -21,7 +21,10 @@
     "themeSystem": "System",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "language": "Language"
+    "language": "Language",
+    "currentUser": "Current user",
+    "resetDemo": "Reset demo data",
+    "resetDemoConfirm": "This deletes all your changes and restores the demo data. Continue?"
   },
   "languages": {
     "en": "English",
@@ -39,5 +42,12 @@
   "notFound": {
     "title": "Page not found",
     "back": "Go to projects"
+  },
+  "memberCategory": {
+    "manager": "Manager",
+    "worker": "Worker"
+  },
+  "data": {
+    "loadError": "The local data could not be loaded. Try reloading the page."
   }
 }

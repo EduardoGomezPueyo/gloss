@@ -1,0 +1,127 @@
+/*
+ * Domain model (see docs/SPEC.md, section 3).
+ *
+ * Pure types with no dependency on storage or the browser, so they can be shared
+ * with a future backend. Every persisted entity is backend-shaped: UUID id plus
+ * creation/update metadata.
+ */
+
+export type Id = string;
+/** ISO 8601 timestamp. */
+export type Timestamp = string;
+/** BCP 47 language code, e.g. "en", "es", "ja". */
+export type LanguageCode = string;
+
+export interface Entity {
+  id: Id;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  /** Member who created the entity; null for seeded or system data. */
+  createdBy: Id | null;
+  /** Member who last updated the entity; null for seeded or system data. */
+  updatedBy: Id | null;
+}
+
+/** Canonical statuses. UI labels come from i18n. */
+export const STATUSES = ['not-started', 'in-progress', 'under-review', 'completed'] as const;
+export type Status = (typeof STATUSES)[number];
+
+/** Canonical priorities, highest first. */
+export const PRIORITIES = ['urgent', 'high', 'medium', 'low', 'none'] as const;
+export type Priority = (typeof PRIORITIES)[number];
+
+export const PLATFORMS = ['playstation', 'xbox', 'pc', 'switch'] as const;
+export type Platform = (typeof PLATFORMS)[number];
+
+export type MemberCategory = 'manager' | 'worker';
+export type MemberStatus = 'active' | 'invited';
+
+export interface Member extends Entity {
+  name: string;
+  email: string;
+  category: MemberCategory;
+  status: MemberStatus;
+  /** Removed members are kept so their translations stay attributed. */
+  removedAt: Timestamp | null;
+}
+
+export interface Project extends Entity {
+  name: string;
+  /** Human-readable identifier, e.g. "DEMO-A-2026". */
+  code: string;
+  /** Free text, e.g. "Q3 2026" (SPEC minor open decision). */
+  releaseDate: string | null;
+  sourceLanguage: LanguageCode;
+  /** Never includes the source language. */
+  targetLanguages: LanguageCode[];
+  platforms: Platform[];
+  managerIds: Id[];
+  memberIds: Id[];
+  priority: Priority;
+}
+
+/** An act of the game ("Act 1 - …"). */
+export interface Section extends Entity {
+  projectId: Id;
+  name: string;
+  description: string;
+  order: number;
+}
+
+export interface ContentItem extends Entity {
+  projectId: Id;
+  sectionId: Id;
+  name: string;
+  /** e.g. "Mission dialogue" (closed list or free text is still open). */
+  type: string;
+  order: number;
+  translatorNote: string | null;
+}
+
+/** Position of a text box detected by OCR, in image pixels. */
+export interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface OcrBlock {
+  text: string;
+  bbox: BoundingBox | null;
+  confidence: number | null;
+}
+
+/** The single source text block of an image. */
+export interface SourceText {
+  text: string;
+  speaker: string | null;
+  /** e.g. "Dialogue". */
+  type: string | null;
+  contextNote: string | null;
+  /** Text as returned by OCR; null if it was typed by hand. */
+  ocrText: string | null;
+  ocrBlocks: OcrBlock[];
+}
+
+export interface SceneImage extends Entity {
+  projectId: Id;
+  contentItemId: Id;
+  order: number;
+  title: string;
+  fileName: string;
+  /** Stored image file; null when the image has no file (e.g. placeholder seed data). */
+  fileId: Id | null;
+  source: SourceText;
+}
+
+/** Translation of one image into one target language. A missing translation means "not started". */
+export interface Translation extends Entity {
+  projectId: Id;
+  imageId: Id;
+  language: LanguageCode;
+  text: string;
+  status: Status;
+  authorId: Id | null;
+  reviewerId: Id | null;
+}
