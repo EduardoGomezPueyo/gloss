@@ -1,335 +1,335 @@
-# Translator Software — Especificación (v4)
+# Translator Software — Specification (v4)
 
-> Derivado de las notas de diseño de Obsidian y de las capturas de Figma.
-> **Integrado:** lista de proyectos (filtros, progreso, crear proyecto), detalle de proyecto, detalle de sección (con mover items y añadir contenido), editor de traducciones, glosario (overview, categoría, detalle, edición, historial y comparación) y ajustes de miembros.
-> **Sin diseño en las capturas:** Notifications, Assigned to me, Comments, General settings y Workspace projects.
-> **Figma manda sobre las capturas.** Según el autor, Figma está actualizado y algunas capturas pueden ser una versión anterior. Cuando una pantalla tenga varias versiones o haya dudas, hay que preguntar y comprobarlo en Figma (ver decisión resuelta 20).
-> Las partes marcadas como **[Propuesta]** son decisiones de alcance o de modelo que no estaban en las notas ni en el diseño y deben validarse.
-> Los textos de la interfaz del diseño están en inglés; se mantienen tal cual en esta spec.
+> Derived from the Obsidian design notes and the Figma screenshots.
+> **Integrated:** project list (filters, progress, create project), project detail, section detail (with moving items and adding content), translation editor, glossary (overview, category, detail, editing, history and comparison) and member settings.
+> **No design in the screenshots:** Notifications, Assigned to me, Comments, General settings and Workspace projects.
+> **Figma takes precedence over the screenshots.** According to the author, Figma is up to date and some screenshots may be an earlier version. When a screen has several versions or there is any doubt, ask and check it in Figma (see resolved decision 20).
+> Parts marked **[Proposal]** are scope or model decisions that were not in the notes or the design and must be validated.
+> The interface texts in the design are in English; they are kept verbatim in this spec.
 
-## 1. Visión
+## 1. Vision
 
-### Por qué existe
+### Why it exists
 
-Proyecto de desarrollo personal para diseñar un software desde cero, mejorar la forma de diseñar y hacer algo con un significado concreto. Es también un proyecto de portfolio que, a futuro, se publicará como **open source**.
+A personal development project to design software from scratch, improve the way I design, and build something with a concrete meaning. It is also a portfolio project that will eventually be published as **open source**.
 
-### Qué es
+### What it is
 
-Una herramienta de traducción de videojuegos. Por cómo está planteada, se puede extrapolar a otros medios (libros, películas, series).
+A video game translation tool. Given how it is conceived, it can be extended to other media (books, films, series).
 
-### Problema
+### Problem
 
-Las traducciones de videojuegos sufren por falta de contexto, de tiempo y de conocimiento del mundo del juego.
+Video game translations suffer from a lack of context, time and knowledge of the game's world.
 
-### Solución
+### Solution
 
-Unir en un mismo sitio:
+Bring together in one place:
 
-- La **parte visual** que acompaña a los diálogos (la escena del juego).
-- El **conocimiento asociado** al juego, en forma de glosario por proyecto: historia, localizaciones, personajes, lore.
-- **Trabajo en equipo** con supervisión de compañeros (peer review).
+- The **visual part** that accompanies the dialogue (the game scene).
+- The **knowledge** associated with the game, as a per-project glossary: story, locations, characters, lore.
+- **Teamwork** with supervision from colleagues (peer review).
 
-## 2. Alcance por fases **[Propuesta]**
+## 2. Scope by phase **[Proposal]**
 
-### v1 — Showcase (local, un solo usuario)
+### v1 — Showcase (local, single user)
 
-Prioridad: que el flujo completo se vea pulido y fiel al diseño de Figma. No tiene que ser perfecta.
+Priority: the whole flow should look polished and faithful to the Figma design. It does not have to be perfect.
 
-- Gestión de proyectos: lista con búsqueda, filtros, popover de progreso y ordenación; crear proyecto.
-- Detalle de proyecto: overview, secciones colapsables con progreso, progreso por idioma.
-- Detalle de sección: lista de content items con búsqueda, filtro por estado, selección múltiple y mover items; añadir contenido (imágenes).
-- **Entrada del texto original mediante OCR** sobre las imágenes. El texto detectado se puede **editar** al hacer clic, con una etiqueta "edited".
-- Editor de traducciones completo según el diseño (ver 5.4), con comentarios en hilos y glosario integrado.
-- Glosario por proyecto, solo con **entradas Markdown simplificadas**: overview, filtro por categoría, detalle, edición, historial y comparación de versiones.
-- **Export to code:** exportación de las traducciones a un archivo JSON. CSV también previsto (ubicación en la interfaz sin definir).
-- Ajustes > Miembros, **solo local**: ver, buscar, filtrar, cambiar categoría y quitar miembros; "Invite members" crea un miembro con estado _Invited_ sin enviar correos reales.
-- Persistencia local. Usuarios y roles **simulados** con un selector de usuario actual, para poder mostrar la vista de manager y de worker sin backend.
-- Proyecto de ejemplo incluido, con contenido propio, libre o de dominio público (ver decisión abierta 9).
+- Project management: list with search, filters, progress popover and sorting; create project.
+- Project detail: overview, collapsible sections with progress, progress per language.
+- Section detail: list of content items with search, status filter, multi-select and moving items; adding content (images).
+- **Source text entered via OCR** on the images. The detected text can be **edited** by clicking on it, with an "edited" label.
+- Full translation editor as designed (see 5.4), with threaded comments and an integrated glossary.
+- Per-project glossary, with **simplified Markdown entries** only: overview, category filter, detail, editing, history and version comparison.
+- **Export to code:** export of the translations to a JSON file. CSV is also planned (location in the interface undefined).
+- Settings > Members, **local only**: view, search, filter, change category and remove members; "Invite members" creates a member with status _Invited_ without sending real emails.
+- Local persistence. Users and roles **simulated** with a current-user selector, so the manager and worker views can be shown without a backend.
+- Sample project included, with original, free or public-domain content (see open decision 9).
 
-### v2 — Equipos
+### v2 — Teams
 
-- Backend, autenticación, invitaciones por email reales.
-- Permisos reales (managers / workers, visibilidad de proyectos).
-- Notificaciones y sincronización.
-- Traducción con IA con revisión humana obligatoria (requisito de las notas; **el editor diseñado no tiene interfaz para ello**).
-- Importación de formatos adicionales (PO, XLIFF).
+- Backend, authentication, real email invitations.
+- Real permissions (managers / workers, project visibility).
+- Notifications and synchronization.
+- AI translation with mandatory human review (a requirement from the notes; **the designed editor has no interface for it**).
+- Import of additional formats (PO, XLIFF).
 
-### Futuro
+### Future
 
-- Vistas Kanban y Timeline en gestión de proyectos.
-- Otros medios además de videojuegos.
+- Kanban and Timeline views in project management.
+- Media other than video games.
 
-**Requisito de arquitectura:** el acceso a datos debe estar detrás de una interfaz (repositorio/servicio) para poder sustituir la persistencia local por un backend en v2 sin reescribir la UI.
+**Architecture requirement:** data access must sit behind an interface (repository/service) so local persistence can be replaced by a backend in v2 without rewriting the UI.
 
-## 3. Modelo de dominio (borrador)
+## 3. Domain model (draft)
 
-Jerarquía: **Workspace > Project > Section > Content item > Image**. Cada imagen tiene **un bloque de texto**, y la traducción se hace por imagen e idioma.
+Hierarchy: **Workspace > Project > Section > Content item > Image**. Each image has **one text block**, and translation is done per image and language.
 
-> Terminología del diseño: una _Section_ es un acto ("Act 1 - World introduction") y un _Content item_ es lo que cuelga de ella ("Bomber mission"). Un content item agrupa una o varias imágenes ordenadas ("01 / 02"). El texto "Images in this section" del editor se refiere al content item y debería corregirse.
+> Design terminology: a _Section_ is an act ("Act 1 - World introduction") and a _Content item_ is what hangs from it ("Bomber mission"). A content item groups one or more ordered images ("01 / 02"). The editor's "Images in this section" text refers to the content item and should be corrected.
 
-- **Workspace**: miembros y proyectos.
-- **User / Member**: nombre, email, avatar (o iniciales), categoría (`manager` | `worker`), sub-team (ver decisión abierta 4), estado (`active` | `invited`; al quitar a alguien, sus traducciones se conservan).
-- **Project**: nombre (obligatorio), identificador (ej. `FFVII-GEN-2025`), fecha de lanzamiento (en el diseño, un trimestre: "Q3 2025"), **idioma original** (por proyecto; ej. un juego en japonés traducido a otros idiomas), idiomas de destino (sin incluir el original), plataformas (Playstation, Xbox, PC, Switch; cada una con color propio), **uno o varios managers**, miembros, prioridad, estado, palabras totales, glosario propio.
-- **Section**: nombre, descripción, orden, progreso (%), estado. Muestra los managers y la prioridad del proyecto **[Propuesta: se heredan]**.
-- **Content item**: nombre, **tipo** (en el diseño, "Mission dialogue" y "Character dialogue"), estado, progreso, nº de palabras, nº de idiomas, última actualización (quién y cuándo), imágenes ordenadas, nota para traductores.
-- **Image**: archivo, título corto ("Station rendezvous"), orden dentro del content item y su **bloque de texto original**: texto (por OCR, editable), hablante (_speaker_), tipo (ej. "Dialogue"), nota de contexto (ej. "After the reactor escape"), nº de caracteres, y la marca **edited** si el texto se ha modificado respecto al OCR.
-- **Translation**: por imagen e idioma; texto, estado, autor, fecha de última edición, revisor (peer review), marca de IA pendiente de revisión humana (v2). El hablante se hereda del original y es de solo lectura.
-- **TranslatorNote**: instrucción de estilo asociada al content item o a la imagen.
-- **CommentThread**: pertenece a una imagen; idioma, categoría (ej. "Terminology"), estado (`open` | `resolved`), quién lo resolvió, respuestas, menciones con `@`.
-- **GlossaryCategory**: Characters, Factions, Locations, Lore y las que se creen con "New category".
-- **GlossaryEntry** (por proyecto, **solo tipo Markdown**): título, descripción corta (se muestra en tarjetas y en el editor), categoría, tags libres, imágenes, contenido en Markdown con enlaces internos y referencias, contador de visitas. **Sin** campos de traducción por idioma ni estado de aprobación.
-- **GlossaryVersion**: versión guardada de una entrada: contenido, autor, fecha y hora.
+- **Workspace**: members and projects.
+- **User / Member**: name, email, avatar (or initials), category (`manager` | `worker`), sub-team (see open decision 4), status (`active` | `invited`; when someone is removed, their translations are kept).
+- **Project**: name (required), identifier (e.g. `FFVII-GEN-2025`), release date (in the design, a quarter: "Q3 2025"), **source language** (per project; e.g. a game in Japanese translated into other languages), target languages (not including the source), platforms (Playstation, Xbox, PC, Switch; each with its own color), **one or more managers**, members, priority, status, total words, its own glossary.
+- **Section**: name, description, order, progress (%), status. Shows the project's managers and priority **[Proposal: they are inherited]**.
+- **Content item**: name, **type** (in the design, "Mission dialogue" and "Character dialogue"), status, progress, word count, language count, last update (who and when), ordered images, note for translators.
+- **Image**: file, short title ("Station rendezvous"), order within the content item, and its **source text block**: text (from OCR, editable), _speaker_, type (e.g. "Dialogue"), context note (e.g. "After the reactor escape"), character count, and the **edited** mark if the text has been changed from the OCR result.
+- **Translation**: per image and language; text, status, author, last edit date, reviewer (peer review), AI flag pending human review (v2). The speaker is inherited from the source and is read-only.
+- **TranslatorNote**: style instruction attached to the content item or to the image.
+- **CommentThread**: belongs to an image; language, category (e.g. "Terminology"), status (`open` | `resolved`), who resolved it, replies, `@` mentions.
+- **GlossaryCategory**: Characters, Factions, Locations, Lore and any created with "New category".
+- **GlossaryEntry** (per project, **Markdown type only**): title, short description (shown on cards and in the editor), category, free tags, images, Markdown content with internal links and references, view counter. **No** per-language translation fields or approval status.
+- **GlossaryVersion**: saved version of an entry: content, author, date and time.
 
-**Prioridad:** `Urgent`, `High`, `Medium`, `Low`, `None` (de mayor a menor).
-**Estados:** `Not started`, `In progress`, `Under Review`, `Completed`.
+**Priority:** `Urgent`, `High`, `Medium`, `Low`, `None` (highest to lowest).
+**Statuses:** `Not started`, `In progress`, `Under Review`, `Completed`.
 
-## 4. Navegación
+## 4. Navigation
 
-Dos niveles:
+Two levels:
 
-- **General:** Projects, Notifications, Assigned to me, Comments, Settings. Avatar de usuario abajo a la izquierda.
-- **Ajustes:** "← Back to translation space", General settings, Members, Workspace projects.
+- **General:** Projects, Notifications, Assigned to me, Comments, Settings. User avatar at the bottom left.
+- **Settings:** "← Back to translation space", General settings, Members, Workspace projects.
 
-El **glosario es por proyecto**: se accede desde la tarjeta _Glossary_ de los detalles de proyecto y de sección, y desde _Full glossary_ en el editor. No es un elemento de la navegación general.
+The **glossary is per project**: it is reached from the _Glossary_ card on the project and section details, and from _Full glossary_ in the editor. It is not an item in the general navigation.
 
-> Algunas capturas (lista de proyectos con filtros y el glosario) muestran la **navegación antigua** (Projects, Glossary). Lo vigente es lo descrito aquí; en las pantallas del glosario el elemento activo debe ser _Projects_.
+> Some screenshots (project list with filters and the glossary) show the **old navigation** (Projects, Glossary). What is described here is current; on the glossary screens the active item must be _Projects_.
 
-**Sin diseño:** Notifications, Assigned to me, Comments, General settings y Workspace projects. **[Propuesta]** en v1 no se construyen; sus entradas de navegación se ocultan o quedan desactivadas (decisión abierta 6).
+**No design:** Notifications, Assigned to me, Comments, General settings and Workspace projects. **[Proposal]** they are not built in v1; their navigation entries are hidden or disabled (open decision 6).
 
-Requisitos:
+Requirements:
 
-- Diferenciar entre "ningún proyecto seleccionado" y "proyecto seleccionado".
-- Búsqueda general entre los proyectos del usuario.
-- Los managers ven de un vistazo todos los proyectos, su progreso, quién trabaja en ellos y si hay peticiones pendientes.
+- Distinguish between "no project selected" and "project selected".
+- General search across the user's projects.
+- Managers see at a glance all projects, their progress, who works on them and whether there are pending requests.
 
-## 5. Pantallas
+## 5. Screens
 
-### 5.1 Lista de proyectos ("List of projects")
+### 5.1 Project list ("List of projects")
 
-- **Cabecera:** título y botón **Add project**.
-- **Barra:** botón de filtros (icono de ajustes, resaltado con un círculo cuando está activo) y buscador "Search projects".
-- **Tabla** con columnas _Name, Platforms, Manager, Members, Priority, Status_:
-  - Plataformas como chips con punto de color (Playstation azul, Xbox verde, PC azul claro, Switch rojo).
-  - Manager(s) y miembros como avatares apilados.
-  - Prioridad como icono: Urgent (rombo con exclamación), High (3 barras), Medium (2), Low (1), None (guion).
-  - Estado como icono: Not started (círculo discontinuo), In progress (círculo parcial amarillo), Under Review (círculo naranja con "!"), Completed (círculo verde con check).
-  - Hover resalta la fila; clicar abre el detalle del proyecto (5.2).
-  - **Progreso por idioma:** al pasar el ratón sobre el icono de estado aparece un popover "Progress" con una barra y un % por idioma (en el diseño, con bandera: English, Spanish, Japanese, Chinese, Italian, Portuguese, German).
-- **Filtros:** el menú tiene cinco categorías con submenú de casillas:
+- **Header:** title and **Add project** button.
+- **Bar:** filter button (settings icon, highlighted with a circle when active) and "Search projects" search box.
+- **Table** with columns _Name, Platforms, Manager, Members, Priority, Status_:
+  - Platforms as chips with a colored dot (Playstation blue, Xbox green, PC light blue, Switch red).
+  - Manager(s) and members as stacked avatars.
+  - Priority as an icon: Urgent (diamond with exclamation mark), High (3 bars), Medium (2), Low (1), None (dash).
+  - Status as an icon: Not started (dashed circle), In progress (partial yellow circle), Under Review (orange circle with "!"), Completed (green circle with check).
+  - Hover highlights the row; clicking opens the project detail (5.2).
+  - **Progress per language:** hovering over the status icon shows a "Progress" popover with a bar and a % per language (in the design, with a flag: English, Spanish, Japanese, Chinese, Italian, Portuguese, German).
+- **Filters:** the menu has five categories, each with a checkbox submenu:
   - _Platforms:_ Playstation, Xbox, PC, Switch.
-  - _Managers_ y _Workers:_ personas con avatar.
-  - _Priority:_ Urgent, High, Medium, Low, None (con icono).
-  - _Status:_ Not started, **In progress**, Under Review, Completed (con icono). La captura que dice "Started" es una versión anterior.
-  - Los filtros aplicados aparecen como **chips quitables** bajo la barra ("Status is Not Started ×", "Manager is James Fielden ×") con **Clear all filters**.
-  - Varios filtros se combinan entre sí (el resultado cumple todos). **[Propuesta]** Varias casillas dentro de una categoría = cualquiera de ellas.
-  - No hay filtro por etiquetas de proyecto (género, etc.).
-- **Ordenación** (según las notas; el diseño no muestra indicadores): al hacer hover en el encabezado aparece una flecha en las columnas ordenables.
-  - Nombre (por defecto): empieza en A-Z; clicar de nuevo alterna A-Z / Z-A.
-  - Prioridad: de mayor a menor (Urgent → None).
+  - _Managers_ and _Workers:_ people with avatars.
+  - _Priority:_ Urgent, High, Medium, Low, None (with icon).
+  - _Status:_ Not started, **In progress**, Under Review, Completed (with icon). The screenshot that says "Started" is an earlier version.
+  - Applied filters appear as **removable chips** under the bar ("Status is Not Started ×", "Manager is James Fielden ×") with **Clear all filters**.
+  - Several filters combine with each other (the result matches all of them). **[Proposal]** Several checkboxes within one category = any of them.
+  - There is no filter by project tags (genre, etc.).
+- **Sorting** (from the notes; the design shows no indicators): hovering over the header shows an arrow on sortable columns.
+  - Name (default): starts A-Z; clicking again toggles A-Z / Z-A.
+  - Priority: highest to lowest (Urgent → None).
   - Status: In progress > Under Review > Not started > Completed.
 
 **Add new project (modal)**
 
-- Título "Add new project" y subtítulo "Set up the project, platforms and people."
-- _Project name_ (obligatorio, `*`).
-- _Platforms:_ chips seleccionables con check; ayuda "Select all platforms this project supports."
-- _Manager:_ desplegable con avatar. **Debe permitir varios managers** (la captura muestra selección única; Figma está actualizado según el autor).
-- _Team members:_ chips con avatar y `×`, contador "N added" y "+ Add team members".
+- Title "Add new project" and subtitle "Set up the project, platforms and people."
+- _Project name_ (required, `*`).
+- _Platforms:_ selectable chips with a check; help text "Select all platforms this project supports."
+- _Manager:_ dropdown with avatar. **Must allow several managers** (the screenshot shows single selection; according to the author, Figma is up to date).
+- _Team members:_ chips with avatar and `×`, an "N added" counter and "+ Add team members".
 - _Priority:_ None, Low, Medium, High, Urgent.
-- **Idioma original** e **idiomas del proyecto**: decididos, pero la captura no los muestra (diseño por confirmar en Figma). **[Propuesta]** idioma original obligatorio; idiomas de destino opcionales (también se añaden después con _Add language_).
-- Acciones: **Cancel** y **Create project**. Al crearlo, se coloca según el orden activo de la lista.
+- **Source language** and **project languages**: decided, but the screenshot does not show them (design to be confirmed in Figma). **[Proposal]** source language required; target languages optional (they can also be added later with _Add language_).
+- Actions: **Cancel** and **Create project**. Once created, it is placed according to the list's active sort order.
 
-### 5.2 Detalle de proyecto
+### 5.2 Project detail
 
-Layout de dos columnas. Existen dos versiones de la captura: en una, la lista de items de _Section Progress_ se desborda por la derecha y oculta los porcentajes. Se considera un fallo de maquetación; la versión con porcentajes visibles es la de referencia.
+Two-column layout. There are two versions of the screenshot: in one, the _Section Progress_ item list overflows to the right and hides the percentages. This is considered a layout bug; the version with visible percentages is the reference.
 
-**Cabecera**
+**Header**
 
-- Nombre del proyecto, badge de estado, pastilla de progreso (ej. _33% translated_), subtítulo ("Section-based translation progress").
-- Botón **Export to code** arriba a la derecha: descarga un archivo JSON con las traducciones.
+- Project name, status badge, progress pill (e.g. _33% translated_), subtitle ("Section-based translation progress").
+- **Export to code** button at the top right: downloads a JSON file with the translations.
 
-**Columna izquierda**
+**Left column**
 
-- **Overview**: badge de prioridad (_Urgent_), plataformas, manager(s) y miembros (avatares), Project ID, Release Date, Word Count. La etiqueta dice "Manager" aunque puede haber varios.
-- **Section Progress**: botón _Add section_. Cada sección es colapsable y muestra nombre, % de completado y un indicador circular (parcial; discontinuo si _Not started_). Al expandirla, lista sus content items con nombre, badge de estado y barra de progreso con color según estado (verde Completed, naranja Under Review, amarillo In progress). Sin desglose por idioma. Clicar una sección abre su vista de detalle (5.3).
+- **Overview**: priority badge (_Urgent_), platforms, manager(s) and members (avatars), Project ID, Release Date, Word Count. The label says "Manager" even though there can be several.
+- **Section Progress**: _Add section_ button. Each section is collapsible and shows its name, % completion and a circular indicator (partial; dashed if _Not started_). When expanded, it lists its content items with name, status badge and a progress bar colored by status (green Completed, orange Under Review, yellow In progress). No per-language breakdown. Clicking a section opens its detail view (5.3).
 
-**Columna derecha**
+**Right column**
 
-- **Glossary**: tarjeta con descripción y enlace al glosario del proyecto.
-- **Languages Progress**: contador ("6 languages"), lista de idiomas con porcentaje y badge de estado, y botón _Add language_.
+- **Glossary**: card with a description and a link to the project glossary.
+- **Languages Progress**: counter ("6 languages"), list of languages with percentage and status badge, and an _Add language_ button.
 
-### 5.3 Detalle de sección
+### 5.3 Section detail
 
-- **Breadcrumb:** `← All sections > Act 1 - World introduction`, con el identificador del proyecto a la derecha. Bajo la cabecera del proyecto (nombre, estado, % traducido).
-- **Tarjeta de sección:** nombre, % de completado con indicador circular, descripción, contadores (content items, palabras, idiomas), managers (avatares) y prioridad.
-- **Glossary:** misma tarjeta que en el detalle de proyecto.
-- **Content items** (con contador) y botón primario **+ Add**:
-  - Buscador "Search content in this section..." y filtro "All statuses".
-  - **Selección múltiple** con casillas. Con selección aparece "N items selected", **Clear selection** y **Move to section**.
-  - Cada fila: casilla, nombre, badge de estado, % y barra de progreso (color según estado), subtítulo con tipo, palabras e idiomas ("Mission dialogue · 6,400 words · 6 languages"), avatar de quien lo actualizó por última vez con "Updated 2h ago" y una flecha que abre el editor (5.4).
-  - Pie: "Showing all N items" y "Translation progress across all languages".
-- **Languages Progress:** misma tarjeta que en el proyecto, sin el botón _Add language_.
-- **Move to section (popover):** lista de los items seleccionados, desplegable "Destination section", aviso "Translations and item progress will be kept." y botones **Cancel** y "Move N items".
+- **Breadcrumb:** `← All sections > Act 1 - World introduction`, with the project identifier on the right. Below the project header (name, status, % translated).
+- **Section card:** name, % completion with circular indicator, description, counters (content items, words, languages), managers (avatars) and priority.
+- **Glossary:** same card as in the project detail.
+- **Content items** (with counter) and primary **+ Add** button:
+  - "Search content in this section..." search box and "All statuses" filter.
+  - **Multi-select** with checkboxes. With a selection, "N items selected", **Clear selection** and **Move to section** appear.
+  - Each row: checkbox, name, status badge, % and progress bar (colored by status), subtitle with type, words and languages ("Mission dialogue · 6,400 words · 6 languages"), avatar of whoever last updated it with "Updated 2h ago", and an arrow that opens the editor (5.4).
+  - Footer: "Showing all N items" and "Translation progress across all languages".
+- **Languages Progress:** same card as in the project, without the _Add language_ button.
+- **Move to section (popover):** list of the selected items, "Destination section" dropdown, the notice "Translations and item progress will be kept." and **Cancel** and "Move N items" buttons.
 
-**Add content to section (modal, tres estados)**
+**Add content to section (modal, three states)**
 
-- Zonas: _Image ordering_ ("Click on uploaded images to add them. Drag horizontally to set order."; vacío: "Selected images will appear here"), _Image preview_ ("Preview images by hovering on them") e _Image selector_ ("Drag images here", con botón "+" para buscar archivos).
-- Estados: sin imágenes; imágenes subidas sin seleccionar (miniaturas a la derecha, vista previa al hacer hover); imágenes seleccionadas (aparecen arriba con un número que es su **orden** en la traducción y se reordenan arrastrando).
-- **Lo que el diseño no muestra:** botón de confirmar o cancelar, campo para el **nombre** y el **tipo** del content item, título de cada imagen y estado del OCR (decisión abierta 3).
+- Areas: _Image ordering_ ("Click on uploaded images to add them. Drag horizontally to set order."; empty: "Selected images will appear here"), _Image preview_ ("Preview images by hovering on them") and _Image selector_ ("Drag images here", with a "+" button to browse files).
+- States: no images; uploaded images not selected (thumbnails on the right, preview on hover); selected images (they appear at the top with a number that is their **order** in the translation, and are reordered by dragging).
+- **What the design does not show:** confirm or cancel button, a field for the content item's **name** and **type**, each image's title, and the OCR status (open decision 3).
 
-### 5.4 Editor de traducciones ("Translation workspace")
+### 5.4 Translation editor ("Translation workspace")
 
-Layout de tres columnas.
+Three-column layout.
 
-**Cabecera**
+**Header**
 
-- Nombre del proyecto, badge de estado, etiqueta "Translation workspace".
-- Indicador de guardado automático ("All changes saved") y botón primario **Submit for review**, que actúa sobre la **sección** (decisión resuelta 17). Aunque el botón está en el editor del content item, afecta a la sección que lo contiene.
-- Breadcrumb: `← All sections > Act 1 - World introduction > Bomber mission`, e identificador del proyecto a la derecha.
+- Project name, status badge, "Translation workspace" label.
+- Autosave indicator ("All changes saved") and primary **Submit for review** button, which acts on the **section** (resolved decision 17). Although the button is in the content item editor, it affects the section that contains it.
+- Breadcrumb: `← All sections > Act 1 - World introduction > Bomber mission`, and the project identifier on the right.
 
-**Columna izquierda — contexto**
+**Left column — context**
 
-- **Source image**: contador "01 / 02", la imagen de la escena, nombre de archivo, zoom (100%) y pantalla completa.
-- **Source text**: idioma original ("English · Read only"), hablante, texto original y metadatos (tipo, nota de contexto, nº de caracteres). **El texto se puede editar al hacer clic** (acción pequeña, aún sin diseñar) y, si se modifica, aparece la etiqueta **edited**. **[Propuesta]** la misma acción cubre texto, hablante, tipo y contexto.
-- **Images in this section** (debería decir "item"): miniaturas con número, título y marca _Current_ / _Next_, y botones _Previous image_ / _Next image_.
+- **Source image**: "01 / 02" counter, the scene image, file name, zoom (100%) and full screen.
+- **Source text**: source language ("English · Read only"), speaker, source text and metadata (type, context note, character count). **The text can be edited by clicking on it** (a small action, not yet designed) and, if changed, the **edited** label appears. **[Proposal]** the same action covers text, speaker, type and context.
+- **Images in this section** (should say "item"): thumbnails with number, title and a _Current_ / _Next_ mark, and _Previous image_ / _Next image_ buttons.
 
-**Columna central — traducción**
+**Center column — translation**
 
-- **Translations**: cuadrícula de tarjetas por idioma con icono de estado y contador "x/N translated". La tarjeta seleccionada se resalta. Ayuda: "Select a language to edit its translation."
-- **Editor del idioma seleccionado**: selector de idioma, badge de estado, _Speaker_ (heredado, bloqueado), área de texto, contador de caracteres y líneas, aviso "N glossary match", "Edited by you · Just now" y botón primario **Mark translated**.
-- **Comparación entre idiomas**: debajo del editor aparecen tarjetas de otros idiomas con selector de idioma, estado, texto, autor y fecha, y la acción _Edit French_. Es comparación visual, no edición colaborativa.
-- **Nota para traductores** al pie.
-- Los contadores de caracteres y líneas (frente a los del original) son la única ayuda para saber si el texto cabe; no hay previsualización sobre la escena (ver sección 8).
+- **Translations**: grid of cards per language with a status icon and an "x/N translated" counter. The selected card is highlighted. Help text: "Select a language to edit its translation."
+- **Editor for the selected language**: language selector, status badge, _Speaker_ (inherited, locked), text area, character and line counter, "N glossary match" notice, "Edited by you · Just now" and primary **Mark translated** button.
+- **Comparison between languages**: below the editor, cards for other languages appear with a language selector, status, text, author and date, and the _Edit French_ action. It is a visual comparison, not collaborative editing.
+- **Note for translators** at the bottom.
+- The character and line counters (against those of the source) are the only help for knowing whether the text fits; there is no preview over the scene (see section 8).
 
-**Columna derecha — conocimiento y conversación**
+**Right column — knowledge and conversation**
 
-- **Glossary**: enlace _Full glossary_, buscador (en el diseño, rellenado con "Sector 8"), contador de resultados y entradas coincidentes. **El panel del diseño muestra "término → traducción", guía de uso y estado _Approved_, que ya no existen**: debe adaptarse para mostrar la entrada Markdown (título, descripción corta y tags). **[Propuesta]** una coincidencia ("N glossary match") es una entrada cuyo título aparece en el texto original o en la traducción.
-- **Comments** (ámbito: la imagen actual): pestañas _Open · N_ y _Resolved · N_, filtro por idioma; hilos con etiqueta de idioma y categoría, autor, hora, respuestas, _Reply to thread_, _Resolve_; en resueltos, "Resolved by …", _View thread_ y _Reopen_; compositor con `@` para mencionar, selector de idioma y botón _Comment_.
+- **Glossary**: _Full glossary_ link, search box (in the design, filled in with "Sector 8"), result counter and matching entries. **The design's panel shows "term → translation", usage guidance and an _Approved_ status, which no longer exist**: it must be adapted to show the Markdown entry (title, short description and tags). **[Proposal]** a match ("N glossary match") is an entry whose title appears in the source text or in the translation.
+- **Comments** (scope: the current image): _Open · N_ and _Resolved · N_ tabs, language filter; threads with a language and category label, author, time, replies, _Reply to thread_, _Resolve_; on resolved ones, "Resolved by …", _View thread_ and _Reopen_; composer with `@` to mention, language selector and _Comment_ button.
 
-**Estados de una traducción**: Not started → In progress → (Mark translated) → Under Review → Completed. **[Propuesta]** _Submit for review_ pasa a _Under Review_ las traducciones marcadas como traducidas de la sección, y un manager las pasa a _Completed_. El diseño muestra los estados, pero no las transiciones (decisión abierta 1).
+**Translation statuses**: Not started → In progress → (Mark translated) → Under Review → Completed. **[Proposal]** _Submit for review_ moves the section's translations marked as translated to _Under Review_, and a manager moves them to _Completed_. The design shows the statuses but not the transitions (open decision 1).
 
-### 5.5 Glosario (por proyecto, solo entradas Markdown)
+### 5.5 Glossary (per project, Markdown entries only)
 
-**Overview** (título "<Proyecto> - Glossary", con icono)
+**Overview** (title "<Project> - Glossary", with icon)
 
-- Botón **+ New entry**, buscador "Search terms", chips de categoría (Characters, Factions, Locations, Lore) y **New category**.
-- Una sección por categoría con **View all »** y una fila de tres tarjetas (según las notas, las más vistas). Tarjeta: título, descripción y tags.
-- **Filtro por categoría:** el chip seleccionado se resalta, "New category" pasa a **Clear filters** y se muestra la cuadrícula completa de esa categoría en tres columnas.
+- **+ New entry** button, "Search terms" search box, category chips (Characters, Factions, Locations, Lore) and **New category**.
+- One section per category with **View all »** and a row of three cards (according to the notes, the most viewed). Card: title, description and tags.
+- **Category filter:** the selected chip is highlighted, "New category" becomes **Clear filters** and the full grid for that category is shown in three columns.
 
-**Detalle de entrada**
+**Entry detail**
 
-- Flecha de volver, título y acción **Edit entry**.
-- Galería de imágenes, tags y cuerpo en Markdown renderizado, con enlaces internos a otras entradas y referencias numeradas. La página hace scroll. La sintaxis de los enlaces internos no está definida.
-- "Simplificadas" (decisión del autor): se descartan los campos de traducción y de aprobación. **[Propuesta]** el resto de la entrada (imágenes, tags, referencias) se mantiene como en el diseño.
+- Back arrow, title and **Edit entry** action.
+- Image gallery, tags and rendered Markdown body, with internal links to other entries and numbered references. The page scrolls. The syntax of internal links is not defined.
+- "Simplified" (author's decision): the translation and approval fields are dropped. **[Proposal]** the rest of the entry (images, tags, references) stays as in the design.
 
-**Edición de entrada**
+**Entry editing**
 
-- "Edit entry - <nombre>" con **Discard changes** / **Save changes**.
-- Editor Markdown "en vivo" (se ve la sintaxis de los títulos), tags con **+ Tag** e imágenes incrustadas.
-- Panel **Version history** a la derecha: "Current Version" y versiones anteriores con fecha, hora y autor.
+- "Edit entry - <name>" with **Discard changes** / **Save changes**.
+- "Live" Markdown editor (heading syntax is visible), tags with **+ Tag** and embedded images.
+- **Version history** panel on the right: "Current Version" and earlier versions with date, time and author.
 
-**Comparación de versiones** — hay **dos diseños** y falta confirmar cuál es el vigente en Figma:
+**Version comparison** — there are **two designs** and which one is current in Figma remains to be confirmed:
 
-- **A. Página "Compare versions"** con **Go back** y **Restore version**: dos columnas, _Current Version_ (punto verde) y la versión del historial (punto gris). Los cambios se resaltan sobre la columna actual: añadido en azul `#353967`; eliminado tachado sobre `#272729`; barra lateral en los bloques modificados.
-- **B. Modal "Older Version"** sobre la pantalla de edición, con punto naranja, fecha y hora, **Restore version** y cierre `×`. Muestra la versión antigua con el texto eliminado tachado sobre un bloque resaltado.
+- **A. "Compare versions" page** with **Go back** and **Restore version**: two columns, _Current Version_ (green dot) and the version from the history (grey dot). Changes are highlighted on the current column: added in blue `#353967`; removed struck through on `#272729`; side bar on modified blocks.
+- **B. "Older Version" modal** over the editing screen, with an orange dot, date and time, **Restore version** and a `×` close button. It shows the old version with the removed text struck through on a highlighted block.
 
-### 5.6 Ajustes — Miembros
+### 5.6 Settings — Members
 
-- Página "Settings" con navegación lateral: "← Back to translation space", General settings, **Members**, Workspace projects. Este formato es la base para el resto de páginas de ajustes.
-- **Team Members** con contador ("6 members") y botón primario **Invite members to workspace**.
-- Búsqueda por nombre o email, y filtros _All categories_ y _All sub-teams_.
-- Tabla: casilla de selección (también en el encabezado), _Member_ (iniciales, nombre y email), _Category_ (desplegable Manager / Worker), _Sub-team_ (desplegable), _Status_ (Active / Invited) y _Actions_ (**Remove**).
-- Pie: "Showing all N members" y "5 active · 1 invitation pending".
-- Leyenda: **Manager** "Manages members, sub-teams and translation reviews."; **Worker** "Translates and edits content assigned to their team."; "Removing a member keeps their existing translations."
-- Los workers solo ven aquello en lo que participan; los managers ven todo (en v1, simulado).
-- **Conflicto:** la columna y el filtro _Sub-team_ contradicen la decisión de dejar los sub-equipos fuera de alcance (decisión abierta 4).
+- "Settings" page with side navigation: "← Back to translation space", General settings, **Members**, Workspace projects. This format is the basis for the other settings pages.
+- **Team Members** with a counter ("6 members") and primary **Invite members to workspace** button.
+- Search by name or email, and _All categories_ and _All sub-teams_ filters.
+- Table: selection checkbox (also in the header), _Member_ (initials, name and email), _Category_ (Manager / Worker dropdown), _Sub-team_ (dropdown), _Status_ (Active / Invited) and _Actions_ (**Remove**).
+- Footer: "Showing all N members" and "5 active · 1 invitation pending".
+- Legend: **Manager** "Manages members, sub-teams and translation reviews."; **Worker** "Translates and edits content assigned to their team."; "Removing a member keeps their existing translations."
+- Workers only see what they take part in; managers see everything (simulated in v1).
+- **Conflict:** the _Sub-team_ column and filter contradict the decision to leave sub-teams out of scope (open decision 4).
 
-## 6. Reglas de negocio y vocabulario
+## 6. Business rules and vocabulary
 
-- **Estados (canónicos):** `Not started`, `In progress`, `Under Review`, `Completed`. Orden al ordenar por status: In progress > Under Review > Not started > Completed.
-- **Prioridades (canónicas):** `Urgent`, `High`, `Medium`, `Low`, `None`.
-- **Progreso [Propuesta]:** el de un content item = traducciones completadas ÷ (imágenes × idiomas de destino), "across all languages"; el de una sección = media de sus items; el del proyecto = media de sus secciones; el de un idioma = traducciones completadas de ese idioma ÷ total de imágenes. Los porcentajes del diseño son datos de ejemplo, no requisitos.
-- El idioma original **no** cuenta como idioma de destino.
-- Mover un content item a otra sección conserva sus traducciones y su progreso.
-- Quitar a un miembro conserva sus traducciones.
+- **Statuses (canonical):** `Not started`, `In progress`, `Under Review`, `Completed`. Order when sorting by status: In progress > Under Review > Not started > Completed.
+- **Priorities (canonical):** `Urgent`, `High`, `Medium`, `Low`, `None`.
+- **Progress [Proposal]:** a content item's = completed translations ÷ (images × target languages), "across all languages"; a section's = average of its items; the project's = average of its sections; a language's = completed translations in that language ÷ total images. The percentages in the design are sample data, not requirements.
+- The source language does **not** count as a target language.
+- Moving a content item to another section keeps its translations and progress.
+- Removing a member keeps their translations.
 
-## 7. Decisiones
+## 7. Decisions
 
-### Resueltas
+### Resolved
 
-1. **Origen del texto:** OCR sobre la imagen.
-2. **Previsualización sobre la escena:** descartada (ver sección 8). La ayuda para saber si el texto cabe son los contadores de caracteres y líneas.
-3. **Comparación de traducciones:** tarjetas de idiomas bajo el editor, visual; no colaborativa.
-4. **Prioridad:** Urgent, High, Medium, Low, None.
-5. **Language progress:** panel con % y estado por idioma, contador y botón _Add language_; en la lista, popover de progreso por idioma.
-6. **Sub-equipos por idioma:** fuera de alcance (pero ver conflicto en 5.6).
-7. **Formatos:** exportación JSON y CSV; importación de PO/XLIFF en v2.
-8. **Textos por imagen:** una imagen = un bloque de texto.
-9. **Idioma original:** configurable por proyecto. English como idioma de destino en el ejemplo es un fallo del diseño de muestra.
-10. **Export to code:** exporta un archivo JSON con las traducciones.
-11. **Datos de ejemplo incoherentes:** son datos de relleno.
-12. **Glosario por proyecto**, accesible desde los detalles de proyecto y de sección y desde el editor.
-13. **Glosario solo con entradas Markdown simplificadas:** se eliminan el término → traducción por idioma y el estado _Approved_.
-14. **Texto original editable al hacer clic**, con etiqueta "edited"; sin paso de revisión imagen por imagen.
-15. **Modal de crear proyecto** incluye idioma original (y los idiomas del proyecto).
-16. **Filtro de estado:** "In progress". **Varios managers** por proyecto.
-17. **Submit for review** actúa sobre la sección.
-18. **Terminología:** Section (acto) > Content item > Image.
-19. **Progreso en la lista:** popover por idioma al pasar el ratón sobre el estado.
-20. **Figma es la fuente de verdad visual y puede ser más reciente que las capturas.** Claude Code debe conectarse al MCP de Figma y **preguntar cada vez** cuál es la versión vigente cuando haya varias versiones de una pantalla.
+1. **Text source:** OCR on the image.
+2. **Preview over the scene:** discarded (see section 8). The help for knowing whether the text fits is the character and line counters.
+3. **Translation comparison:** language cards below the editor, visual; not collaborative.
+4. **Priority:** Urgent, High, Medium, Low, None.
+5. **Language progress:** panel with % and status per language, counter and _Add language_ button; in the list, a per-language progress popover.
+6. **Sub-teams per language:** out of scope (but see the conflict in 5.6).
+7. **Formats:** JSON and CSV export; PO/XLIFF import in v2.
+8. **Texts per image:** one image = one text block.
+9. **Source language:** configurable per project. English as a target language in the example is a mistake in the sample design.
+10. **Export to code:** exports a JSON file with the translations.
+11. **Inconsistent sample data:** it is filler data.
+12. **Per-project glossary**, reachable from the project and section details and from the editor.
+13. **Glossary with simplified Markdown entries only:** per-language term → translation and the _Approved_ status are removed.
+14. **Source text editable by clicking**, with an "edited" label; no image-by-image review step.
+15. **Create project modal** includes the source language (and the project languages).
+16. **Status filter:** "In progress". **Several managers** per project.
+17. **Submit for review** acts on the section.
+18. **Terminology:** Section (act) > Content item > Image.
+19. **Progress in the list:** per-language popover when hovering over the status.
+20. **Figma is the visual source of truth and may be more recent than the screenshots.** Claude Code must connect to the Figma MCP and **ask every time** which version is current when a screen has several versions.
 
-### Abiertas — bloquean el modelo o el flujo
+### Open — blocking the model or the flow
 
-1. **Transiciones de revisión.** Qué cambia el estado de una traducción (_Mark translated_, _Submit for review_ a nivel de sección), quién pasa a _Completed_ y dónde se muestra el revisor (las notas piden mostrar quién tradujo y quién revisó; el diseño solo muestra al autor). Ver la propuesta en 5.4.
-2. **Metadatos del texto original.** El OCR no detecta hablante, tipo ni nota de contexto. **[Propuesta]** que la acción de editar el texto original los cubra también.
-3. **Modal "Add content to section" incompleto.** No tiene confirmar/cancelar, nombre ni tipo del content item, título de las imágenes ni estado del OCR (progreso, errores, texto vacío).
-4. **Sub-teams.** Ajustes > Miembros tiene columna y filtro _Sub-team_ ("Manages members, sub-teams…", "content assigned to their team"), pero se decidió dejarlos fuera. O se quitan de Figma, o se mantienen como asignación de idioma del worker.
-5. **Esquema del JSON de "Export to code"** (qué incluye: ¿solo traducciones completadas?, ¿idiomas elegibles?, claves) y dónde se exporta el CSV.
-6. **Páginas de navegación sin diseño:** Notifications, Assigned to me, Comments, General settings, Workspace projects. **[Propuesta]** quedan fuera de v1.
-7. **Panel de glosario del editor.** Rediseñar para mostrar la entrada Markdown (título, descripción corta, tags) y definir qué es una coincidencia.
-8. **Comparación de versiones del glosario:** elegir entre la página A y el modal B (ver 5.5).
-9. **Contenido de demostración.** No hay juego propio. Opciones en discusión: mundo ficticio con arte CC0, obra de dominio público como universo del glosario, o un juego de código abierto con licencia compatible. Hasta decidirlo, usar contenido ficticio propio.
+1. **Review transitions.** What changes a translation's status (_Mark translated_, _Submit for review_ at section level), who moves it to _Completed_ and where the reviewer is shown (the notes ask to show who translated and who reviewed; the design only shows the author). See the proposal in 5.4.
+2. **Source text metadata.** OCR does not detect speaker, type or context note. **[Proposal]** the action that edits the source text covers them too.
+3. **Incomplete "Add content to section" modal.** It has no confirm/cancel, content item name or type, image titles, or OCR status (progress, errors, empty text).
+4. **Sub-teams.** Settings > Members has a _Sub-team_ column and filter ("Manages members, sub-teams…", "content assigned to their team"), but they were decided to be out of scope. Either they are removed from Figma, or they are kept as the worker's language assignment.
+5. **Schema of the "Export to code" JSON** (what it includes: only completed translations? selectable languages? keys) and where the CSV is exported.
+6. **Navigation pages without a design:** Notifications, Assigned to me, Comments, General settings, Workspace projects. **[Proposal]** they stay out of v1.
+7. **Editor glossary panel.** Redesign it to show the Markdown entry (title, short description, tags) and define what a match is.
+8. **Glossary version comparison:** choose between page A and modal B (see 5.5).
+9. **Demo content.** There is no original game. Options under discussion: a fictional world with CC0 art, a public-domain work as the glossary universe, or an open-source game with a compatible license. Until decided, use original fictional content.
 
-### Abiertas — menores
+### Open — minor
 
-- **Release Date** como trimestre ("Q3 2025"): modelar como trimestre o texto libre.
-- **Etiqueta "Manager"** en el overview con varios managers: pasar a "Managers".
-- **Etiquetas de proyecto** (género, etc.) de las notas: no aparecen en ningún diseño.
-- **Nombres:** "Not-started" con guion en Languages Progress; "Started" en el filtro anterior.
-- **Detalles de diseño:** "88" y "100" sin "%" en una versión del detalle de proyecto; "Images in this section" por "item"; erratas en los datos de ejemplo del glosario; línea blanca suelta en la fila de Lucas Moreau de Ajustes.
-- **Banderas** para representar idiomas en el popover de progreso: confirmar que se mantienen.
-- **Tipos de content item** ("Mission dialogue", "Character dialogue"): ¿lista cerrada o libre?
-- **Icono del proyecto** junto al título del glosario: ¿campo del proyecto?
-- **Cuántas tarjetas de comparación** caben a la vez en el editor.
-- **Permisos de edición del texto original** (propuesta: managers).
+- **Release Date** as a quarter ("Q3 2025"): model it as a quarter or free text.
+- **"Manager" label** in the overview with several managers: change to "Managers".
+- **Project tags** (genre, etc.) from the notes: they do not appear in any design.
+- **Naming:** "Not-started" with a hyphen in Languages Progress; "Started" in the earlier filter.
+- **Design details:** "88" and "100" without "%" in one version of the project detail; "Images in this section" instead of "item"; typos in the glossary sample data; a stray white line in Lucas Moreau's row in Settings.
+- **Flags** to represent languages in the progress popover: confirm they are kept.
+- **Content item types** ("Mission dialogue", "Character dialogue"): closed list or free?
+- **Project icon** next to the glossary title: a project field?
+- **How many comparison cards** fit at once in the editor.
+- **Permissions to edit the source text** (proposal: managers).
 
-## 8. Fuera de alcance en v1
+## 8. Out of scope in v1
 
-Autenticación real, invitaciones por email reales, notificaciones, sincronización entre usuarios, traducción con IA, vistas Kanban y Timeline, importación de PO/XLIFF, páginas sin diseño (ver sección 4), y **previsualización del texto traducido sobre la imagen del juego**: la herramienta no puede reescribir el texto dentro de la escena sin renderizarlo con la fuente y el cuadro del propio juego, así que no se plantea ni como futuro.
+Real authentication, real email invitations, notifications, synchronization between users, AI translation, Kanban and Timeline views, PO/XLIFF import, pages without a design (see section 4), and **preview of the translated text over the game image**: the tool cannot rewrite the text inside the scene without rendering it with the game's own font and text box, so it is not considered even for the future.
 
-## 9. Referencias de diseño
+## 9. Design references
 
-Copiar las capturas de Attachments a `docs/design/` con nombres descriptivos. Hay capturas duplicadas: usar una de cada.
+Copy the screenshots from Attachments to `docs/design/` with descriptive names. There are duplicate screenshots: use one of each.
 
-| Pantalla                                                           | Archivo sugerido                     | Notas                                    |
-| ------------------------------------------------------------------ | ------------------------------------ | ---------------------------------------- |
-| Lista de proyectos (navegación nueva)                              | `proyectos-lista.png`                | Vigente                                  |
-| Lista de proyectos (navegación antigua)                            | `proyectos-lista-nav-antigua.png`    | Secundaria                               |
-| Progreso por idioma (popover)                                      | `proyectos-progreso-popover.png`     |                                          |
-| Filtros: aplicados, Status, Workers, Platforms, Managers, Priority | `proyectos-filtros-*.png`            | Status dice "Started": versión anterior  |
-| Menú de filtros (versión anterior)                                 | `proyectos-filtros-menu-antiguo.png` | Secundaria                               |
-| Crear proyecto                                                     | `proyecto-crear.png`                 | Falta idioma original y varios managers  |
-| Detalle de proyecto                                                | `proyecto-detalle.png`               | Usar la versión con porcentajes visibles |
-| Detalle de sección                                                 | `seccion-detalle.png`                |                                          |
-| Mover a otra sección (popover)                                     | `seccion-mover-items.png`            |                                          |
-| Añadir contenido (3 estados)                                       | `seccion-anadir-contenido.png`       |                                          |
-| Editor de traducciones                                             | `editor.png`                         |                                          |
-| Glosario overview                                                  | `glosario-overview.png`              | Navegación antigua                       |
-| Glosario filtrado por categoría                                    | `glosario-categoria-locations.png`   |                                          |
-| Glosario detalle                                                   | `glosario-detalle.png`               |                                          |
-| Glosario edición e historial                                       | `glosario-edicion.png`               |                                          |
-| Glosario comparación A (página)                                    | `glosario-comparacion-a.png`         |                                          |
-| Glosario comparación B (modal)                                     | `glosario-comparacion-b.png`         |                                          |
-| Ajustes — Miembros                                                 | `ajustes-miembros.png`               |                                          |
+| Screen                                                         | Suggested file                       | Notes                                   |
+| -------------------------------------------------------------- | ------------------------------------ | --------------------------------------- |
+| Project list (new navigation)                                  | `proyectos-lista.png`                | Current                                 |
+| Project list (old navigation)                                  | `proyectos-lista-nav-antigua.png`    | Secondary                               |
+| Progress per language (popover)                                | `proyectos-progreso-popover.png`     |                                         |
+| Filters: applied, Status, Workers, Platforms, Managers, Priority | `proyectos-filtros-*.png`          | Status says "Started": earlier version  |
+| Filter menu (earlier version)                                  | `proyectos-filtros-menu-antiguo.png` | Secondary                               |
+| Create project                                                 | `proyecto-crear.png`                 | Missing source language and several managers |
+| Project detail                                                 | `proyecto-detalle.png`               | Use the version with visible percentages |
+| Section detail                                                 | `seccion-detalle.png`                |                                         |
+| Move to another section (popover)                              | `seccion-mover-items.png`            |                                         |
+| Add content (3 states)                                         | `seccion-anadir-contenido.png`       |                                         |
+| Translation editor                                             | `editor.png`                         |                                         |
+| Glossary overview                                              | `glosario-overview.png`              | Old navigation                          |
+| Glossary filtered by category                                  | `glosario-categoria-locations.png`   |                                         |
+| Glossary detail                                                | `glosario-detalle.png`               |                                         |
+| Glossary editing and history                                   | `glosario-edicion.png`               |                                         |
+| Glossary comparison A (page)                                   | `glosario-comparacion-a.png`         |                                         |
+| Glossary comparison B (modal)                                  | `glosario-comparacion-b.png`         |                                         |
+| Settings — Members                                             | `ajustes-miembros.png`               |                                         |
 
-> **Derechos de autor:** las capturas usan imágenes y textos de Final Fantasy VII (escena del juego, arte de personajes, artículos del glosario) y nombres de otros juegos. Para un repositorio público conviene sustituirlos por contenido propio, libre o de dominio público en `docs/design/` y en los datos de demostración (decisión abierta 9).
+> **Copyright:** the screenshots use images and text from Final Fantasy VII (game scene, character art, glossary articles) and names of other games. For a public repository, they should be replaced with original, free or public-domain content in `docs/design/` and in the demo data (open decision 9).
