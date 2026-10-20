@@ -68,4 +68,28 @@ describe('local repositories', () => {
     await repos.demo.ensureSeeded();
     expect(await repos.projects.getDetail('missing')).toBeUndefined();
   });
+
+  it('creates an empty project with a generated, unique code', async () => {
+    const { repos } = setup();
+    await repos.demo.ensureSeeded();
+    const input = {
+      name: 'Moonfall',
+      sourceLanguage: 'ja',
+      targetLanguages: ['es', 'fr'],
+      platforms: ['pc' as const],
+      managerIds: ['m1'],
+      memberIds: [],
+      priority: 'high' as const,
+    };
+
+    const first = await repos.projects.create(input, 'm1');
+    const second = await repos.projects.create(input, 'm1');
+    const year = new Date().getFullYear();
+    expect(first).toMatchObject({ ...input, code: `MOON-${year}`, createdBy: 'm1' });
+    expect(second.code).toBe(`MOON-${year}-2`);
+
+    const summary = (await repos.projects.listSummaries()).find((s) => s.project.id === first.id);
+    expect(summary).toMatchObject({ progress: 0, status: 'not-started', wordCount: 0 });
+    expect(summary?.languages.map((l) => l.language)).toEqual(['es', 'fr']);
+  });
 });

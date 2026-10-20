@@ -39,6 +39,26 @@
   --color-platform-pc: var(--platform-pc);
   --color-platform-switch: var(--platform-switch);
 
+  --color-status-not-started: var(--status-not-started);
+  --color-status-in-progress: var(--status-in-progress);
+  --color-status-under-review: var(--status-under-review);
+  --color-status-completed: var(--status-completed);
+  --color-progress-track: var(--progress-track);
+
+  --color-overlay: var(--overlay);
+  --color-danger: var(--danger);
+
+  --color-button-primary: var(--button-primary);
+  --color-button-primary-foreground: var(--button-primary-foreground);
+
+  --color-avatar-1: var(--avatar-1);
+  --color-avatar-2: var(--avatar-2);
+  --color-avatar-3: var(--avatar-3);
+  --color-avatar-4: var(--avatar-4);
+  --color-avatar-5: var(--avatar-5);
+  --color-avatar-6: var(--avatar-6);
+  --color-avatar-foreground: var(--avatar-foreground);
+
   --color-diff-added: var(--diff-added);
   --color-diff-removed: var(--diff-removed);
 }

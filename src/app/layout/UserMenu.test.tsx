@@ -18,6 +18,7 @@ describe('User menu', () => {
   it('starts as the first manager and lists only active members', async () => {
     renderApp('/projects');
     const { menu } = await openMenu();
+    await within(menu).findByText('Ana Torres');
     // 7 active members + 3 themes + 2 languages; Hana Ito is only invited.
     expect(within(menu).getAllByRole('menuitemradio')).toHaveLength(12);
     expect(within(menu).queryByText('Hana Ito')).not.toBeInTheDocument();

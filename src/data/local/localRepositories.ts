@@ -5,7 +5,9 @@ import {
   type ProjectDetail,
   type ProjectSummary,
 } from '@/domain/progress';
-import type { Id, Member } from '@/domain/types';
+import type { NewProjectInput } from '@/domain/newProject';
+import { generateProjectCode } from '@/domain/projectCode';
+import type { Id, Member, Project } from '@/domain/types';
 import type {
   DemoRepository,
   MemberRepository,
@@ -64,6 +66,26 @@ class LocalProjectRepository implements ProjectRepository {
   async getDetail(id: Id): Promise<ProjectDetail | undefined> {
     const data = await this.loadProject(id);
     return data && summarizeProject(data);
+  }
+
+  async create(input: NewProjectInput, by: Id | null): Promise<Project> {
+    const db = this.db;
+    return db.transaction('rw', db.projects, async () => {
+      const now = new Date();
+      const existingCodes = (await db.projects.toArray()).map((p) => p.code);
+      const project: Project = {
+        id: crypto.randomUUID(),
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+        createdBy: by,
+        updatedBy: by,
+        ...input,
+        code: generateProjectCode(input.name, now.getFullYear(), existingCodes),
+        releaseDate: null,
+      };
+      await db.projects.add(project);
+      return project;
+    });
   }
 
   private loadProject(id: Id): Promise<ProjectData | undefined> {

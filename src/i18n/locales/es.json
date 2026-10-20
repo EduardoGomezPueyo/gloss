@@ -31,7 +31,31 @@
     "es": "Español"
   },
   "projects": {
-    "title": "Lista de proyectos"
+    "title": "Lista de proyectos",
+    "addProject": "Añadir proyecto",
+    "searchPlaceholder": "Buscar proyectos",
+    "searchLabel": "Buscar proyectos por nombre o código",
+    "filters": "Filtros",
+    "filtersActive": "Filtros ({{count}} activos)",
+    "clearAllFilters": "Quitar todos los filtros",
+    "removeFilter": "Quitar filtro: {{label}}",
+    "chipLabel": "{{category}} es",
+    "columns": {
+      "name": "Nombre",
+      "platforms": "Plataformas",
+      "manager": "Manager",
+      "members": "Miembros",
+      "priority": "Prioridad",
+      "status": "Estado"
+    },
+    "sortBy": "Ordenar por {{column}}",
+    "empty": "Aún no hay proyectos. Crea el primero con Añadir proyecto.",
+    "noMatches": "Ningún proyecto coincide con la búsqueda o los filtros.",
+    "loading": "Cargando proyectos…",
+    "progressTitle": "Progreso",
+    "progressOf": "Progreso en {{language}}",
+    "noTargetLanguages": "Aún no hay idiomas de destino.",
+    "detailComingSoon": "El detalle del proyecto se construye en la fase 3."
   },
   "settings": {
     "title": "Ajustes"
@@ -49,5 +73,68 @@
   },
   "data": {
     "loadError": "No se pudieron cargar los datos locales. Prueba a recargar la página."
+  },
+  "filterCategory": {
+    "platforms": "Plataformas",
+    "managers": "Managers",
+    "workers": "Colaboradores",
+    "priorities": "Prioridad",
+    "statuses": "Estado"
+  },
+  "filterChip": {
+    "platforms": "Plataforma",
+    "managers": "Manager",
+    "workers": "Colaborador",
+    "priorities": "Prioridad",
+    "statuses": "Estado"
+  },
+  "createProject": {
+    "title": "Añadir nuevo proyecto",
+    "subtitle": "Configura el proyecto, las plataformas y las personas.",
+    "close": "Cerrar",
+    "name": "Nombre del proyecto",
+    "platforms": "Plataformas",
+    "platformsHelp": "Selecciona todas las plataformas que admite este proyecto.",
+    "managers": "Managers",
+    "addManagers": "Añadir managers",
+    "teamMembers": "Miembros del equipo",
+    "addTeamMembers": "Añadir miembros del equipo",
+    "added": "{{count}} añadidos",
+    "remove": "Quitar a {{name}}",
+    "noPeople": "No queda nadie por añadir.",
+    "sourceLanguage": "Idioma original",
+    "sourceLanguagePlaceholder": "Selecciona un idioma",
+    "targetLanguages": "Idiomas de destino",
+    "targetLanguagesHelp": "Opcional. Puedes añadir más idiomas después desde el proyecto.",
+    "priority": "Prioridad",
+    "required": "Obligatorio",
+    "cancel": "Cancelar",
+    "submit": "Crear proyecto",
+    "submitting": "Creando…",
+    "saveError": "No se pudo crear el proyecto. Inténtalo de nuevo.",
+    "errors": {
+      "nameRequired": "Escribe un nombre para el proyecto.",
+      "sourceLanguageRequired": "Selecciona el idioma original.",
+      "managerRequired": "Añade al menos un manager."
+    }
+  },
+  "status": {
+    "not-started": "No iniciado",
+    "in-progress": "En curso",
+    "under-review": "En revisión",
+    "completed": "Completado"
+  },
+  "priority": {
+    "urgent": "Urgente",
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja",
+    "none": "Ninguna"
+  },
+  "platform": {
+    "playstation": "Playstation",
+    "xbox": "Xbox",
+    "pc": "PC",
+    "switch": "Switch"
   }
 }

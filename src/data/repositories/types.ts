@@ -9,8 +9,9 @@
  * - ids are UUIDs and entities carry createdAt/updatedAt/createdBy/updatedBy.
  */
 
+import type { NewProjectInput } from '@/domain/newProject';
 import type { ProjectDetail, ProjectSummary } from '@/domain/progress';
-import type { Id, Member } from '@/domain/types';
+import type { Id, Member, Project } from '@/domain/types';
 
 export interface MemberRepository {
   /** Active and invited members, excluding removed ones. */
@@ -23,6 +24,8 @@ export interface ProjectRepository {
   listSummaries(): Promise<ProjectSummary[]>;
   /** One project with its sections and content items summarized; undefined if not found. */
   getDetail(id: Id): Promise<ProjectDetail | undefined>;
+  /** Creates an empty project (no sections yet); the code is generated from the name. */
+  create(input: NewProjectInput, by: Id | null): Promise<Project>;
 }
 
 /** Demo sandbox controls (local data source only). */

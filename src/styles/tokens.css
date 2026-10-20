@@ -53,6 +53,30 @@
   --platform-pc: #c5ecf3; /* Platforms/PC */
   --platform-switch: #ef3d3d; /* Platforms/Switch */
 
+  /* Statuses (status icons and progress bars) */
+  --status-not-started: #69696b;
+  --status-in-progress: #e9ca1b;
+  --status-under-review: #e3a748; /* from the status icon */
+  --status-completed: #22c55e;
+  --progress-track: #2a2a2e;
+
+  /* Modal backdrop and form errors */
+  --overlay: rgb(0 0 0 / 0.6);
+  --danger: #f87171;
+
+  /* Primary button (Create project): light on dark */
+  --button-primary: #e4e4e7;
+  --button-primary-foreground: #09090a;
+
+  /* Avatar backgrounds (initials; members have no photo in v1) */
+  --avatar-1: #3b4a6b;
+  --avatar-2: #4a3b6b;
+  --avatar-3: #3b6b5a;
+  --avatar-4: #6b553b;
+  --avatar-5: #6b3b4a;
+  --avatar-6: #3b5f6b;
+  --avatar-foreground: #f9fafb;
+
   /* Glossary version diff (from the design notes) */
   --diff-added: #353967;
   --diff-removed: #272729;
@@ -92,6 +116,26 @@
   --platform-xbox: #16a34a;
   --platform-pc: #38a3b8;
   --platform-switch: #e02f2f;
+
+  --status-not-started: #a1a1aa;
+  --status-in-progress: #c9ab00;
+  --status-under-review: #d38f20;
+  --status-completed: #16a34a;
+  --progress-track: #e4e4e7;
+
+  --overlay: rgb(0 0 0 / 0.3);
+  --danger: #dc2626;
+
+  --button-primary: #18181b;
+  --button-primary-foreground: #ffffff;
+
+  --avatar-1: #c7d2ec;
+  --avatar-2: #d6c7ec;
+  --avatar-3: #c7ecdd;
+  --avatar-4: #ecdcc7;
+  --avatar-5: #ecc7d2;
+  --avatar-6: #c7e3ec;
+  --avatar-foreground: #18181b;
 
   --diff-added: #dcdcf7;
   --diff-removed: #ececee;

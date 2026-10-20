@@ -96,6 +96,25 @@ Log of technical and design decisions and the reasons behind them. Product decis
 ### D21. Removing a member is a soft delete (2026-10-19) — *confirmed by the author*
 - **Decision:** members have `removedAt`; removed members disappear from lists but stay in the store, so their translations remain attributed (SPEC 6: "Removing a member keeps their translations").
 
+### D22. Project list filters and search (2026-10-20) — *phase 2*
+- **Decision:** categories combine with AND; several values inside one category combine with OR (the SPEC 5.1 proposal; confirmed by the author). Applied filters show **one chip per category** ("Status is Not started, In progress ×"); × clears that category. The search matches the project name **or code**, ignoring case and accents. *Managers* lists members whose category is manager; *Workers* lists workers (invited ones included) and matches the project's team members.
+- **Undesigned states (proposal):** a ticked checkbox is a filled square with a check; the filter button gets a stronger circle and a subtle fill while any filter is active; with no matches, the list shows a message and **Clear all filters**. Menus stay open while ticking so several values can be picked in a row.
+- **Implementation:** pure functions in `src/domain/filters.ts`, with tests. Filters, search and sort are page state (not in the URL) for now.
+
+### D23. Add new project: rules not in the design (2026-10-20) — *extends D8*
+- **Decision:** required fields are *Project name*, *Original language* and **at least one manager** (SPEC: a project has one or more managers); these rules, the manager preselection and the manager/team member exclusion are confirmed by the author. The current user is preselected as manager when they are one. *Team members* offers workers; a person cannot be both manager and team member of the same project. Target languages exclude the original language and changing it removes it from the targets. Default priority: *None*. Errors are shown after the first submit.
+- **Generated fields:** the identifier is generated from the name (up to three word initials, or the first four letters of a single word, plus the year, with `-2`, `-3`… if taken: "The Lantern Keeper" → `TLK-2026`; confirmed by the author). The release date starts empty. The project starts with no sections (progress 0 %, *Not started*).
+- **Look:** *Managers* reuses the *Team members* picker, *Original language* is a dropdown styled like the name input and *Target languages* reuses the *Platforms* chips. The modal body scrolls when it does not fit.
+
+### D24. Languages, flags and avatars (2026-10-20)
+- **Languages:** a fixed catalog of 16 languages in `src/domain/languages.ts` (BCP 47 codes). Names come from `Intl.DisplayNames` in the interface language, so they need no i18n keys ("Japanese" / "Japonés").
+- **Flags:** `country-flag-icons` (MIT) SVG components, because emoji flags do not render on Windows. Only the catalog's flags are imported, so the bundle carries 16 small SVGs.
+- **Avatars:** members have no photo in v1, so avatars show initials on a colour picked from a stable hash of the member id (six theme tokens).
+- **In progress icon:** the yellow pie fills with the project's progress (clamped to 10–90 % so it never looks empty or complete), as the design shows different fills.
+
+### D25. Project rows link to the detail (2026-10-20)
+- **Decision:** the name is a link stretched over the whole row (keyboard and screen-reader friendly); the status icon sits above it so hovering it opens the progress popover instead. `/projects/:projectId` shows a placeholder until phase 3.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
@@ -107,6 +126,7 @@ Decisions that are still open, with the phase they block:
 | Light theme review (D5) | — | Proposal, pending the author's review |
 | User menu on the avatar (D6, D20) | — | Proposal, pending confirmation |
 | Pages without a design (SPEC open 6) | — | Proposal D11: disabled |
+| Undesigned list and modal looks (D22 checkbox, active filter button, empty state; D23 look) | — | Proposal, pending the author's review (filter logic, required fields and project ID confirmed) |
 | Incomplete "Add content to section" modal (SPEC open 3) | Phase 4 | To be proposed before the phase |
 | Review transitions (SPEC open 1) | Phase 5 | To be proposed before the phase |
 | Editor glossary panel (SPEC open 7) | Phase 5 | To be proposed before the phase |

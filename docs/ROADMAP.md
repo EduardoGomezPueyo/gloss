@@ -34,7 +34,7 @@ Vertical phases; the app stays runnable after each one.
 
 - [x] **0. Foundation:** scaffold, Figma tokens, shell (sidebar with disabled entries, Settings layout), avatar menu with theme and language, i18n (en/es), lint/test, `DECISIONS.md`, `CLAUDE.md` stack and commands.
 - [x] **1. Data model and data access:** domain types, repository interfaces, Dexie implementation, coherent fictional seed, simulated current-user selector. Tests for progress, statuses and sorting.
-- [ ] **2. Project list and create project:** table, search, filters (menu, submenus, removable chips, Clear all), sorting, per-language progress popover, modal with managers and languages. Tests for filters and sorting.
+- [x] **2. Project list and create project:** table, search, filters (menu, submenus, removable chips, Clear all), sorting, per-language progress popover, modal with managers and languages. Tests for filters and sorting.
 - [ ] **3. Project and section detail:** overview, collapsible sections, Languages Progress, Add section and Add language; content items with search, filter, multi-select and Move to section. Tests for moving items.
 - [ ] **4. Images and OCR:** "Add content to section" modal (3 states, dnd-kit) and OCR. *Before starting: propose what the design is missing (SPEC open decision 3).*
 - [ ] **5. Translation editor:** three columns, autosave, editable source text with "edited", language cards, comparison, threaded comments and Submit for review. *Before starting: status transitions (open 1) and the glossary panel (open 7).*
