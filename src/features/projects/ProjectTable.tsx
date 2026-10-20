@@ -99,7 +99,7 @@ function ProjectRow({
   return (
     <div
       role="row"
-      className={`${rowGrid} relative rounded-lg p-3 transition-colors hover:bg-popup has-[a:focus-visible]:bg-popup`}
+      className={`${rowGrid} relative rounded-lg p-3 transition-colors hover:bg-row-hover has-[a:focus-visible]:bg-row-hover`}
     >
       <div role="cell" className="min-w-0">
         {/* The link stretches over the whole row: clicking anywhere opens the project (SPEC 5.1). */}

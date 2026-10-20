@@ -47,7 +47,7 @@ Decided (see `docs/DECISIONS.md`): a **local-first** SPA deployed on Vercel, rea
 - Styling: Tailwind CSS v4. The semantic tokens in `src/styles/tokens.css` (dark theme from Figma, proposed light theme) are exposed as utilities (`bg-surface`, `text-text-secondary`…). **Never** put raw colors in components.
 - Accessible primitives: Radix UI (`radix-ui`). Figma icons live in `src/assets/icons` as SVG components (`?react`) using `currentColor`.
 - i18n: i18next. **Interface in English and Spanish**: every text goes through a key in `src/i18n/locales/{en,es}.json` (a test checks both have the same keys). Project content is not translated.
-- Light and dark themes (`data-theme` on `<html>`), with the switch in the avatar menu.
+- Light and dark themes (`data-theme` on `<html>`), with a light/dark switch next to the avatar (D26).
 - Data (from phase 1): repository interfaces + Dexie (IndexedDB) + TanStack Query. `VITE_DATA_SOURCE=local|remote`. The UI (`src/features`, `src/ui`) cannot import storage implementations (ESLint rule).
 - Tests: Vitest + Testing Library. Lint: ESLint + Prettier (Prettier does not touch `.md` files or `docs/`).
 

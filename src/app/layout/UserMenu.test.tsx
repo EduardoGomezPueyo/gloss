@@ -19,8 +19,8 @@ describe('User menu', () => {
     renderApp('/projects');
     const { menu } = await openMenu();
     await within(menu).findByText('Ana Torres');
-    // 7 active members + 3 themes + 2 languages; Hana Ito is only invited.
-    expect(within(menu).getAllByRole('menuitemradio')).toHaveLength(12);
+    // 7 active members; Hana Ito is only invited.
+    expect(within(menu).getAllByRole('menuitemradio')).toHaveLength(7);
     expect(within(menu).queryByText('Hana Ito')).not.toBeInTheDocument();
     expect(within(menu).getByRole('menuitemradio', { name: /Ana Torres/ })).toHaveAttribute(
       'aria-checked',

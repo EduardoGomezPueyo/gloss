@@ -17,14 +17,13 @@
   },
   "userMenu": {
     "open": "Abrir menú de usuario",
-    "theme": "Tema",
-    "themeSystem": "Sistema",
-    "themeLight": "Claro",
-    "themeDark": "Oscuro",
-    "language": "Idioma",
     "currentUser": "Usuario actual",
     "resetDemo": "Restablecer datos de demo",
     "resetDemoConfirm": "Esto borra todos tus cambios y restaura los datos de demo. ¿Continuar?"
+  },
+  "sidebar": {
+    "darkMode": "Modo oscuro",
+    "language": "Idioma de la interfaz"
   },
   "languages": {
     "en": "English",

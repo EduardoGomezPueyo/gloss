@@ -17,14 +17,13 @@
   },
   "userMenu": {
     "open": "Open user menu",
-    "theme": "Theme",
-    "themeSystem": "System",
-    "themeLight": "Light",
-    "themeDark": "Dark",
-    "language": "Language",
     "currentUser": "Current user",
     "resetDemo": "Reset demo data",
     "resetDemoConfirm": "This deletes all your changes and restores the demo data. Continue?"
+  },
+  "sidebar": {
+    "darkMode": "Dark mode",
+    "language": "Interface language"
   },
   "languages": {
     "en": "English",

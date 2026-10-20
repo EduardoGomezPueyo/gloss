@@ -6,7 +6,9 @@ import NotificationsIcon from '@/assets/icons/nav-notifications.svg?react';
 import ProjectsIcon from '@/assets/icons/nav-projects.svg?react';
 import SettingsIcon from '@/assets/icons/nav-settings.svg?react';
 import { ContentPanel } from './ContentPanel';
+import { LanguageToggle } from './LanguageToggle';
 import { SidebarNavItem } from './SidebarNavItem';
+import { ThemeSwitch } from './ThemeSwitch';
 import { UserMenu } from './UserMenu';
 
 /** Translation space: general navigation on the left, content panel on the right. */
@@ -27,7 +29,11 @@ export function AppLayout() {
           <SidebarNavItem icon={CommentsIcon} label={t('nav.comments')} />
           <SidebarNavItem icon={SettingsIcon} label={t('nav.settings')} to="/settings" />
         </div>
-        <UserMenu />
+        <div className="flex items-center gap-2">
+          <UserMenu />
+          <ThemeSwitch />
+          <LanguageToggle />
+        </div>
       </nav>
 
       <ContentPanel>

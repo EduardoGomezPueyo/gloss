@@ -29,10 +29,10 @@ Log of technical and design decisions and the reasons behind them. Product decis
 
 ### D5. Light and dark theme (2026-10-18)
 - **Decision:** the dark theme comes from Figma. The light one is a **proposal** with no design: the same semantic tokens with their own values (pending the author's review). By default it follows `prefers-color-scheme`; a script in `index.html` applies the theme before first paint.
-- **Light theme adjustments:** text in the accent color uses a dark yellow (`--accent-text`) to keep contrast, and the PC platform color is darkened because the original light blue is not visible on white.
+- **Light theme adjustments:** text in the accent color uses a dark yellow (`--accent-text`) to keep contrast, and the PC platform color is darkened because the original light blue is not visible on white. Hovered list rows use their own `--row-hover` token, because the popup colour is white too and the hover was invisible (reported by the author).
 
 ### D6. User menu on the avatar (2026-10-18) — *proposal, no design*
-- **Decision:** the avatar at the bottom left opens a menu with **Theme** (System / Light / Dark) and **Language** (English / Español). In phase 1 the simulated current-user selector is added to it.
+- **Decision:** the avatar at the bottom left opens a menu with **Theme** (System / Light / Dark) and **Language** (English / Español). *Superseded by D26: theme and language moved out of the menu.* In phase 1 the simulated current-user selector is added to it.
 - **Reason:** the avatar already exists in the design and has no assigned function, so no new elements are added to the navigation.
 
 ## Design (current versions and gaps)
@@ -115,6 +115,9 @@ Log of technical and design decisions and the reasons behind them. Product decis
 ### D25. Project rows link to the detail (2026-10-20)
 - **Decision:** the name is a link stretched over the whole row (keyboard and screen-reader friendly); the status icon sits above it so hovering it opens the progress popover instead. `/projects/:projectId` shows a placeholder until phase 3.
 
+### D26. Theme switch and language toggle next to the avatar (2026-10-20) — *replaces part of D6*
+- **Decision:** at the author's request, the theme is a **light/dark switch** to the right of the avatar instead of a menu option. The switch shows the theme in use; until it is flipped the app follows the system preference, so the explicit *System* option is gone. The interface language follows the same idea as a compact **EN / ES** toggle beside it (proposal: with more languages it would go back to a menu). The avatar menu keeps the current user and the demo reset.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
@@ -125,6 +128,7 @@ Decisions that are still open, with the phase they block:
 | `docs/design/` screenshots (FFVII art) | Public repo | Excluded from git (D16); replace with original material if they should be versioned |
 | Light theme review (D5) | — | Proposal, pending the author's review |
 | User menu on the avatar (D6, D20) | — | Proposal, pending confirmation |
+| EN / ES toggle next to the avatar (D26) | — | Proposal, pending the author's review |
 | Pages without a design (SPEC open 6) | — | Proposal D11: disabled |
 | Undesigned list and modal looks (D22 checkbox, active filter button, empty state; D23 look) | — | Proposal, pending the author's review (filter logic, required fields and project ID confirmed) |
 | Incomplete "Add content to section" modal (SPEC open 3) | Phase 4 | To be proposed before the phase |

@@ -3,16 +3,7 @@ import { DropdownMenu } from 'radix-ui';
 import { useTranslation } from 'react-i18next';
 import UserAvatarIcon from '@/assets/icons/user-avatar.svg?react';
 import { useRepositories } from '@/data/RepositoryContext';
-import { UI_LANGUAGES, type UiLanguage } from '@/i18n';
 import { useCurrentUser } from '../currentUser/useCurrentUser';
-import type { ThemePreference } from '../theme/theme';
-import { useTheme } from '../theme/useTheme';
-
-const THEME_OPTIONS = [
-  { value: 'system', labelKey: 'userMenu.themeSystem' },
-  { value: 'light', labelKey: 'userMenu.themeLight' },
-  { value: 'dark', labelKey: 'userMenu.themeDark' },
-] as const satisfies ReadonlyArray<{ value: ThemePreference; labelKey: string }>;
 
 const itemClass =
   'flex cursor-pointer items-center justify-between gap-4 rounded-sm px-2 py-1.5 text-xs text-text-secondary outline-none data-[highlighted]:bg-fill-subtle data-[highlighted]:text-text';
@@ -21,15 +12,14 @@ const separatorClass = 'my-1 h-px bg-border-strong';
 
 /**
  * Menu opened from the avatar at the bottom of the sidebar. Not in the design
- * (DECISIONS D6): simulated current user, theme, interface language and demo reset.
+ * (DECISIONS D6, D20, D26): simulated current user and demo reset. Theme and
+ * language live next to it, in ThemeSwitch and LanguageToggle.
  */
 export function UserMenu() {
-  const { t, i18n } = useTranslation();
-  const { preference, setPreference } = useTheme();
+  const { t } = useTranslation();
   const { currentUser, selectableMembers, setCurrentUserId } = useCurrentUser();
   const { demo } = useRepositories();
   const queryClient = useQueryClient();
-  const currentLanguage = (i18n.resolvedLanguage ?? 'en') as UiLanguage;
 
   const resetDemo = async () => {
     if (!window.confirm(t('userMenu.resetDemoConfirm'))) return;
@@ -68,36 +58,6 @@ export function UserMenu() {
                     {t(`memberCategory.${member.category}`)}
                   </span>
                 </span>
-                <DropdownMenu.ItemIndicator>✓</DropdownMenu.ItemIndicator>
-              </DropdownMenu.RadioItem>
-            ))}
-          </DropdownMenu.RadioGroup>
-
-          <DropdownMenu.Separator className={separatorClass} />
-
-          <DropdownMenu.Label className={labelClass}>{t('userMenu.theme')}</DropdownMenu.Label>
-          <DropdownMenu.RadioGroup
-            value={preference}
-            onValueChange={(value) => setPreference(value as ThemePreference)}
-          >
-            {THEME_OPTIONS.map((option) => (
-              <DropdownMenu.RadioItem key={option.value} value={option.value} className={itemClass}>
-                {t(option.labelKey)}
-                <DropdownMenu.ItemIndicator>✓</DropdownMenu.ItemIndicator>
-              </DropdownMenu.RadioItem>
-            ))}
-          </DropdownMenu.RadioGroup>
-
-          <DropdownMenu.Separator className={separatorClass} />
-
-          <DropdownMenu.Label className={labelClass}>{t('userMenu.language')}</DropdownMenu.Label>
-          <DropdownMenu.RadioGroup
-            value={currentLanguage}
-            onValueChange={(value) => void i18n.changeLanguage(value)}
-          >
-            {UI_LANGUAGES.map((language) => (
-              <DropdownMenu.RadioItem key={language} value={language} className={itemClass}>
-                {t(`languages.${language}`)}
                 <DropdownMenu.ItemIndicator>✓</DropdownMenu.ItemIndicator>
               </DropdownMenu.RadioItem>
             ))}
