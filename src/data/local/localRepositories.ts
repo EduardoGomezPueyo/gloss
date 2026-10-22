@@ -173,6 +173,10 @@ class LocalProjectRepository implements ProjectRepository {
     );
   }
 
+  getData(id: Id): Promise<ProjectData | undefined> {
+    return this.loadProject(id);
+  }
+
   async getDetail(id: Id): Promise<ProjectDetail | undefined> {
     const data = await this.loadProject(id);
     return data && summarizeProject(data);

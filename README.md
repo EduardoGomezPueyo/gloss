@@ -30,6 +30,10 @@ The app is **local-first**: everything is stored in your browser (IndexedDB). Th
 
 All data access goes through repository interfaces, so you can plug in a backend without rewriting the UI. `VITE_DATA_SOURCE` (see `.env.example`) selects the implementation: `local` (the default) or `remote`. A Supabase reference adapter is planned for v2.
 
+## Exporting translations
+
+*Export to code* on a project page downloads the translations as **JSON** (one file with every string, its context and the chosen languages) or **CSV** (one column per language). By default only completed (reviewed) translations are included. Each string has a readable `key` (`act-1-opening.north-gate.01`) and a stable `id`; the full format is described in [`docs/DECISIONS.md`](docs/DECISIONS.md) (D33). New formats are added as adapters in `src/export`.
+
 ## Interface languages and themes
 
 The interface is available in **English** and **Spanish** (`src/i18n/locales`), with **dark** and **light** themes. Both switches sit next to the avatar at the bottom of the sidebar.
@@ -42,6 +46,7 @@ src/
   domain/     pure types and logic (progress, statuses, sorting) – no browser APIs
   data/       repository interfaces, local IndexedDB implementation, demo seed
   ocr/        OCR provider interface and the Tesseract.js implementation
+  export/     export formats (JSON, CSV) behind one adapter interface
   features/   one folder per screen area (projects, settings, …)
   ui/         small reusable components
   i18n/       interface translations (en, es)

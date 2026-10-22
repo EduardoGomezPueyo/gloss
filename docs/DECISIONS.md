@@ -169,6 +169,13 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Visibility (SPEC 5.6, simulated):** workers only see the projects they take part in, in the list and through direct links (one guard route for every project page); managers see everything. Switch the current user in the avatar menu to try it.
 - **Defaults (proposal):** only active managers can invite, change categories or remove; workers see the table read-only with a note. You cannot remove yourself, and the workspace always keeps at least one active manager (removing or demoting the last ones is refused with a message). Remove asks for confirmation and is a soft delete (D21). Invited members stay *Invited* (no real sign-up); removing one cancels the invitation.
 
+### D33. Export to code (2026-10-22) — *phase 8, resolves SPEC open decision 5 (confirmed by the author)*
+- **Where:** *Export to code* on the project page opens a dialog: **format** (JSON or CSV — this is where the CSV lives), **languages** (all target languages ticked) and **"Include translations that are not completed yet"** (off by default: only *Completed* translations go in, so the game ships reviewed text). It shows how many strings and translations the file will have, then *Download* saves `<CODE>-translations.json|csv`.
+- **JSON (one file, all languages):** `{ format: "translator-export", version: 1, project: { name, code, sourceLanguage }, exportedAt, languages, include, strings: [...] }`. Each string: `key`, `id`, `section`, `item`, `position`, `speaker`, `type`, `context`, `source` and `translations: { <language>: text | null }` — `null` when no translation passes the filter, so gaps are visible. Strings follow section → item → image order. Bump `version` when the shape changes.
+- **Keys:** readable `section.item.position` slugs (`act-1-opening.north-gate.01`; accents removed; repeated names get `-2`, `-3`…), plus the image's stable `id`, which never changes. Renaming a section or item changes the key, not the id.
+- **CSV:** the same rows with one column per language (`key,id,section,item,position,speaker,type,context,source,<languages…>`), RFC 4180 quoting, CRLF line endings, UTF-8 with a byte order mark so spreadsheet apps read accents.
+- **Architecture:** the export is built once in a format-independent shape (`src/export/buildExport.ts`); each format is a `TranslationExporter` adapter (`json.ts`, `csv.ts`) listed in `src/export/registry.ts`, so PO/XLIFF (v2) are new adapters only. The file is assembled in the browser; nothing is uploaded.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
@@ -187,5 +194,4 @@ Decisions that are still open, with the phase they block:
 | Editor defaults and comment look (D30) | — | Proposal, pending the author's review |
 | Glossary defaults and looks (D31) | — | Proposal, pending the author's review |
 | Member permission rules (D32) | — | Proposal, pending the author's review |
-| Export to code JSON schema and CSV location (SPEC open 5) | Phase 8 | To be proposed before the phase |
 | Demo content (SPEC open 9) | Phase 9 (demo) | Neutral placeholder content in the seed for now (decided 2026-10-19); the real world is chosen later and swapped in |

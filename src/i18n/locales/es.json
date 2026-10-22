@@ -536,5 +536,25 @@
         "emailRepeated": "Este correo ya aparece más arriba."
       }
     }
+  },
+  "export": {
+    "title": "Exportar a código",
+    "subtitle": "Descarga las traducciones para usarlas en el juego.",
+    "format": "Formato",
+    "formatHint": {
+      "json": "Un archivo con todos los textos, su contexto y los idiomas elegidos.",
+      "csv": "Una tabla con una columna por idioma, para hojas de cálculo."
+    },
+    "languages": "Idiomas",
+    "include": "Incluir traducciones que aún no están completadas",
+    "includeHint": "Por defecto solo se exportan las traducciones aprobadas (Completadas); las que faltan quedan vacías.",
+    "summary": "{{strings}} textos · {{translations}} traducciones incluidas",
+    "noLanguages": "Elige al menos un idioma.",
+    "noStrings": "Este proyecto aún no tiene contenido que exportar.",
+    "download": "Descargar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "loading": "Leyendo el proyecto…",
+    "error": "No se pudo crear el archivo. Inténtalo de nuevo."
   }
 }

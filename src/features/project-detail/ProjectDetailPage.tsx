@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import { useMembers, useProjectDetail } from '@/data/hooks';
-import { neutralButton } from '@/ui/buttons';
-import { ExternalLinkIcon } from '@/ui/icons';
 import { AddLanguagePopover } from './AddLanguagePopover';
+import { ExportDialog } from './ExportDialog';
 import { GlossaryCard } from './GlossaryCard';
 import { LanguagesProgressCard } from './LanguagesProgressCard';
 import { OverviewCard } from './OverviewCard';
@@ -37,21 +36,7 @@ export function ProjectDetailPage() {
 
   return (
     <>
-      <ProjectHeader
-        summary={detail.data}
-        actions={
-          // Export to code arrives in phase 8.
-          <button
-            type="button"
-            aria-disabled="true"
-            title={t('nav.notAvailable')}
-            className={neutralButton}
-          >
-            <ExternalLinkIcon />
-            {t('projectDetail.exportToCode')}
-          </button>
-        }
-      />
+      <ProjectHeader summary={detail.data} actions={<ExportDialog project={project} />} />
 
       <DetailGrid>
         <OverviewCard summary={detail.data} members={members} />

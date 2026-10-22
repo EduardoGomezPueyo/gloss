@@ -345,3 +345,14 @@ export function useRemoveMembers() {
     onSuccess,
   });
 }
+
+/** Everything of a project (Export to code); null when it does not exist. */
+export function useProjectData(projectId: Id, enabled = true) {
+  const { projects } = useRepositories();
+  return useQuery({
+    // Under "projects", so any project write refreshes it.
+    queryKey: ['projects', 'data', projectId],
+    queryFn: async () => (await projects.getData(projectId)) ?? null,
+    enabled,
+  });
+}

@@ -536,5 +536,25 @@
         "emailRepeated": "This email is repeated above."
       }
     }
+  },
+  "export": {
+    "title": "Export to code",
+    "subtitle": "Download the translations to use them in the game.",
+    "format": "Format",
+    "formatHint": {
+      "json": "One file with every string, its context and all chosen languages.",
+      "csv": "A table with one column per language, for spreadsheets."
+    },
+    "languages": "Languages",
+    "include": "Include translations that are not completed yet",
+    "includeHint": "By default only approved (Completed) translations are exported; missing ones are left empty.",
+    "summary": "{{strings}} strings · {{translations}} translations included",
+    "noLanguages": "Choose at least one language.",
+    "noStrings": "This project has no content to export yet.",
+    "download": "Download",
+    "cancel": "Cancel",
+    "close": "Close",
+    "loading": "Reading the project…",
+    "error": "The file could not be created. Try again."
   }
 }

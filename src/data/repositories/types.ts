@@ -13,7 +13,7 @@ import type { OcrOutcome, SourceTextPatch } from '@/domain/images';
 import type { InviteRow } from '@/domain/members';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
-import type { ProjectDetail, ProjectSummary } from '@/domain/progress';
+import type { ProjectData, ProjectDetail, ProjectSummary } from '@/domain/progress';
 import type { SectionInput } from '@/domain/sections';
 import type {
   Comment,
@@ -53,6 +53,8 @@ export interface ProjectRepository {
   listSummaries(): Promise<ProjectSummary[]>;
   /** One project with its sections and content items summarized; undefined if not found. */
   getDetail(id: Id): Promise<ProjectDetail | undefined>;
+  /** Everything of a project (sections, items, images, translations), e.g. for export. */
+  getData(id: Id): Promise<ProjectData | undefined>;
   /** Creates an empty project (no sections yet); the code is generated from the name. */
   create(input: NewProjectInput, by: Id | null): Promise<Project>;
   /** Adds a target language (not the source, not already added); it starts not started. */
