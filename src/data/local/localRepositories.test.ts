@@ -153,3 +153,67 @@ describe('local repositories: sections, items and languages', () => {
     await expect(repos.projects.addLanguage(detail.project.id, 'en', 'm1')).rejects.toThrow();
   });
 });
+
+describe('local repositories: content and OCR', () => {
+  async function firstSection() {
+    const { db, repos } = setup();
+    await repos.demo.ensureSeeded();
+    const summary = (await repos.projects.listSummaries()).find(
+      (s) => s.project.name === 'Sample Project Alpha',
+    )!;
+    const detail = (await repos.projects.getDetail(summary.project.id))!;
+    return { db, repos, detail, section: detail.sections[0]! };
+  }
+
+  const png = (text: string) => new Blob([text], { type: 'image/png' });
+
+  it('creates an item with its images in order, waiting for OCR', async () => {
+    const { repos, detail, section } = await firstSection();
+    const item = await repos.contentItems.create(
+      section.section.id,
+      { name: 'Harbour', type: 'Mission dialogue' },
+      [
+        { name: 'b.png', data: png('second') },
+        { name: 'a.png', data: png('first') },
+      ],
+      'm1',
+    );
+    expect(item.order).toBe(section.items.length);
+
+    const pending = await repos.images.listPendingOcr();
+    expect(pending.map((p) => p.image.fileName)).toEqual(['b.png', 'a.png']);
+    expect(pending.every((p) => p.language === detail.project.sourceLanguage)).toBe(true);
+    const file = await repos.images.getFile(pending[0]!.image.fileId!);
+    expect(await file!.text()).toBe('second');
+
+    const after = (await repos.projects.getDetail(detail.project.id))!;
+    const created = after.sections[0]!.items.at(-1)!;
+    expect(created).toMatchObject({ imageCount: 2, wordCount: 0, progress: 0 });
+    expect(created.ocr).toEqual({ pending: 2, empty: 0, failed: 0 });
+  });
+
+  it('saves OCR outcomes and retries failures', async () => {
+    const { repos, section } = await firstSection();
+    await repos.contentItems.create(
+      section.section.id,
+      { name: 'Harbour', type: '' },
+      [
+        { name: 'a.png', data: png('a') },
+        { name: 'b.png', data: png('b') },
+      ],
+      null,
+    );
+    const [a, b] = await repos.images.listPendingOcr();
+    await repos.images.saveOcrOutcome(a!.image.id, {
+      status: 'done',
+      text: 'Meet me at the gate',
+      blocks: [],
+    });
+    await repos.images.saveOcrOutcome(b!.image.id, { status: 'failed', error: 'offline' });
+    expect(await repos.images.listPendingOcr()).toEqual([]);
+
+    await repos.images.retryOcr(a!.image.contentItemId);
+    const pending = await repos.images.listPendingOcr();
+    expect(pending.map((p) => p.image.id)).toEqual([b!.image.id]);
+  });
+});

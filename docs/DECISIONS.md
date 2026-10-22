@@ -132,6 +132,16 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Labels (proposal for SPEC minor open decisions):** the overview says *Manager* with one manager and *Managers* with several; "Not-started" is written *Not started*; an empty release date shows *Not set*. "Updated 2h ago" uses the most recent change to the item, its images or translations, with its author's avatar.
 - **Move to section** appends the items after the destination's last item, in their current order; nothing else about them changes, so translations and progress are kept. Selected items that leave the section drop out of the selection.
 
+### D29. Add content to section and OCR (2026-10-22) — *phase 4, resolves SPEC open decision 3 (confirmed by the author)*
+- **One content item per use of the modal:** the chosen images, in the chosen order. Above the designed areas, a row with *Name* (required) and *Type* (optional free text that suggests the types already used in the project); a footer with *Cancel* and **Create content item**. At least one image is required. Uploaded but unchosen images are discarded. Accepted files: PNG, JPEG and WebP up to 15 MB; others are listed as not added.
+- **Choosing and ordering:** a click in *Image selector* adds the image at the end (or takes it out); *Image ordering* reorders by dragging, with the keyboard too (dnd-kit), and × takes an image out. Hover or focus shows it in *Image preview*.
+- **No image titles:** with 10–40 images per dialogue, images are labelled from the item and their position ("North gate - 1", "North gate - 2"); only the original file name is kept. `SceneImage.title` was removed (IndexedDB v2 migration).
+- **OCR runs after creating the item**, in the background, one image at a time, in the project's source language. Each image has a status: *pending* (shown as "Reading text…"), *done*, *empty* ("No text found") or *failed* (with **Retry** on the item). The queue resumes after a reload. Found text becomes the source text and is also kept as `ocrText`, with the line boxes, so the editor can mark later changes as "edited".
+- **Engine:** Tesseract.js (Apache-2.0) in a Web Worker, behind `OcrProvider` (`src/ocr`). It is loaded only when OCR first runs.
+- **Self-hosted, offline after first use:** `scripts/setup-ocr.mjs` (runs before `dev` and `build`, or `npm run ocr:setup`) copies the engine from `node_modules` and downloads the Tesseract **fast** models (tessdata_fast 4.1.0, Apache-2.0) for the 14 models of the catalog into `public/ocr` (git-ignored). Nothing is committed and no CDN is used at runtime; each user downloads only the languages they use, which the browser then caches. Sizes: engine ~12 MB in the build (one ~3.9 MB core is loaded, by SIMD support), languages ~20 MB in total.
+- **Model choice, measured** on original generated images (English, Spanish, Japanese, Chinese; clean and low-contrast retro dialogue boxes): *fast* and *best_int* read the same text; *fast* is about a third smaller and a little quicker.
+- **Preprocessing, measured:** without it neither model read light text on a dark box; a hard black-and-white threshold fixed that but destroyed low-contrast boxes. So OCR runs twice, on the original and on a softened copy (grayscale, inverted when mostly dark, ×2 when narrower than 1000 px), with automatic page segmentation, and keeps the result with more confidently read text. Known limit: small Chinese text in a low-contrast box was not read; a pixel-art test read 3 lines with 2 small errors. The text is always correctable by hand (phase 5).
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
@@ -147,7 +157,6 @@ Decisions that are still open, with the phase they block:
 | Section Progress interaction and detail labels (D27, D28) | — | Proposal, pending the author's review |
 | Pages without a design (SPEC open 6) | — | Proposal D11: disabled |
 | Undesigned list and modal looks (D22 checkbox, active filter button, empty state; D23 look) | — | Proposal, pending the author's review (filter logic, required fields and project ID confirmed) |
-| Incomplete "Add content to section" modal (SPEC open 3) | Phase 4 | To be proposed before the phase |
 | Review transitions (SPEC open 1) | Phase 5 | To be proposed before the phase |
 | Editor glossary panel (SPEC open 7) | Phase 5 | To be proposed before the phase |
 | Glossary A-Z list view (D9) | Phase 6 | Designed with the author during the phase |

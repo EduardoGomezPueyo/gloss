@@ -83,9 +83,14 @@ describe('Project detail', () => {
     await user.type(within(dialog).getByLabelText(/Description/), 'Thanks for playing.');
     await user.click(within(dialog).getByRole('button', { name: 'Create and add content' }));
 
+    // The new section opens with "Add content to section" ready.
+    expect(
+      await screen.findByRole('dialog', { name: 'Add content to section' }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toMatch(/\/sections\/.+/);
+    await user.click(screen.getByRole('button', { name: 'Close' }));
     expect(await screen.findByRole('heading', { name: 'Act 6 - Credits' })).toBeInTheDocument();
     expect(screen.getByText('Thanks for playing.')).toBeInTheDocument();
-    expect(router.state.location.state).toEqual({ addContent: true });
   });
 
   it('adds a target language from the popover', async () => {

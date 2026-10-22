@@ -184,7 +184,6 @@
     "managers": "Managers",
     "contentItems": "Content items",
     "add": "Add",
-    "addContentComingSoon": "Adding content is built in phase 4.",
     "searchPlaceholder": "Search content in this section...",
     "searchLabel": "Search content items by name or type",
     "statusFilter": "Filter by status",
@@ -237,5 +236,52 @@
   "editor": {
     "comingSoon": "The translation editor is built in phase 5.",
     "back": "Back to the section"
+  },
+  "addContent": {
+    "title": "Add content to section",
+    "close": "Close",
+    "name": "Name",
+    "type": "Type",
+    "typePlaceholder": "e.g. Mission dialogue",
+    "orderingTitle": "Image ordering",
+    "orderingHint": "Click on uploaded images to add them. Drag horizontally to set order.",
+    "orderingEmpty": "Selected images will appear here",
+    "previewTitle": "Image preview",
+    "previewHint": "Preview images by hovering on them",
+    "previewEmpty": "Upload images to preview them here",
+    "selectorTitle": "Image selector",
+    "selectorHint": "Drag images here",
+    "browse": "Browse images",
+    "addImage": "Add {{name}}",
+    "removeImage": "Remove {{name}} from the content item",
+    "position": "Image {{position}}: {{name}}",
+    "rejected": "Not added: {{names}}. Use PNG, JPEG or WebP images up to 15 MB.",
+    "selectedCount_one": "{{count}} image selected",
+    "selectedCount_other": "{{count}} images selected",
+    "ocrNote": "The text is read from the images after creating the item.",
+    "cancel": "Cancel",
+    "create": "Create content item",
+    "creating": "Creating…",
+    "saveError": "The content item could not be created. Try again.",
+    "errors": {
+      "nameRequired": "Enter a name for the content item.",
+      "imagesRequired": "Add at least one image."
+    },
+    "drag": {
+      "instructions": "To reorder, press Space or Enter to pick up an image, use the arrow keys to move it, and press Space or Enter again to drop it. Press Escape to cancel.",
+      "start": "Picked up {{name}}.",
+      "over": "{{name}} is now in position {{position}}.",
+      "end": "Dropped {{name}} in position {{position}}.",
+      "cancel": "Reordering cancelled."
+    }
+  },
+  "ocr": {
+    "reading_one": "Reading text from {{count}} image…",
+    "reading_other": "Reading text from {{count}} images…",
+    "failed_one": "Text could not be read in {{count}} image.",
+    "failed_other": "Text could not be read in {{count}} images.",
+    "empty_one": "No text found in {{count}} image.",
+    "empty_other": "No text found in {{count}} images.",
+    "retry": "Retry"
   }
 }

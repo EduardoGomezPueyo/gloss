@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import type { SectionInput } from '@/domain/sections';
 import type { Id, LanguageCode } from '@/domain/types';
@@ -76,6 +77,29 @@ export function useMoveItems() {
   return useMutation({
     mutationFn: (vars: { itemIds: Id[]; sectionId: Id; by: Id | null }) =>
       contentItems.moveToSection(vars.itemIds, vars.sectionId, vars.by),
+    onSuccess,
+  });
+}
+
+export function useCreateContentItem() {
+  const { contentItems } = useRepositories();
+  const onSuccess = useInvalidateProjects();
+  return useMutation({
+    mutationFn: (vars: {
+      sectionId: Id;
+      input: NewContentItemInput;
+      images: NewImageFile[];
+      by: Id | null;
+    }) => contentItems.create(vars.sectionId, vars.input, vars.images, vars.by),
+    onSuccess,
+  });
+}
+
+export function useRetryOcr() {
+  const { images } = useRepositories();
+  const onSuccess = useInvalidateProjects();
+  return useMutation({
+    mutationFn: (contentItemId: Id) => images.retryOcr(contentItemId),
     onSuccess,
   });
 }

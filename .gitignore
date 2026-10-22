@@ -10,3 +10,6 @@ coverage
 
 # Design screenshots contain commercial game art (Final Fantasy VII): local reference only, never in the repo.
 docs/design/
+
+# OCR engine and language data, prepared by scripts/setup-ocr.mjs (npm run ocr:setup).
+public/ocr/

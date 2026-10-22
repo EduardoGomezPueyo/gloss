@@ -32,3 +32,10 @@ if (!window.matchMedia) {
       dispatchEvent: () => false,
     }) as MediaQueryList;
 }
+
+// jsdom does not implement object URLs (used for image thumbnails).
+if (!URL.createObjectURL) {
+  let urlCounter = 0;
+  URL.createObjectURL = () => `blob:test/${++urlCounter}`;
+  URL.revokeObjectURL = () => {};
+}

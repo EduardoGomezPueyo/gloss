@@ -104,15 +104,29 @@ export interface SourceText {
   ocrBlocks: OcrBlock[];
 }
 
+/**
+ * Where OCR is for an image: waiting (queued or running), text found, no text
+ * found, or failed (it can be retried). DECISIONS D29.
+ */
+export const OCR_STATUSES = ['pending', 'done', 'empty', 'failed'] as const;
+export type OcrStatus = (typeof OCR_STATUSES)[number];
+
+/**
+ * One image of a content item. It has no title of its own: it is shown as
+ * "<item name> - <position>" (DECISIONS D29, see imageLabel).
+ */
 export interface SceneImage extends Entity {
   projectId: Id;
   contentItemId: Id;
   order: number;
-  title: string;
+  /** Original file name, kept for reference. */
   fileName: string;
   /** Stored image file; null when the image has no file (e.g. placeholder seed data). */
   fileId: Id | null;
   source: SourceText;
+  ocrStatus: OcrStatus;
+  /** Why OCR failed, for the retry message; null otherwise. */
+  ocrError: string | null;
 }
 
 /** Translation of one image into one target language. A missing translation means "not started". */

@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { useMembers, useProjectDetail } from '@/data/hooks';
 import { ArrowLeftIcon, ChevronRightIcon } from '@/ui/icons';
+import { AddContentDialog } from './addContent/AddContentDialog';
 import { ContentItemsCard } from './ContentItemsCard';
 import { GlossaryCard } from './GlossaryCard';
 import { LanguagesProgressCard } from './LanguagesProgressCard';
 import { ProjectHeader } from './ProjectHeader';
 import { SectionCard } from './SectionCard';
 import { SectionDialog } from './SectionDialog';
+import type { SectionLocationState } from './ProjectDetailPage';
 import { DetailGrid, PageMessage } from './shared';
 
 /** "Section details view" (Figma 370:10799, SPEC 5.3). */
@@ -18,6 +20,17 @@ export function SectionDetailPage() {
   const detail = useProjectDetail(projectId);
   const { data: members = [] } = useMembers();
   const [editing, setEditing] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  // "Create and add content" (D27) arrives with this state: open the modal once.
+  const [addingContent, setAddingContent] = useState(
+    () => (location.state as SectionLocationState | null)?.addContent === true,
+  );
+  useEffect(() => {
+    if ((location.state as SectionLocationState | null)?.addContent) {
+      void navigate('.', { replace: true, state: null });
+    }
+  }, [location.state, navigate]);
 
   if (detail.isPending) {
     return <p className="text-sm text-text-tertiary">{t('projectDetail.loading')}</p>;
@@ -71,6 +84,7 @@ export function SectionDetailPage() {
           summary={summary}
           sections={sections.map((s) => s.section)}
           members={members}
+          onAddContent={() => setAddingContent(true)}
         />
         <LanguagesProgressCard languages={summary.languages} />
       </DetailGrid>
@@ -78,6 +92,12 @@ export function SectionDetailPage() {
       <SectionDialog
         mode={editing ? { kind: 'edit', section: summary.section } : null}
         onOpenChange={setEditing}
+      />
+      <AddContentDialog
+        open={addingContent}
+        onOpenChange={setAddingContent}
+        sectionId={summary.section.id}
+        existingTypes={sections.flatMap((s) => s.items.map(({ item }) => item.type))}
       />
     </>
   );

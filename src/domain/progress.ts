@@ -1,3 +1,4 @@
+import { ocrProgress, type OcrProgress } from './images';
 import { aggregateStatus } from './status';
 import { countWords } from './text';
 import type {
@@ -35,6 +36,8 @@ export interface ItemSummary {
   progress: number;
   status: Status;
   lastUpdate: LastUpdate;
+  /** OCR state of the item's images (phase 4). */
+  ocr: OcrProgress;
 }
 
 export interface SectionSummary {
@@ -139,6 +142,7 @@ export function summarizeProject(data: ProjectData): ProjectDetail {
       progress: completedShare(statuses),
       status: aggregateStatus(statuses),
       lastUpdate: latest(updates),
+      ocr: ocrProgress(images),
     };
   };
 

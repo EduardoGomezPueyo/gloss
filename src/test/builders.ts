@@ -61,7 +61,6 @@ export function anImage(item: ContentItem, overrides: Partial<SceneImage> = {}):
     projectId: item.projectId,
     contentItemId: item.id,
     order: 0,
-    title: 'Image',
     fileName: 'image.png',
     fileId: null,
     source: {
@@ -72,6 +71,8 @@ export function anImage(item: ContentItem, overrides: Partial<SceneImage> = {}):
       ocrText: null,
       ocrBlocks: [],
     },
+    ocrStatus: 'done',
+    ocrError: null,
     ...overrides,
   };
 }

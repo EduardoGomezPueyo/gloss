@@ -271,7 +271,6 @@ export function createDemoData(options: DemoSeedOptions = {}): DemoData {
             projectId: project.id,
             contentItemId: item.id,
             order: imageIndex,
-            title: `Placeholder shot ${lineNumber}`,
             fileName: `scene_${sectionIndex + 1}_${itemIndex + 1}_${String(lineNumber).padStart(3, '0')}.png`,
             fileId: null,
             source: {
@@ -282,6 +281,8 @@ export function createDemoData(options: DemoSeedOptions = {}): DemoData {
               ocrText: text,
               ocrBlocks: [],
             },
+            ocrStatus: 'done',
+            ocrError: null,
           };
           data.images.push(image);
 

@@ -2,7 +2,9 @@ import { Checkbox } from 'radix-ui';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
+import { useOcrQueue } from '@/app/ocr/useOcrQueue';
 import SearchIcon from '@/assets/icons/search.svg?react';
+import { useRetryOcr } from '@/data/hooks';
 import { filterItems } from '@/domain/contentFilters';
 import { toPercent, type ItemSummary, type SectionSummary } from '@/domain/progress';
 import { formatRelativeTime } from '@/domain/relativeTime';
@@ -28,12 +30,14 @@ export function ContentItemsCard({
   summary,
   sections,
   members,
+  onAddContent,
 }: {
   projectId: Id;
   summary: SectionSummary;
   /** Every section of the project, for the move destinations. */
   sections: Section[];
   members: Member[];
+  onAddContent: () => void;
 }) {
   const { t } = useTranslation();
   const titleId = useId();
@@ -55,13 +59,7 @@ export function ContentItemsCard({
           <CardTitle id={titleId}>{t('sectionDetail.contentItems')}</CardTitle>
           <span className="text-sm text-text-secondary">{items.length}</span>
         </div>
-        {/* "Add content to section" arrives in phase 4. */}
-        <button
-          type="button"
-          aria-disabled="true"
-          title={t('sectionDetail.addContentComingSoon')}
-          className={accentButton}
-        >
+        <button type="button" onClick={onAddContent} className={accentButton}>
           <PlusIcon />
           {t('sectionDetail.add')}
         </button>
@@ -88,7 +86,7 @@ export function ContentItemsCard({
               { value: ALL, label: t('sectionDetail.allStatuses') },
               ...STATUSES.map((s) => ({ value: s, label: t(`status.${s}`) })),
             ]}
-            className="h-[38px] w-44 rounded-full border border-border-input px-4 text-sm text-text-secondary outline-none focus-visible:border-text-tertiary"
+            className="h-[38px] w-auto min-w-44 shrink-0 rounded-full border border-border-input px-4 text-sm whitespace-nowrap text-text-secondary outline-none focus-visible:border-text-tertiary"
           />
         </div>
 
@@ -197,7 +195,9 @@ function ContentItemRow({
               item.type,
               t('projectDetail.words', { count: wordCount, value: formatNumber(wordCount) }),
               t('sectionDetail.itemLanguages', { count: languageCount }),
-            ].join(' · ')}
+            ]
+              .filter(Boolean)
+              .join(' · ')}
           </span>
           <span className="flex items-center gap-1.5">
             {updater && <Avatar member={updater} />}
@@ -206,6 +206,7 @@ function ContentItemRow({
             })}
           </span>
         </div>
+        <OcrStatusLine itemId={item.id} ocr={summary.ocr} />
       </div>
 
       <Link
@@ -218,4 +219,43 @@ function ContentItemRow({
       </Link>
     </li>
   );
+}
+
+/** OCR state of an item's images (DECISIONS D29); nothing when every image was read. */
+function OcrStatusLine({ itemId, ocr }: { itemId: Id; ocr: ItemSummary['ocr'] }) {
+  const { t } = useTranslation();
+  const retry = useRetryOcr();
+  const ocrQueue = useOcrQueue();
+
+  if (ocr.pending > 0) {
+    return (
+      <p className="flex items-center gap-2 text-sm text-text-secondary" role="status">
+        <span
+          aria-hidden
+          className="size-3 animate-spin rounded-full border-2 border-text-tertiary border-t-transparent"
+        />
+        {t('ocr.reading', { count: ocr.pending })}
+      </p>
+    );
+  }
+  if (ocr.failed > 0) {
+    return (
+      <p className="flex items-center gap-3 text-sm text-danger">
+        {t('ocr.failed', { count: ocr.failed })}
+        <button
+          type="button"
+          disabled={retry.isPending}
+          onClick={() => retry.mutate(itemId, { onSuccess: () => ocrQueue.run() })}
+          // Above the stretched link, so it does not open the item.
+          className={`${textButton} relative z-10 underline`}
+        >
+          {t('ocr.retry')}
+        </button>
+      </p>
+    );
+  }
+  if (ocr.empty > 0) {
+    return <p className="text-sm text-text-tertiary">{t('ocr.empty', { count: ocr.empty })}</p>;
+  }
+  return null;
 }

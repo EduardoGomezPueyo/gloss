@@ -184,7 +184,6 @@
     "managers": "Managers",
     "contentItems": "Elementos de contenido",
     "add": "Añadir",
-    "addContentComingSoon": "Añadir contenido se construye en la fase 4.",
     "searchPlaceholder": "Buscar contenido en esta sección...",
     "searchLabel": "Buscar elementos de contenido por nombre o tipo",
     "statusFilter": "Filtrar por estado",
@@ -237,5 +236,52 @@
   "editor": {
     "comingSoon": "El editor de traducción se construye en la fase 5.",
     "back": "Volver a la sección"
+  },
+  "addContent": {
+    "title": "Añadir contenido a la sección",
+    "close": "Cerrar",
+    "name": "Nombre",
+    "type": "Tipo",
+    "typePlaceholder": "p. ej., Diálogo de misión",
+    "orderingTitle": "Orden de las imágenes",
+    "orderingHint": "Haz clic en las imágenes subidas para añadirlas. Arrástralas en horizontal para ordenarlas.",
+    "orderingEmpty": "Las imágenes seleccionadas aparecerán aquí",
+    "previewTitle": "Vista previa",
+    "previewHint": "Pasa el cursor sobre las imágenes para verlas",
+    "previewEmpty": "Sube imágenes para verlas aquí",
+    "selectorTitle": "Selector de imágenes",
+    "selectorHint": "Arrastra imágenes aquí",
+    "browse": "Buscar imágenes",
+    "addImage": "Añadir {{name}}",
+    "removeImage": "Quitar {{name}} del elemento de contenido",
+    "position": "Imagen {{position}}: {{name}}",
+    "rejected": "No se han añadido: {{names}}. Usa imágenes PNG, JPEG o WebP de hasta 15 MB.",
+    "selectedCount_one": "{{count}} imagen seleccionada",
+    "selectedCount_other": "{{count}} imágenes seleccionadas",
+    "ocrNote": "El texto se lee de las imágenes después de crear el elemento.",
+    "cancel": "Cancelar",
+    "create": "Crear elemento de contenido",
+    "creating": "Creando…",
+    "saveError": "No se pudo crear el elemento de contenido. Inténtalo de nuevo.",
+    "errors": {
+      "nameRequired": "Escribe un nombre para el elemento de contenido.",
+      "imagesRequired": "Añade al menos una imagen."
+    },
+    "drag": {
+      "instructions": "Para reordenar, pulsa Espacio o Intro para coger una imagen, muévela con las flechas y pulsa Espacio o Intro otra vez para soltarla. Pulsa Escape para cancelar.",
+      "start": "Has cogido {{name}}.",
+      "over": "{{name}} está ahora en la posición {{position}}.",
+      "end": "Has soltado {{name}} en la posición {{position}}.",
+      "cancel": "Reordenación cancelada."
+    }
+  },
+  "ocr": {
+    "reading_one": "Leyendo el texto de {{count}} imagen…",
+    "reading_other": "Leyendo el texto de {{count}} imágenes…",
+    "failed_one": "No se pudo leer el texto de {{count}} imagen.",
+    "failed_other": "No se pudo leer el texto de {{count}} imágenes.",
+    "empty_one": "No se encontró texto en {{count}} imagen.",
+    "empty_other": "No se encontró texto en {{count}} imágenes.",
+    "retry": "Reintentar"
   }
 }

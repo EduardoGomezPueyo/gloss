@@ -13,6 +13,8 @@ npm install
 npm run dev      # http://localhost:5173
 ```
 
+The first `dev` or `build` also prepares the OCR files in `public/ocr` (git-ignored): it copies the Tesseract engine from `node_modules` and downloads the language models (~20 MB, once). Run `npm run ocr:setup` to do it by hand.
+
 | Command | Description |
 |---|---|
 | `npm run dev` | Development server |
@@ -20,6 +22,7 @@ npm run dev      # http://localhost:5173
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript |
 | `npm run build` | Production build into `dist/` |
+| `npm run ocr:setup` | Prepare the OCR engine and language data in `public/ocr` |
 
 ## How data is stored
 
@@ -29,7 +32,7 @@ All data access goes through repository interfaces, so you can plug in a backend
 
 ## Interface languages and themes
 
-The interface is available in **English** and **Spanish** (`src/i18n/locales`), with **dark** and **light** themes. Both switches are in the menu that opens from the avatar at the bottom of the sidebar.
+The interface is available in **English** and **Spanish** (`src/i18n/locales`), with **dark** and **light** themes. Both switches sit next to the avatar at the bottom of the sidebar.
 
 ## Project structure
 
@@ -38,6 +41,7 @@ src/
   app/        router, layouts, providers (theme, data source, current user)
   domain/     pure types and logic (progress, statuses, sorting) – no browser APIs
   data/       repository interfaces, local IndexedDB implementation, demo seed
+  ocr/        OCR provider interface and the Tesseract.js implementation
   features/   one folder per screen area (projects, settings, …)
   ui/         small reusable components
   i18n/       interface translations (en, es)

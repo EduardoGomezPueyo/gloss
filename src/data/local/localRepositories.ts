@@ -5,22 +5,35 @@ import {
   type ProjectDetail,
   type ProjectSummary,
 } from '@/domain/progress';
+import { applyOcrOutcome, type OcrOutcome } from '@/domain/images';
 import { addableTargetLanguages } from '@/domain/languages';
 import { planMove } from '@/domain/moveItems';
+import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import { generateProjectCode } from '@/domain/projectCode';
 import { nextOrder, type SectionInput } from '@/domain/sections';
-import type { Entity, Id, LanguageCode, Member, Project, Section } from '@/domain/types';
+import type {
+  ContentItem,
+  Entity,
+  Id,
+  LanguageCode,
+  Member,
+  Project,
+  SceneImage,
+  Section,
+} from '@/domain/types';
 import type {
   ContentItemRepository,
   DemoRepository,
+  ImageRepository,
   MemberRepository,
   ProjectRepository,
   Repositories,
+  PendingOcr,
   SectionRepository,
 } from '../repositories/types';
 import { createDemoData, type DemoSeedOptions } from '../seed/demoSeed';
-import { META_SEEDED_AT, TranslatorDb } from './db';
+import { META_SEEDED_AT, TranslatorDb, type StoredFile } from './db';
 
 const nameCollator = new Intl.Collator(undefined, { sensitivity: 'base' });
 
@@ -179,6 +192,65 @@ class LocalSectionRepository implements SectionRepository {
 class LocalContentItemRepository implements ContentItemRepository {
   constructor(private readonly db: TranslatorDb) {}
 
+  async create(
+    sectionId: Id,
+    input: NewContentItemInput,
+    images: NewImageFile[],
+    by: Id | null,
+  ): Promise<ContentItem> {
+    // Read the files before the transaction: IndexedDB transactions close on foreign awaits.
+    const files = await Promise.all(
+      images.map(async ({ name, data }) => ({
+        name,
+        type: data.type,
+        bytes: await data.arrayBuffer(),
+      })),
+    );
+    const db = this.db;
+    return db.transaction('rw', [db.sections, db.contentItems, db.images, db.files], async () => {
+      const section = await mustGet(db.sections.get(sectionId), 'Section', sectionId);
+      const siblings = await db.contentItems.where({ sectionId }).toArray();
+      const item: ContentItem = {
+        ...newEntity(by),
+        projectId: section.projectId,
+        sectionId,
+        ...input,
+        order: nextOrder(siblings),
+        translatorNote: null,
+      };
+      const stored: StoredFile[] = files.map((file) => ({
+        id: crypto.randomUUID(),
+        name: file.name,
+        type: file.type,
+        size: file.bytes.byteLength,
+        data: file.bytes,
+        createdAt: item.createdAt,
+      }));
+      const sceneImages: SceneImage[] = stored.map((file, order) => ({
+        ...newEntity(by),
+        projectId: section.projectId,
+        contentItemId: item.id,
+        order,
+        fileName: file.name,
+        fileId: file.id,
+        source: {
+          text: '',
+          speaker: null,
+          type: null,
+          contextNote: null,
+          ocrText: null,
+          ocrBlocks: [],
+        },
+        ocrStatus: 'pending',
+        ocrError: null,
+      }));
+      await db.contentItems.add(item);
+      await db.files.bulkAdd(stored);
+      await db.images.bulkAdd(sceneImages);
+      return item;
+    });
+  }
+
   async moveToSection(itemIds: Id[], sectionId: Id, by: Id | null): Promise<void> {
     const db = this.db;
     await db.transaction('rw', [db.sections, db.contentItems], async () => {
@@ -191,6 +263,53 @@ class LocalContentItemRepository implements ContentItemRepository {
       await Promise.all(
         moves.map(({ id, ...move }) => db.contentItems.update(id, { ...move, ...touched(by) })),
       );
+    });
+  }
+}
+
+class LocalImageRepository implements ImageRepository {
+  constructor(private readonly db: TranslatorDb) {}
+
+  async listPendingOcr(): Promise<PendingOcr[]> {
+    const db = this.db;
+    return db.transaction('r', [db.images, db.projects], async () => {
+      const images = await db.images.where({ ocrStatus: 'pending' }).toArray();
+      const projects = await db.projects.bulkGet([...new Set(images.map((i) => i.projectId))]);
+      const languageOf = new Map(projects.flatMap((p) => (p ? [[p.id, p.sourceLanguage]] : [])));
+      return images
+        .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.order - b.order)
+        .flatMap((image) => {
+          const language = languageOf.get(image.projectId);
+          return language ? [{ image, language }] : [];
+        });
+    });
+  }
+
+  async getFile(fileId: Id): Promise<Blob | undefined> {
+    const file = await this.db.files.get(fileId);
+    return file && new Blob([file.data], { type: file.type });
+  }
+
+  async saveOcrOutcome(imageId: Id, outcome: OcrOutcome): Promise<void> {
+    const db = this.db;
+    await db.transaction('rw', db.images, async () => {
+      const image = await db.images.get(imageId);
+      // The image may have been deleted while OCR was running.
+      if (!image) return;
+      await db.images.put({
+        ...applyOcrOutcome(image, outcome),
+        updatedAt: new Date().toISOString(),
+      });
+    });
+  }
+
+  async retryOcr(contentItemId: Id): Promise<void> {
+    const db = this.db;
+    await db.transaction('rw', db.images, async () => {
+      await db.images
+        .where({ contentItemId })
+        .filter((image) => image.ocrStatus === 'failed')
+        .modify({ ocrStatus: 'pending', ocrError: null });
     });
   }
 }
@@ -242,6 +361,7 @@ export function createLocalRepositories(
     projects: new LocalProjectRepository(db),
     sections: new LocalSectionRepository(db),
     contentItems: new LocalContentItemRepository(db),
+    images: new LocalImageRepository(db),
     demo: new LocalDemoRepository(db, seedOptions),
   };
 }

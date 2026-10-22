@@ -13,6 +13,7 @@ function summary(name: string, type: string, status: Status): ItemSummary {
     progress: 0,
     status,
     lastUpdate: { at: item.updatedAt, by: null },
+    ocr: { pending: 0, empty: 0, failed: 0 },
   };
 }
 

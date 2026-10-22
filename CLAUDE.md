@@ -70,7 +70,7 @@ Decided (see `docs/DECISIONS.md`): a **local-first** SPA deployed on Vercel, rea
 ## Commands
 
 - Install: `npm install`
-- Development: `npm run dev` (http://localhost:5173)
+- Development: `npm run dev` (http://localhost:5173). `dev` and `build` first run `scripts/setup-ocr.mjs`, which prepares `public/ocr` (git-ignored; `npm run ocr:setup` by hand).
 - Tests: `npm test` (or `npm run test:watch`)
 - Lint: `npm run lint` · Format: `npm run format` · Types: `npm run typecheck`
 - Build: `npm run build` (output in `dist/`) · Preview: `npm run preview`
