@@ -13,6 +13,12 @@ import {
 } from '@/domain/images';
 import { DEFAULT_CATEGORIES, validateCategoryName } from '@/domain/glossary';
 import { addableTargetLanguages } from '@/domain/languages';
+import {
+  checkCategoryChange,
+  checkRemoval,
+  validateInvites,
+  type InviteRow,
+} from '@/domain/members';
 import { planMove } from '@/domain/moveItems';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
@@ -37,6 +43,7 @@ import type {
   Id,
   LanguageCode,
   Member,
+  MemberCategory,
   Project,
   SceneImage,
   Section,
@@ -88,6 +95,50 @@ class LocalMemberRepository implements MemberRepository {
 
   get(id: Id): Promise<Member | undefined> {
     return this.db.members.get(id);
+  }
+
+  async invite(rows: InviteRow[], by: Id | null): Promise<Member[]> {
+    const db = this.db;
+    return db.transaction('rw', db.members, async () => {
+      const existing = await db.members.filter((m) => m.removedAt === null).toArray();
+      const valid = validateInvites(rows, existing);
+      if (!valid.ok) throw new Error('Invalid invitations');
+      const invited: Member[] = valid.rows.map((row) => ({
+        ...newEntity(by),
+        ...row,
+        status: 'invited',
+        removedAt: null,
+      }));
+      await db.members.bulkAdd(invited);
+      return invited;
+    });
+  }
+
+  async setCategory(ids: Id[], category: MemberCategory, by: Id | null): Promise<void> {
+    const db = this.db;
+    await db.transaction('rw', db.members, async () => {
+      const members = await db.members.filter((m) => m.removedAt === null).toArray();
+      const error = checkCategoryChange(members, ids, category);
+      if (error) throw new Error(`Cannot change category: ${error}`);
+      await db.members
+        .where('id')
+        .anyOf(ids)
+        .modify({ category, ...touched(by) });
+    });
+  }
+
+  async remove(ids: Id[], by: Id | null): Promise<void> {
+    const db = this.db;
+    await db.transaction('rw', db.members, async () => {
+      const members = await db.members.filter((m) => m.removedAt === null).toArray();
+      const error = checkRemoval(members, ids, by);
+      if (error) throw new Error(`Cannot remove: ${error}`);
+      const now = new Date().toISOString();
+      await db.members
+        .where('id')
+        .anyOf(ids)
+        .modify({ removedAt: now, ...touched(by) });
+    });
   }
 }
 

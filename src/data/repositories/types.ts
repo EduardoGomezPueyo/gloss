@@ -10,6 +10,7 @@
  */
 
 import type { OcrOutcome, SourceTextPatch } from '@/domain/images';
+import type { InviteRow } from '@/domain/members';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import type { ProjectDetail, ProjectSummary } from '@/domain/progress';
@@ -25,6 +26,7 @@ import type {
   Id,
   LanguageCode,
   Member,
+  MemberCategory,
   Project,
   SceneImage,
   Section,
@@ -35,6 +37,15 @@ export interface MemberRepository {
   /** Active and invited members, excluding removed ones. */
   list(): Promise<Member[]>;
   get(id: Id): Promise<Member | undefined>;
+  /**
+   * "Invite members to workspace": adds them as Invited (no email is sent in v1).
+   * Fails if a row is invalid (see validateInvites).
+   */
+  invite(rows: InviteRow[], by: Id | null): Promise<Member[]>;
+  /** Fails if the workspace would be left without an active manager. */
+  setCategory(ids: Id[], category: MemberCategory, by: Id | null): Promise<void>;
+  /** Soft delete (D21). Fails for yourself or the last active manager. */
+  remove(ids: Id[], by: Id | null): Promise<void>;
 }
 
 export interface ProjectRepository {

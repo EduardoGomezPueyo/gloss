@@ -25,6 +25,7 @@ function initials(name: string): string {
 const SIZES = {
   sm: 'size-4 text-[7px]',
   md: 'size-6 text-[10px]',
+  lg: 'size-9 text-xs',
 };
 
 type AvatarMember = Pick<Member, 'id' | 'name'>;

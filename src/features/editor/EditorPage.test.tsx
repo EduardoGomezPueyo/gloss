@@ -83,7 +83,8 @@ describe('Translation editor', () => {
     await user.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(await screen.findByText('edited')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Text')).not.toBeInTheDocument();
+    // The data refreshes just before the form closes.
+    await waitFor(() => expect(screen.queryByLabelText('Text')).not.toBeInTheDocument());
     expect(screen.getByText('A corrected line.')).toBeInTheDocument();
     expect(screen.getAllByText('Mira').length).toBeGreaterThan(0);
 

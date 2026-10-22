@@ -53,7 +53,8 @@
     "loading": "Cargando proyectos…",
     "progressTitle": "Progreso",
     "progressOf": "Progreso en {{language}}",
-    "noTargetLanguages": "Aún no hay idiomas de destino."
+    "noTargetLanguages": "Aún no hay idiomas de destino.",
+    "noAccess": "No formas parte de este proyecto. Pide a un manager que te añada."
   },
   "settings": {
     "title": "Ajustes"
@@ -464,6 +465,76 @@
       "notFound": "Esta versión no existe.",
       "added": "Añadido",
       "removed": "Eliminado"
+    }
+  },
+  "members": {
+    "title": "Miembros del equipo",
+    "count_one": "{{count}} miembro",
+    "count_other": "{{count}} miembros",
+    "invite": "Invitar miembros al espacio de trabajo",
+    "searchPlaceholder": "Buscar por nombre o correo...",
+    "searchLabel": "Buscar miembros por nombre o correo",
+    "categoryFilter": "Filtrar por categoría",
+    "allCategories": "Todas las categorías",
+    "columns": {
+      "member": "Miembro",
+      "category": "Categoría",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "selectAll": "Seleccionar todos los miembros mostrados",
+    "select": "Seleccionar a {{name}}",
+    "categoryOf": "Categoría de {{name}}",
+    "status": {
+      "active": "Activo",
+      "invited": "Invitado"
+    },
+    "remove": "Quitar",
+    "removeMember": "Quitar a {{name}}",
+    "removeConfirm_one": "¿Quitar a {{names}} del espacio de trabajo? Sus traducciones se conservan.",
+    "removeConfirm_other": "¿Quitar a {{count}} miembros del espacio de trabajo? Sus traducciones se conservan.",
+    "selected_one": "{{count}} miembro seleccionado",
+    "selected_other": "{{count}} miembros seleccionados",
+    "clearSelection": "Borrar selección",
+    "changeCategory": "Cambiar categoría",
+    "removeSelected": "Quitar",
+    "showingAll_one": "Mostrando {{count}} miembro",
+    "showingAll_other": "Mostrando los {{count}} miembros",
+    "showingSome": "Mostrando {{shown}} de {{count}} miembros",
+    "summary_one": "{{active}} activos · {{invited}} invitación pendiente",
+    "summary_other": "{{active}} activos · {{invited}} invitaciones pendientes",
+    "noMatches": "Ningún miembro coincide con la búsqueda o el filtro.",
+    "readOnly": "Solo los managers pueden invitar, cambiar o quitar miembros.",
+    "errors": {
+      "self": "No puedes quitarte a ti mismo.",
+      "lastManager": "El espacio de trabajo necesita al menos un manager activo.",
+      "failed": "No se pudo guardar el cambio. Inténtalo de nuevo."
+    },
+    "legend": {
+      "manager": "Gestiona miembros, proyectos y revisiones de traducción.",
+      "worker": "Traduce y edita contenido en los proyectos en los que participa.",
+      "removal": "Quitar a un miembro conserva sus traducciones."
+    },
+    "inviteDialog": {
+      "title": "Invitar miembros al espacio de trabajo",
+      "subtitle": "Se añaden como Invitados. Esta demo no envía correos.",
+      "name": "Nombre",
+      "email": "Correo",
+      "category": "Categoría",
+      "person": "Persona {{number}}",
+      "addAnother": "Añadir otra",
+      "removeRow": "Quitar la persona {{number}}",
+      "cancel": "Cancelar",
+      "send": "Enviar invitaciones",
+      "sending": "Enviando…",
+      "close": "Cerrar",
+      "saveError": "No se pudieron guardar las invitaciones. Inténtalo de nuevo.",
+      "errors": {
+        "nameRequired": "Escribe un nombre.",
+        "emailInvalid": "Escribe un correo válido.",
+        "emailTaken": "Este correo ya está en el espacio de trabajo.",
+        "emailRepeated": "Este correo ya aparece más arriba."
+      }
     }
   }
 }

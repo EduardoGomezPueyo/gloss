@@ -39,7 +39,7 @@ Vertical phases; the app stays runnable after each one.
 - [x] **4. Images and OCR:** "Add content to section" modal (3 states, dnd-kit) and OCR. *Before starting: propose what the design is missing (SPEC open decision 3).*
 - [x] **5. Translation editor:** three columns, autosave, editable source text with "edited", language cards, comparison, threaded comments and Submit for review. *Before starting: status transitions (open 1) and the glossary panel (open 7).*
 - [x] **6. Glossary:** overview, category filter, list view (designed together), detail, editing with CodeMirror, history and the Compare versions page. Tests for versions and diff.
-- [ ] **7. Settings > Members** (local, no sub-teams): search, filter by category, change category, Remove and Invite (*Invited* status).
+- [x] **7. Settings > Members** (local, no sub-teams): search, filter by category, change category, Remove and Invite (*Invited* status).
 - [ ] **8. Export to code:** JSON and CSV. *Before starting: propose the JSON schema and where the CSV goes (open 5).* Tests for the exporters.
 - [ ] **9. Polish and demo:** screen-by-screen fidelity review against Figma and Vercel deployment.
 

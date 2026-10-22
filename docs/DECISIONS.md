@@ -162,6 +162,13 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Libraries:** CodeMirror 6 (MIT) for the live Markdown editor, loaded only on the edit page; react-markdown and remark-gfm (MIT); jsdiff (BSD-3-Clause), loaded only on the compare page.
 - **Demo:** original fictional entries for the first project (characters, factions, places and lore of a placeholder river city), with older versions on "Mira Vale" to show the comparison.
 
+### D32. Settings > Members (2026-10-22) — *phase 7, confirmed by the author unless marked*
+- **No sub-teams (D10):** the current frame no longer has the Sub-team column; the "All sub-teams" filter is dropped too. **Legend:** Manager "Manages members, projects and translation reviews."; Worker "Translates and edits content in the projects they take part in."; "Removing a member keeps their existing translations." stays.
+- **Invite members to workspace:** a dialog with one row per person (Name, Email, Category — Worker by default) and *Add another*. Emails must be valid, not already in the workspace and not repeated; empty rows are ignored. People are added as *Invited*; no email is sent (the dialog says so).
+- **Selection:** with people selected, a bar shows "N selected", *Clear selection*, **Change category** and **Remove**.
+- **Visibility (SPEC 5.6, simulated):** workers only see the projects they take part in, in the list and through direct links (one guard route for every project page); managers see everything. Switch the current user in the avatar menu to try it.
+- **Defaults (proposal):** only active managers can invite, change categories or remove; workers see the table read-only with a note. You cannot remove yourself, and the workspace always keeps at least one active manager (removing or demoting the last ones is refused with a message). Remove asks for confirmation and is a soft delete (D21). Invited members stay *Invited* (no real sign-up); removing one cancels the invitation.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
@@ -179,6 +186,6 @@ Decisions that are still open, with the phase they block:
 | Undesigned list and modal looks (D22 checkbox, active filter button, empty state; D23 look) | — | Proposal, pending the author's review (filter logic, required fields and project ID confirmed) |
 | Editor defaults and comment look (D30) | — | Proposal, pending the author's review |
 | Glossary defaults and looks (D31) | — | Proposal, pending the author's review |
-| Members legend without sub-teams (D10) | Phase 7 | Text to be confirmed |
+| Member permission rules (D32) | — | Proposal, pending the author's review |
 | Export to code JSON schema and CSV location (SPEC open 5) | Phase 8 | To be proposed before the phase |
 | Demo content (SPEC open 9) | Phase 9 (demo) | Neutral placeholder content in the seed for now (decided 2026-10-19); the real world is chosen later and swapped in |

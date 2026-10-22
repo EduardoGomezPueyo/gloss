@@ -53,7 +53,8 @@
     "loading": "Loading projects…",
     "progressTitle": "Progress",
     "progressOf": "{{language}} progress",
-    "noTargetLanguages": "No target languages yet."
+    "noTargetLanguages": "No target languages yet.",
+    "noAccess": "You are not part of this project. Ask a manager to add you."
   },
   "settings": {
     "title": "Settings"
@@ -464,6 +465,76 @@
       "notFound": "This version does not exist.",
       "added": "Added",
       "removed": "Removed"
+    }
+  },
+  "members": {
+    "title": "Team Members",
+    "count_one": "{{count}} member",
+    "count_other": "{{count}} members",
+    "invite": "Invite members to workspace",
+    "searchPlaceholder": "Search by name or email...",
+    "searchLabel": "Search members by name or email",
+    "categoryFilter": "Filter by category",
+    "allCategories": "All categories",
+    "columns": {
+      "member": "Member",
+      "category": "Category",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "selectAll": "Select all members shown",
+    "select": "Select {{name}}",
+    "categoryOf": "Category of {{name}}",
+    "status": {
+      "active": "Active",
+      "invited": "Invited"
+    },
+    "remove": "Remove",
+    "removeMember": "Remove {{name}}",
+    "removeConfirm_one": "Remove {{names}} from the workspace? Their translations are kept.",
+    "removeConfirm_other": "Remove {{count}} members from the workspace? Their translations are kept.",
+    "selected_one": "{{count}} member selected",
+    "selected_other": "{{count}} members selected",
+    "clearSelection": "Clear selection",
+    "changeCategory": "Change category",
+    "removeSelected": "Remove",
+    "showingAll_one": "Showing {{count}} member",
+    "showingAll_other": "Showing all {{count}} members",
+    "showingSome": "Showing {{shown}} of {{count}} members",
+    "summary_one": "{{active}} active · {{invited}} invitation pending",
+    "summary_other": "{{active}} active · {{invited}} invitations pending",
+    "noMatches": "No members match your search or filter.",
+    "readOnly": "Only managers can invite, change or remove members.",
+    "errors": {
+      "self": "You can't remove yourself.",
+      "lastManager": "The workspace needs at least one active manager.",
+      "failed": "The change could not be saved. Try again."
+    },
+    "legend": {
+      "manager": "Manages members, projects and translation reviews.",
+      "worker": "Translates and edits content in the projects they take part in.",
+      "removal": "Removing a member keeps their existing translations."
+    },
+    "inviteDialog": {
+      "title": "Invite members to workspace",
+      "subtitle": "They are added as Invited. This demo sends no emails.",
+      "name": "Name",
+      "email": "Email",
+      "category": "Category",
+      "person": "Person {{number}}",
+      "addAnother": "Add another",
+      "removeRow": "Remove person {{number}}",
+      "cancel": "Cancel",
+      "send": "Send invitations",
+      "sending": "Sending…",
+      "close": "Close",
+      "saveError": "The invitations could not be saved. Try again.",
+      "errors": {
+        "nameRequired": "Enter a name.",
+        "emailInvalid": "Enter a valid email.",
+        "emailTaken": "This email is already in the workspace.",
+        "emailRepeated": "This email is repeated above."
+      }
     }
   }
 }

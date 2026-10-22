@@ -3,7 +3,8 @@ import type { SourceTextPatch } from '@/domain/images';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import type { SectionInput } from '@/domain/sections';
-import type { GlossaryContent, Id, LanguageCode } from '@/domain/types';
+import type { InviteRow } from '@/domain/members';
+import type { GlossaryContent, Id, LanguageCode, MemberCategory } from '@/domain/types';
 import { queryKeys } from './queryKeys';
 import type { ReviewDecision } from './repositories/types';
 import { useRepositories } from './RepositoryContext';
@@ -306,4 +307,41 @@ export function useRecordView() {
 export function useStoreGlossaryImage() {
   const { glossary } = useRepositories();
   return useMutation({ mutationFn: (file: NewImageFile) => glossary.storeImage(file) });
+}
+
+/** Member writes change names and avatars everywhere: refresh members and projects. */
+function useInvalidateMembers() {
+  const queryClient = useQueryClient();
+  return async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.members });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.projects });
+  };
+}
+
+export function useInviteMembers() {
+  const { members } = useRepositories();
+  const onSuccess = useInvalidateMembers();
+  return useMutation({
+    mutationFn: (vars: { rows: InviteRow[]; by: Id | null }) => members.invite(vars.rows, vars.by),
+    onSuccess,
+  });
+}
+
+export function useSetMemberCategory() {
+  const { members } = useRepositories();
+  const onSuccess = useInvalidateMembers();
+  return useMutation({
+    mutationFn: (vars: { ids: Id[]; category: MemberCategory; by: Id | null }) =>
+      members.setCategory(vars.ids, vars.category, vars.by),
+    onSuccess,
+  });
+}
+
+export function useRemoveMembers() {
+  const { members } = useRepositories();
+  const onSuccess = useInvalidateMembers();
+  return useMutation({
+    mutationFn: (vars: { ids: Id[]; by: Id | null }) => members.remove(vars.ids, vars.by),
+    onSuccess,
+  });
 }

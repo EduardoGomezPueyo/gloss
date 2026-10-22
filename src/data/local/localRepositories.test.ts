@@ -388,3 +388,51 @@ describe('local repositories: glossary', () => {
     expect(await (await repos.images.getFile(id))!.text()).toBe('map');
   });
 });
+
+describe('local repositories: members', () => {
+  async function fixture() {
+    const { db, repos } = setup();
+    await repos.demo.ensureSeeded();
+    const members = await repos.members.list();
+    const byName = (name: string) => members.find((m) => m.name === name)!;
+    return {
+      db,
+      repos,
+      ana: byName('Ana Torres'),
+      ben: byName('Ben Carter'),
+      chloe: byName('Chloé Martin'),
+    };
+  }
+
+  it('invites members as Invited and refuses taken emails', async () => {
+    const { repos, ana } = await fixture();
+    const [iris] = await repos.members.invite(
+      [{ name: 'Iris Holm', email: 'Iris@example.com', category: 'worker' }],
+      ana.id,
+    );
+    expect(iris).toMatchObject({ status: 'invited', email: 'iris@example.com', createdBy: ana.id });
+    await expect(
+      repos.members.invite(
+        [{ name: 'Again', email: 'iris@example.com', category: 'worker' }],
+        ana.id,
+      ),
+    ).rejects.toThrow();
+  });
+
+  it('changes categories but keeps a manager', async () => {
+    const { repos, ana, ben, chloe } = await fixture();
+    await repos.members.setCategory([chloe.id], 'manager', ana.id);
+    expect((await repos.members.get(chloe.id))!.category).toBe('manager');
+    await expect(
+      repos.members.setCategory([ana.id, ben.id, chloe.id], 'worker', ana.id),
+    ).rejects.toThrow();
+  });
+
+  it('removes others softly but never yourself', async () => {
+    const { repos, ana, chloe } = await fixture();
+    await expect(repos.members.remove([ana.id], ana.id)).rejects.toThrow();
+    await repos.members.remove([chloe.id], ana.id);
+    expect((await repos.members.list()).some((m) => m.id === chloe.id)).toBe(false);
+    expect((await repos.members.get(chloe.id))!.removedAt).not.toBeNull();
+  });
+});
