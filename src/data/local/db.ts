@@ -1,8 +1,12 @@
 import Dexie, { type EntityTable } from 'dexie';
+import { DEFAULT_CATEGORIES } from '@/domain/glossary';
 import type {
   Comment,
   CommentThread,
   ContentItem,
+  GlossaryCategory,
+  GlossaryEntry,
+  GlossaryVersion,
   Member,
   Project,
   SceneImage,
@@ -41,6 +45,9 @@ export class TranslatorDb extends Dexie {
   files!: EntityTable<StoredFile, 'id'>;
   commentThreads!: EntityTable<CommentThread, 'id'>;
   comments!: EntityTable<Comment, 'id'>;
+  glossaryCategories!: EntityTable<GlossaryCategory, 'id'>;
+  glossaryEntries!: EntityTable<GlossaryEntry, 'id'>;
+  glossaryVersions!: EntityTable<GlossaryVersion, 'id'>;
   meta!: EntityTable<MetaRecord, 'key'>;
 
   constructor(name = 'translator') {
@@ -84,6 +91,31 @@ export class TranslatorDb extends Dexie {
             translation.ready ??= false;
           }),
       );
+    // Phase 6: per-project glossary (DECISIONS D31). Existing projects get the default categories.
+    this.version(4)
+      .stores({
+        glossaryCategories: 'id, projectId',
+        glossaryEntries: 'id, projectId',
+        glossaryVersions: 'id, projectId, entryId',
+      })
+      .upgrade(async (tx) => {
+        const projects = await tx.table('projects').toArray();
+        const now = new Date().toISOString();
+        await tx.table('glossaryCategories').bulkAdd(
+          projects.flatMap((project: { id: string }) =>
+            DEFAULT_CATEGORIES.map((name, order) => ({
+              id: crypto.randomUUID(),
+              createdAt: now,
+              updatedAt: now,
+              createdBy: null,
+              updatedBy: null,
+              projectId: project.id,
+              name,
+              order,
+            })),
+          ),
+        );
+      });
   }
 
   /** Tables that hold workspace data (everything except meta). */
@@ -98,6 +130,9 @@ export class TranslatorDb extends Dexie {
       this.files,
       this.commentThreads,
       this.comments,
+      this.glossaryCategories,
+      this.glossaryEntries,
+      this.glossaryVersions,
     ];
   }
 }

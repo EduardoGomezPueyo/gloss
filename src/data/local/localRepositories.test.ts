@@ -304,3 +304,87 @@ describe('local repositories: editor writes', () => {
     expect(await db.comments.count()).toBe(3);
   });
 });
+
+describe('local repositories: glossary', () => {
+  async function fixture() {
+    const { db, repos } = setup();
+    await repos.demo.ensureSeeded();
+    const alpha = (await repos.projects.listSummaries()).find(
+      (s) => s.project.name === 'Sample Project Alpha',
+    )!.project;
+    return { db, repos, projectId: alpha.id };
+  }
+
+  it('seeds default categories for every project and entries for the first one', async () => {
+    const { db, repos, projectId } = await fixture();
+    expect((await repos.glossary.listCategories(projectId)).map((c) => c.name)).toEqual([
+      'Characters',
+      'Factions',
+      'Locations',
+      'Lore',
+    ]);
+    expect(await db.glossaryCategories.count()).toBe(8 * 4);
+    expect((await repos.glossary.listEntries(projectId)).length).toBeGreaterThan(5);
+  });
+
+  it('creates categories with unique names, and new projects get the defaults', async () => {
+    const { repos, projectId } = await fixture();
+    const created = await repos.glossary.createCategory(projectId, ' Items ', 'm1');
+    expect(created).toMatchObject({ name: 'Items', order: 4 });
+    await expect(repos.glossary.createCategory(projectId, 'items', 'm1')).rejects.toThrow();
+
+    const project = await repos.projects.create(
+      {
+        name: 'Fresh',
+        sourceLanguage: 'en',
+        targetLanguages: [],
+        platforms: [],
+        managerIds: ['m1'],
+        memberIds: [],
+        priority: 'none',
+      },
+      'm1',
+    );
+    expect(await repos.glossary.listCategories(project.id)).toHaveLength(4);
+  });
+
+  it('versions every save and restores an older version as a new one', async () => {
+    const { repos, projectId } = await fixture();
+    const [category] = await repos.glossary.listCategories(projectId);
+    const content = {
+      categoryId: category!.id,
+      title: 'Old Mill',
+      description: 'A mill.',
+      tags: ['Place'],
+      imageFileIds: [],
+      body: 'First text.',
+    };
+    const entry = await repos.glossary.createEntry(projectId, content, 'w1');
+    await repos.glossary.updateEntry(entry.id, { ...content, body: 'Second text.' }, 'w2');
+    // Saving the same content again adds no version.
+    await repos.glossary.updateEntry(entry.id, { ...content, body: 'Second text.' }, 'w2');
+
+    let versions = await repos.glossary.listVersions(entry.id);
+    expect(versions.map((v) => [v.body, v.createdBy])).toEqual([
+      ['Second text.', 'w2'],
+      ['First text.', 'w1'],
+    ]);
+
+    const restored = await repos.glossary.restoreVersion(entry.id, versions[1]!.id, 'm1');
+    expect(restored.body).toBe('First text.');
+    versions = await repos.glossary.listVersions(entry.id);
+    expect(versions).toHaveLength(3);
+
+    await repos.glossary.recordView(entry.id);
+    expect((await repos.glossary.getEntry(entry.id))!.viewCount).toBe(1);
+  });
+
+  it('stores gallery images as files', async () => {
+    const { repos } = await fixture();
+    const id = await repos.glossary.storeImage({
+      name: 'map.png',
+      data: new Blob(['map'], { type: 'image/png' }),
+    });
+    expect(await (await repos.images.getFile(id))!.text()).toBe('map');
+  });
+});

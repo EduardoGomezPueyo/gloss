@@ -122,7 +122,10 @@ export function EditorPage() {
         </div>
 
         <div className="flex flex-col gap-6">
-          <EditorGlossaryCard />
+          <EditorGlossaryCard
+            projectId={project.id}
+            texts={[image?.source.text ?? '', (language && translationOf(language)?.text) || '']}
+          />
           {image && (
             <CommentsCard
               imageId={image.id}

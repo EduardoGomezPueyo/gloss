@@ -3,6 +3,9 @@ import type {
   CommentThread,
   ContentItem,
   Entity,
+  GlossaryCategory,
+  GlossaryEntry,
+  GlossaryVersion,
   Id,
   LanguageCode,
   Member,
@@ -16,6 +19,7 @@ import type {
   Status,
   Translation,
 } from '@/domain/types';
+import { seedGlossary } from './glossarySeed';
 import { createRandom, type Random } from './random';
 
 /*
@@ -35,6 +39,9 @@ export interface DemoData {
   translations: Translation[];
   commentThreads: CommentThread[];
   comments: Comment[];
+  glossaryCategories: GlossaryCategory[];
+  glossaryEntries: GlossaryEntry[];
+  glossaryVersions: GlossaryVersion[];
 }
 
 export interface DemoSeedOptions {
@@ -225,6 +232,9 @@ export function createDemoData(options: DemoSeedOptions = {}): DemoData {
     translations: [],
     commentThreads: [],
     comments: [],
+    glossaryCategories: [],
+    glossaryEntries: [],
+    glossaryVersions: [],
   };
 
   for (const plan of PROJECTS) {
@@ -315,6 +325,10 @@ export function createDemoData(options: DemoSeedOptions = {}): DemoData {
   }
 
   seedComments(data, entity, pastTimestamp);
+  const glossary = seedGlossary(data.projects, entity, pastTimestamp);
+  data.glossaryCategories = glossary.categories;
+  data.glossaryEntries = glossary.entries;
+  data.glossaryVersions = glossary.versions;
   return data;
 }
 

@@ -1,7 +1,8 @@
 import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentUser } from '@/app/currentUser/useCurrentUser';
-import { useReview, useSaveTranslation, useSetReady } from '@/data/hooks';
+import { useGlossary, useReview, useSaveTranslation, useSetReady } from '@/data/hooks';
+import { glossaryMatches } from '@/domain/glossary';
 import { languageName } from '@/domain/languages';
 import { formatRelativeTime } from '@/domain/relativeTime';
 import { textStats } from '@/domain/textStats';
@@ -51,6 +52,11 @@ export function TranslationEditor({
   );
   useEffect(() => onSaveStateChange(autosave.state), [autosave.state, onSaveStateChange]);
 
+  const glossary = useGlossary(image.projectId);
+  const matchCount = glossaryMatches(glossary.data?.entries ?? [], [
+    image.source.text,
+    draft,
+  ]).length;
   const status = translation?.status ?? 'not-started';
   const ready = translation?.ready ?? false;
   const stats = textStats(draft);
@@ -117,6 +123,13 @@ export function TranslationEditor({
         <div className="flex flex-wrap justify-between gap-2 text-sm text-text-secondary">
           <span>{statsText(stats)}</span>
           <span>{t('editor.sourceStats', { stats: statsText(sourceStats) })}</span>
+        </div>
+        <div className="flex justify-end">
+          {matchCount > 0 && (
+            <span className="text-sm font-semibold text-accent-text">
+              {t('editor.glossaryMatch', { count: matchCount })}
+            </span>
+          )}
         </div>
       </div>
 

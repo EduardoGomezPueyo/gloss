@@ -55,7 +55,7 @@ export function ProjectDetailPage() {
 
       <DetailGrid>
         <OverviewCard summary={detail.data} members={members} />
-        <GlossaryCard />
+        <GlossaryCard projectId={project.id} />
         <SectionProgressCard
           projectId={project.id}
           sections={sections}

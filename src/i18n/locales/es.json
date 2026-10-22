@@ -299,7 +299,6 @@
     "editNote": "Editar la nota para traductores",
     "glossary": "Glosario",
     "fullGlossary": "Glosario completo",
-    "glossarySoon": "Aquí aparecerán las coincidencias del glosario para esta imagen cuando exista el glosario del proyecto.",
     "comments": "Comentarios",
     "thisImage": "Esta imagen",
     "openTab": "Abiertos · {{count}}",
@@ -322,7 +321,14 @@
     "noResolved": "No hay comentarios resueltos en esta imagen.",
     "you": "Tú",
     "someone": "Alguien",
-    "mentions": "Personas a mencionar"
+    "mentions": "Personas a mencionar",
+    "glossarySearch": "Buscar en el glosario",
+    "glossaryResults_one": "{{count}} resultado",
+    "glossaryResults_other": "{{count}} resultados",
+    "glossaryInText": "En el texto de esta imagen",
+    "noGlossaryMatches": "Ninguna entrada del glosario aparece en el texto de esta imagen.",
+    "glossaryMatch_one": "{{count}} coincidencia del glosario",
+    "glossaryMatch_other": "{{count}} coincidencias del glosario"
   },
   "addContent": {
     "title": "Añadir contenido a la sección",
@@ -370,5 +376,94 @@
     "empty_one": "No se encontró texto en {{count}} imagen.",
     "empty_other": "No se encontró texto en {{count}} imágenes.",
     "retry": "Reintentar"
+  },
+  "glossary": {
+    "title": "{{project}} - Glosario",
+    "loading": "Cargando glosario…",
+    "searchPlaceholder": "Buscar términos",
+    "searchLabel": "Buscar en el glosario",
+    "categories": "Categorías",
+    "clearFilters": "Quitar filtros",
+    "createCategory": "Crear categoría",
+    "addEntry": "Añadir entrada",
+    "view": "Vista",
+    "viewGrid": "Vista en cuadrícula",
+    "viewList": "Vista de lista A–Z",
+    "viewAll": "Ver todo",
+    "emptyCategory": "Aún no hay entradas en esta categoría.",
+    "noEntries": "Este glosario está vacío. Añade la primera entrada con Añadir entrada.",
+    "noMatches": "Ninguna entrada coincide con la búsqueda.",
+    "jumpTo": "Ir a la letra",
+    "otherLetter": "Otros",
+    "categoryDialog": {
+      "title": "Crear categoría",
+      "name": "Nombre de la categoría",
+      "create": "Crear categoría",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "errors": {
+        "nameRequired": "Escribe un nombre.",
+        "nameTaken": "Este glosario ya tiene una categoría con ese nombre."
+      }
+    },
+    "entry": {
+      "back": "Volver al glosario",
+      "edit": "Editar entrada",
+      "notFound": "Esta entrada no existe o se ha eliminado.",
+      "missingLink": "{{title}} aún no tiene entrada",
+      "references": "Referencias",
+      "backToReference": "Volver al texto",
+      "image": "Imagen {{position}} de {{title}}"
+    },
+    "edit": {
+      "newTitle": "Nueva entrada",
+      "editTitle": "Editar entrada - {{title}}",
+      "discard": "Descartar cambios",
+      "discardConfirm": "¿Descartar los cambios sin guardar?",
+      "save": "Guardar cambios",
+      "saving": "Guardando…",
+      "saveError": "No se pudo guardar la entrada. Inténtalo de nuevo.",
+      "title": "Título",
+      "description": "Descripción breve",
+      "descriptionHelp": "Se muestra en las tarjetas y en el editor. Hasta {{max}} caracteres.",
+      "category": "Categoría",
+      "categoryPlaceholder": "Selecciona una categoría",
+      "tags": "Etiquetas",
+      "addTag": "Etiqueta",
+      "newTag": "Nueva etiqueta",
+      "removeTag": "Quitar la etiqueta {{tag}}",
+      "images": "Imágenes",
+      "addImage": "Imagen",
+      "removeImage": "Quitar la imagen {{position}}",
+      "imageRejected": "No se han añadido: {{names}}. Usa imágenes PNG, JPEG o WebP de hasta 15 MB.",
+      "body": "Contenido",
+      "bodyHelp": "Markdown. Enlaza otras entradas con [[Título]] y añade referencias con [^1].",
+      "errors": {
+        "titleRequired": "Escribe un título.",
+        "descriptionRequired": "Escribe una descripción breve.",
+        "descriptionTooLong": "La descripción no puede superar los {{max}} caracteres.",
+        "categoryRequired": "Elige una categoría."
+      },
+      "bodyPlaceholder": "## Título\n\nEscribe aquí la entrada…"
+    },
+    "history": {
+      "title": "Historial de versiones",
+      "current": "Versión actual",
+      "compare": "Comparar {{date}} con la versión actual",
+      "today": "Hoy {{time}}",
+      "yesterday": "Ayer {{time}}",
+      "noHistory": "Las versiones aparecen aquí después de guardar por primera vez.",
+      "someone": "Alguien"
+    },
+    "compare": {
+      "title": "Comparar versiones",
+      "goBack": "Volver",
+      "restore": "Restaurar versión",
+      "restoring": "Restaurando…",
+      "current": "Versión actual",
+      "notFound": "Esta versión no existe.",
+      "added": "Añadido",
+      "removed": "Eliminado"
+    }
   }
 }

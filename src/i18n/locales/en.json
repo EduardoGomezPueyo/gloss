@@ -299,7 +299,6 @@
     "editNote": "Edit the note for translators",
     "glossary": "Glossary",
     "fullGlossary": "Full glossary",
-    "glossarySoon": "Glossary matches for this image will appear here once the project glossary is built.",
     "comments": "Comments",
     "thisImage": "This image",
     "openTab": "Open · {{count}}",
@@ -322,7 +321,14 @@
     "noResolved": "No resolved comments on this image.",
     "you": "You",
     "someone": "Someone",
-    "mentions": "People to mention"
+    "mentions": "People to mention",
+    "glossarySearch": "Search the glossary",
+    "glossaryResults_one": "{{count}} result",
+    "glossaryResults_other": "{{count}} results",
+    "glossaryInText": "In this image's text",
+    "noGlossaryMatches": "No glossary entries appear in this image's text.",
+    "glossaryMatch_one": "{{count}} glossary match",
+    "glossaryMatch_other": "{{count}} glossary matches"
   },
   "addContent": {
     "title": "Add content to section",
@@ -370,5 +376,94 @@
     "empty_one": "No text found in {{count}} image.",
     "empty_other": "No text found in {{count}} images.",
     "retry": "Retry"
+  },
+  "glossary": {
+    "title": "{{project}} - Glossary",
+    "loading": "Loading glossary…",
+    "searchPlaceholder": "Search terms",
+    "searchLabel": "Search the glossary",
+    "categories": "Categories",
+    "clearFilters": "Clear filters",
+    "createCategory": "Create new category",
+    "addEntry": "Add entry",
+    "view": "View",
+    "viewGrid": "Grid view",
+    "viewList": "A–Z list view",
+    "viewAll": "View all",
+    "emptyCategory": "No entries in this category yet.",
+    "noEntries": "This glossary is empty. Add the first entry with Add entry.",
+    "noMatches": "No entries match your search.",
+    "jumpTo": "Jump to letter",
+    "otherLetter": "Other",
+    "categoryDialog": {
+      "title": "Create new category",
+      "name": "Category name",
+      "create": "Create category",
+      "cancel": "Cancel",
+      "close": "Close",
+      "errors": {
+        "nameRequired": "Enter a name.",
+        "nameTaken": "This glossary already has a category with this name."
+      }
+    },
+    "entry": {
+      "back": "Back to the glossary",
+      "edit": "Edit entry",
+      "notFound": "This entry does not exist or was deleted.",
+      "missingLink": "{{title}} has no entry yet",
+      "references": "References",
+      "backToReference": "Back to the text",
+      "image": "Image {{position}} of {{title}}"
+    },
+    "edit": {
+      "newTitle": "New entry",
+      "editTitle": "Edit entry - {{title}}",
+      "discard": "Discard changes",
+      "discardConfirm": "Discard your unsaved changes?",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saveError": "The entry could not be saved. Try again.",
+      "title": "Title",
+      "description": "Short description",
+      "descriptionHelp": "Shown on cards and in the editor. Up to {{max}} characters.",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
+      "tags": "Tags",
+      "addTag": "Tag",
+      "newTag": "New tag",
+      "removeTag": "Remove tag {{tag}}",
+      "images": "Images",
+      "addImage": "Image",
+      "removeImage": "Remove image {{position}}",
+      "imageRejected": "Not added: {{names}}. Use PNG, JPEG or WebP images up to 15 MB.",
+      "body": "Content",
+      "bodyHelp": "Markdown. Link other entries with [[Title]] and add references with [^1].",
+      "errors": {
+        "titleRequired": "Enter a title.",
+        "descriptionRequired": "Write a short description.",
+        "descriptionTooLong": "Keep the description under {{max}} characters.",
+        "categoryRequired": "Choose a category."
+      },
+      "bodyPlaceholder": "## Heading\n\nWrite the entry here…"
+    },
+    "history": {
+      "title": "Version history",
+      "current": "Current Version",
+      "compare": "Compare {{date}} with the current version",
+      "today": "Today {{time}}",
+      "yesterday": "Yesterday {{time}}",
+      "noHistory": "Versions appear here after the first save.",
+      "someone": "Someone"
+    },
+    "compare": {
+      "title": "Compare versions",
+      "goBack": "Go back",
+      "restore": "Restore version",
+      "restoring": "Restoring…",
+      "current": "Current Version",
+      "notFound": "This version does not exist.",
+      "added": "Added",
+      "removed": "Removed"
+    }
   }
 }

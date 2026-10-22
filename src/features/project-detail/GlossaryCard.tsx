@@ -1,10 +1,11 @@
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
 import { Card, CardTitle } from '@/ui/Card';
 import { ExternalLinkIcon } from '@/ui/icons';
 
-/** "Glossary" card (SPEC 5.2). The project glossary arrives in phase 6, so the link is disabled. */
-export function GlossaryCard() {
+/** "Glossary" card (SPEC 5.2): opens the project glossary. */
+export function GlossaryCard({ projectId }: { projectId: string }) {
   const { t } = useTranslation();
   const titleId = useId();
 
@@ -12,15 +13,14 @@ export function GlossaryCard() {
     <Card labelledBy={titleId}>
       <div className="flex items-center justify-between gap-4">
         <CardTitle id={titleId}>{t('projectDetail.glossary')}</CardTitle>
-        <span
-          role="link"
-          aria-disabled="true"
+        <Link
+          to={`/projects/${projectId}/glossary`}
           aria-label={t('projectDetail.openGlossary')}
-          title={t('nav.notAvailable')}
-          className="cursor-not-allowed text-text-tertiary"
+          title={t('projectDetail.openGlossary')}
+          className="rounded-md text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
         >
           <ExternalLinkIcon className="size-5" />
-        </span>
+        </Link>
       </div>
       <p className="text-base text-text-secondary">{t('projectDetail.glossaryDescription')}</p>
     </Card>

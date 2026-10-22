@@ -11,6 +11,7 @@ import {
   type OcrOutcome,
   type SourceTextPatch,
 } from '@/domain/images';
+import { DEFAULT_CATEGORIES, validateCategoryName } from '@/domain/glossary';
 import { addableTargetLanguages } from '@/domain/languages';
 import { planMove } from '@/domain/moveItems';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
@@ -29,6 +30,10 @@ import type {
   CommentThread,
   ContentItem,
   Entity,
+  GlossaryCategory,
+  GlossaryContent,
+  GlossaryEntry,
+  GlossaryVersion,
   Id,
   LanguageCode,
   Member,
@@ -41,6 +46,7 @@ import type {
   CommentRepository,
   ContentItemRepository,
   DemoRepository,
+  GlossaryRepository,
   ImageRepository,
   ItemImages,
   MemberRepository,
@@ -123,7 +129,7 @@ class LocalProjectRepository implements ProjectRepository {
 
   async create(input: NewProjectInput, by: Id | null): Promise<Project> {
     const db = this.db;
-    return db.transaction('rw', db.projects, async () => {
+    return db.transaction('rw', [db.projects, db.glossaryCategories], async () => {
       const now = new Date();
       const existingCodes = (await db.projects.toArray()).map((p) => p.code);
       const project: Project = {
@@ -137,6 +143,14 @@ class LocalProjectRepository implements ProjectRepository {
         releaseDate: null,
       };
       await db.projects.add(project);
+      await db.glossaryCategories.bulkAdd(
+        DEFAULT_CATEGORIES.map((name, order) => ({
+          ...newEntity(by),
+          projectId: project.id,
+          name,
+          order,
+        })),
+      );
       return project;
     });
   }
@@ -516,6 +530,130 @@ class LocalCommentRepository implements CommentRepository {
   }
 }
 
+const sameContent = (a: GlossaryContent, b: GlossaryContent) =>
+  a.categoryId === b.categoryId &&
+  a.title === b.title &&
+  a.description === b.description &&
+  a.body === b.body &&
+  a.tags.join('\u0000') === b.tags.join('\u0000') &&
+  a.imageFileIds.join() === b.imageFileIds.join();
+
+const contentOf = (source: GlossaryContent): GlossaryContent => ({
+  categoryId: source.categoryId,
+  title: source.title,
+  description: source.description,
+  tags: [...source.tags],
+  imageFileIds: [...source.imageFileIds],
+  body: source.body,
+});
+
+class LocalGlossaryRepository implements GlossaryRepository {
+  constructor(private readonly db: TranslatorDb) {}
+
+  async listCategories(projectId: Id): Promise<GlossaryCategory[]> {
+    const categories = await this.db.glossaryCategories.where({ projectId }).toArray();
+    return categories.sort((a, b) => a.order - b.order);
+  }
+
+  async createCategory(projectId: Id, name: string, by: Id | null): Promise<GlossaryCategory> {
+    const db = this.db;
+    return db.transaction('rw', db.glossaryCategories, async () => {
+      const existing = await db.glossaryCategories.where({ projectId }).toArray();
+      const valid = validateCategoryName(name, existing);
+      if (!valid.ok) throw new Error(`Invalid category name: ${valid.error}`);
+      const category: GlossaryCategory = {
+        ...newEntity(by),
+        projectId,
+        name: valid.name,
+        order: nextOrder(existing),
+      };
+      await db.glossaryCategories.add(category);
+      return category;
+    });
+  }
+
+  listEntries(projectId: Id): Promise<GlossaryEntry[]> {
+    return this.db.glossaryEntries.where({ projectId }).toArray();
+  }
+
+  getEntry(entryId: Id): Promise<GlossaryEntry | undefined> {
+    return this.db.glossaryEntries.get(entryId);
+  }
+
+  async createEntry(projectId: Id, content: GlossaryContent, by: Id | null) {
+    const db = this.db;
+    return db.transaction('rw', [db.glossaryEntries, db.glossaryVersions], async () => {
+      const entry: GlossaryEntry = {
+        ...newEntity(by),
+        ...contentOf(content),
+        projectId,
+        viewCount: 0,
+      };
+      await db.glossaryEntries.add(entry);
+      await db.glossaryVersions.add({
+        ...newEntity(by),
+        ...contentOf(content),
+        projectId,
+        entryId: entry.id,
+        number: 1,
+      });
+      return entry;
+    });
+  }
+
+  async updateEntry(entryId: Id, content: GlossaryContent, by: Id | null) {
+    const db = this.db;
+    return db.transaction('rw', [db.glossaryEntries, db.glossaryVersions], async () => {
+      const entry = await mustGet(db.glossaryEntries.get(entryId), 'Glossary entry', entryId);
+      if (sameContent(entry, content)) return entry;
+      const updated: GlossaryEntry = { ...entry, ...contentOf(content), ...touched(by) };
+      await db.glossaryEntries.put(updated);
+      const count = await db.glossaryVersions.where({ entryId }).count();
+      await db.glossaryVersions.add({
+        ...newEntity(by),
+        ...contentOf(content),
+        projectId: entry.projectId,
+        entryId,
+        number: count + 1,
+      });
+      return updated;
+    });
+  }
+
+  async recordView(entryId: Id): Promise<void> {
+    const db = this.db;
+    await db.transaction('rw', db.glossaryEntries, async () => {
+      const entry = await db.glossaryEntries.get(entryId);
+      if (entry) await db.glossaryEntries.update(entryId, { viewCount: entry.viewCount + 1 });
+    });
+  }
+
+  async listVersions(entryId: Id): Promise<GlossaryVersion[]> {
+    const versions = await this.db.glossaryVersions.where({ entryId }).toArray();
+    return versions.sort((a, b) => b.number - a.number);
+  }
+
+  async restoreVersion(entryId: Id, versionId: Id, by: Id | null) {
+    const version = await mustGet(this.db.glossaryVersions.get(versionId), 'Version', versionId);
+    if (version.entryId !== entryId) throw new Error('The version belongs to another entry');
+    return this.updateEntry(entryId, contentOf(version), by);
+  }
+
+  async storeImage(file: NewImageFile): Promise<Id> {
+    const data = await file.data.arrayBuffer();
+    const id = crypto.randomUUID();
+    await this.db.files.add({
+      id,
+      name: file.name,
+      type: file.data.type,
+      size: data.byteLength,
+      data,
+      createdAt: new Date().toISOString(),
+    });
+    return id;
+  }
+}
+
 class LocalDemoRepository implements DemoRepository {
   constructor(
     private readonly db: TranslatorDb,
@@ -551,6 +689,9 @@ class LocalDemoRepository implements DemoRepository {
       db.translations.bulkAdd(data.translations),
       db.commentThreads.bulkAdd(data.commentThreads),
       db.comments.bulkAdd(data.comments),
+      db.glossaryCategories.bulkAdd(data.glossaryCategories),
+      db.glossaryEntries.bulkAdd(data.glossaryEntries),
+      db.glossaryVersions.bulkAdd(data.glossaryVersions),
       db.meta.put({ key: META_SEEDED_AT, value: new Date().toISOString() }),
     ]);
   }
@@ -568,6 +709,7 @@ export function createLocalRepositories(
     images: new LocalImageRepository(db),
     translations: new LocalTranslationRepository(db),
     comments: new LocalCommentRepository(db),
+    glossary: new LocalGlossaryRepository(db),
     demo: new LocalDemoRepository(db, seedOptions),
   };
 }

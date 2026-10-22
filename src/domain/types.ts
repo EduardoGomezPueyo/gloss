@@ -163,3 +163,37 @@ export interface Comment extends Entity {
   authorId: Id | null;
   body: string;
 }
+
+/** A glossary category of a project (Characters, Factions, Locations, Lore…). */
+export interface GlossaryCategory extends Entity {
+  projectId: Id;
+  name: string;
+  order: number;
+}
+
+/** The editable content of a glossary entry; each save stores it as a version. */
+export interface GlossaryContent {
+  categoryId: Id;
+  title: string;
+  /** Short description for cards and the editor panel. */
+  description: string;
+  tags: string[];
+  /** Stored image files, in gallery order (the first one is shown large). */
+  imageFileIds: Id[];
+  /** Markdown with [[Title]] links and footnote references (DECISIONS D31). */
+  body: string;
+}
+
+/** A per-project glossary entry (SPEC 5.5: simplified Markdown entries only). */
+export interface GlossaryEntry extends Entity, GlossaryContent {
+  projectId: Id;
+  viewCount: number;
+}
+
+/** A saved state of an entry; createdBy / createdAt are its author and time. */
+export interface GlossaryVersion extends Entity, GlossaryContent {
+  projectId: Id;
+  entryId: Id;
+  /** 1 for the first save, then 2, 3… (orders versions saved within the same millisecond). */
+  number: number;
+}

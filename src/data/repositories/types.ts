@@ -18,6 +18,10 @@ import type {
   Comment,
   CommentThread,
   ContentItem,
+  GlossaryCategory,
+  GlossaryContent,
+  GlossaryEntry,
+  GlossaryVersion,
   Id,
   LanguageCode,
   Member,
@@ -140,6 +144,26 @@ export interface CommentRepository {
   reopen(threadId: Id, by: Id | null): Promise<void>;
 }
 
+/** Per-project glossary (SPEC 5.5, DECISIONS D31). Every save stores a version. */
+export interface GlossaryRepository {
+  listCategories(projectId: Id): Promise<GlossaryCategory[]>;
+  /** Fails when the name is empty or already used in the project. */
+  createCategory(projectId: Id, name: string, by: Id | null): Promise<GlossaryCategory>;
+  listEntries(projectId: Id): Promise<GlossaryEntry[]>;
+  getEntry(entryId: Id): Promise<GlossaryEntry | undefined>;
+  createEntry(projectId: Id, content: GlossaryContent, by: Id | null): Promise<GlossaryEntry>;
+  /** Saves the content as a new version (no version when nothing changed). */
+  updateEntry(entryId: Id, content: GlossaryContent, by: Id | null): Promise<GlossaryEntry>;
+  /** Counts a visit to the entry page (the overview shows the most viewed). */
+  recordView(entryId: Id): Promise<void>;
+  /** Newest first; the first one is the current version. */
+  listVersions(entryId: Id): Promise<GlossaryVersion[]>;
+  /** Saves an older version's content as a new version. */
+  restoreVersion(entryId: Id, versionId: Id, by: Id | null): Promise<GlossaryEntry>;
+  /** Stores an image for an entry gallery; returns its file id. */
+  storeImage(file: NewImageFile): Promise<Id>;
+}
+
 export interface Repositories {
   members: MemberRepository;
   projects: ProjectRepository;
@@ -148,5 +172,6 @@ export interface Repositories {
   images: ImageRepository;
   translations: TranslationRepository;
   comments: CommentRepository;
+  glossary: GlossaryRepository;
   demo: DemoRepository;
 }

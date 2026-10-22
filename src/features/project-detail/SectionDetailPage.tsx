@@ -78,7 +78,7 @@ export function SectionDetailPage() {
           members={members}
           onEdit={() => setEditing(true)}
         />
-        <GlossaryCard />
+        <GlossaryCard projectId={project.id} />
         <ContentItemsCard
           projectId={project.id}
           summary={summary}

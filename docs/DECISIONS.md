@@ -150,6 +150,18 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Defaults (proposal):** autosave a short pause after typing (and when leaving the field, image or language), with "Saving… / All changes saved" in the header; the current image and language live in the URL (`?image=2&lang=es`); "Images in this item" (the design says "section"), with images named "<item> - <n>" (D29); demo images without a file show a placeholder; zoom steps 100–300 % and full screen; the **Note for translators** can be written or changed by managers; the comparison card starts on the first other language with text, and *Edit <language>* switches the editor to it.
 - **Storage:** IndexedDB v3 adds comment threads and comments and the `ready` flag.
 
+### D31. Glossary (2026-10-22) — *phase 6, confirmed by the author unless marked*
+- **Comparison:** the "Compare versions" page (D7), not the "Older Version" modal.
+- **A–Z list view (designed with the author, resolves D9):** entries sorted by title under letter headings, one compact row each (title, category, short description, two tags), and a jump bar of letters; letters without entries are dimmed and titles that do not start with a Latin letter go under "#". Search and the category filter apply to it too.
+- **Short description:** its own required field (up to 200 characters), part of every version; it is what cards, the A–Z list and the editor panel show.
+- **Links and references:** `[[Title]]` or `[[Title|text]]` link to another entry by title (ignoring case and accents); links to entries that do not exist yet are dimmed. Typing `[[` in the editor suggests titles. References are Markdown footnotes (`text[^1]` and `[^1]: source`), rendered as numbered links to a visible **References** list. The body is rendered to React elements (react-markdown + GFM), never raw HTML; images inside the body are not rendered.
+- **Images:** a gallery block above the body in Edit entry ("+ Image", × to remove; PNG/JPEG/WebP up to 15 MB); the first image is shown large. Images are part of every version.
+- **Versions:** every *Save changes* stores a numbered version with author and time (no version when nothing changed); *Restore version* saves the older content as a new version, so history is never lost. The diff is word by word: added text on `--diff-added`, removed text struck through on `--diff-removed`, a bar beside changed paragraphs, and tags compared too.
+- **Defaults (proposal):** each project gets Characters, Factions, Locations and Lore (new projects too; IndexedDB v4 adds them to existing ones); *Create new category* asks for a unique name; the overview rows show the three most viewed entries per category, and opening an entry counts a view; *View all* selects that category; anyone in the project can edit; the title of the screen is "<Project> - Glossary" with a book icon (the project has no image); only *Add entry* is kept (the "+ New entry" of one frame duplicates it). Images uploaded and then discarded stay stored (no cleanup yet).
+- **Editor panel (D30):** without a search, it lists the entries whose title appears in the image's source text or translation (whole words, ignoring case and accents), and the translation editor shows "N glossary match"; with a search, it searches the whole glossary.
+- **Libraries:** CodeMirror 6 (MIT) for the live Markdown editor, loaded only on the edit page; react-markdown and remark-gfm (MIT); jsdiff (BSD-3-Clause), loaded only on the compare page.
+- **Demo:** original fictional entries for the first project (characters, factions, places and lore of a placeholder river city), with older versions on "Mira Vale" to show the comparison.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
@@ -165,10 +177,8 @@ Decisions that are still open, with the phase they block:
 | Section Progress interaction and detail labels (D27, D28) | — | Proposal, pending the author's review |
 | Pages without a design (SPEC open 6) | — | Proposal D11: disabled |
 | Undesigned list and modal looks (D22 checkbox, active filter button, empty state; D23 look) | — | Proposal, pending the author's review (filter logic, required fields and project ID confirmed) |
-| Editor glossary panel and what a match is (SPEC open 7, D30) | Phase 6 | Proposal in D30, built with the glossary |
 | Editor defaults and comment look (D30) | — | Proposal, pending the author's review |
-| Glossary A-Z list view (D9) | Phase 6 | Designed with the author during the phase |
-| Glossary internal link syntax (proposal `[[Title]]`) | Phase 6 | To be confirmed |
+| Glossary defaults and looks (D31) | — | Proposal, pending the author's review |
 | Members legend without sub-teams (D10) | Phase 7 | Text to be confirmed |
 | Export to code JSON schema and CSV location (SPEC open 5) | Phase 8 | To be proposed before the phase |
 | Demo content (SPEC open 9) | Phase 9 (demo) | Neutral placeholder content in the seed for now (decided 2026-10-19); the real world is chosen later and swapped in |

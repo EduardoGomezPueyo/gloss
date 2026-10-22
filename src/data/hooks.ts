@@ -3,7 +3,7 @@ import type { SourceTextPatch } from '@/domain/images';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import type { SectionInput } from '@/domain/sections';
-import type { Id, LanguageCode } from '@/domain/types';
+import type { GlossaryContent, Id, LanguageCode } from '@/domain/types';
 import { queryKeys } from './queryKeys';
 import type { ReviewDecision } from './repositories/types';
 import { useRepositories } from './RepositoryContext';
@@ -219,4 +219,91 @@ export function useImageFile(fileId: Id | null) {
     // Files never change once stored.
     staleTime: Infinity,
   });
+}
+
+/** Categories and entries of a project's glossary. */
+export function useGlossary(projectId: Id) {
+  const { glossary } = useRepositories();
+  return useQuery({
+    queryKey: queryKeys.glossary(projectId),
+    queryFn: async () => {
+      const [categories, entries] = await Promise.all([
+        glossary.listCategories(projectId),
+        glossary.listEntries(projectId),
+      ]);
+      return { categories, entries };
+    },
+  });
+}
+
+/** null when the entry does not exist. */
+export function useGlossaryEntry(entryId: Id) {
+  const { glossary } = useRepositories();
+  return useQuery({
+    queryKey: queryKeys.glossaryEntry(entryId),
+    queryFn: async () => (await glossary.getEntry(entryId)) ?? null,
+  });
+}
+
+export function useGlossaryVersions(entryId: Id | null) {
+  const { glossary } = useRepositories();
+  return useQuery({
+    queryKey: queryKeys.glossaryVersions(entryId ?? ''),
+    queryFn: () => glossary.listVersions(entryId!),
+    enabled: entryId !== null,
+  });
+}
+
+/** Every glossary write refreshes all glossary queries (lists, entries, versions). */
+function useInvalidateGlossary() {
+  const queryClient = useQueryClient();
+  return () => queryClient.invalidateQueries({ queryKey: ['glossary'] });
+}
+
+export function useCreateCategory() {
+  const { glossary } = useRepositories();
+  const onSuccess = useInvalidateGlossary();
+  return useMutation({
+    mutationFn: (vars: { projectId: Id; name: string; by: Id | null }) =>
+      glossary.createCategory(vars.projectId, vars.name, vars.by),
+    onSuccess,
+  });
+}
+
+export function useSaveGlossaryEntry() {
+  const { glossary } = useRepositories();
+  const onSuccess = useInvalidateGlossary();
+  return useMutation({
+    mutationFn: (vars: {
+      projectId: Id;
+      entryId: Id | null;
+      content: GlossaryContent;
+      by: Id | null;
+    }) =>
+      vars.entryId
+        ? glossary.updateEntry(vars.entryId, vars.content, vars.by)
+        : glossary.createEntry(vars.projectId, vars.content, vars.by),
+    onSuccess,
+  });
+}
+
+export function useRestoreVersion() {
+  const { glossary } = useRepositories();
+  const onSuccess = useInvalidateGlossary();
+  return useMutation({
+    mutationFn: (vars: { entryId: Id; versionId: Id; by: Id | null }) =>
+      glossary.restoreVersion(vars.entryId, vars.versionId, vars.by),
+    onSuccess,
+  });
+}
+
+export function useRecordView() {
+  const { glossary } = useRepositories();
+  const onSuccess = useInvalidateGlossary();
+  return useMutation({ mutationFn: (entryId: Id) => glossary.recordView(entryId), onSuccess });
+}
+
+export function useStoreGlossaryImage() {
+  const { glossary } = useRepositories();
+  return useMutation({ mutationFn: (file: NewImageFile) => glossary.storeImage(file) });
 }
