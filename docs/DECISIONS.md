@@ -142,6 +142,14 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Model choice, measured** on original generated images (English, Spanish, Japanese, Chinese; clean and low-contrast retro dialogue boxes): *fast* and *best_int* read the same text; *fast* is about a third smaller and a little quicker.
 - **Preprocessing, measured:** without it neither model read light text on a dark box; a hard black-and-white threshold fixed that but destroyed low-contrast boxes. So OCR runs twice, on the original and on a softened copy (grayscale, inverted when mostly dark, ×2 when narrower than 1000 px), with automatic page segmentation, and keeps the result with more confidently read text. Known limit: small Chinese text in a low-contrast box was not read; a pixel-art test read 3 lines with 2 small errors. The text is always correctable by hand (phase 5).
 
+### D30. Translation editor (2026-10-22) — *phase 5, resolves SPEC open decisions 1 and 2 (confirmed by the author)*
+- **Review flow (open 1):** typing makes a translation *In progress*. **Mark translated** flags it as ready (a `ready` flag on an in-progress translation; it can be undone) and it then counts in the language cards' "x/N translated". **Submit for review**, in the header, moves every ready translation of the **section** to *Under Review* and says how many. A **manager** opening an Under Review translation gets **Approve** (→ *Completed*, stored as reviewer, shown as "Approved by …") and **Request changes** (→ *In progress*); a worker sees "Waiting for a manager's review". Editing an Under Review or Completed text sends it back to *In progress*. Rules in `src/domain/translationWorkflow.ts`; the repository rejects reviews by non-managers.
+- **Source text (open 2):** clicking the text (or the pencil) edits text, speaker, type and context note together. When the text differs from what OCR read, an **edited** label and **Restore OCR text** appear. Text typed where OCR found nothing is not "edited".
+- **Glossary panel:** built in phase 6 with the glossary; phase 5 shows the card with a short note and *Full glossary* disabled. Proposal for phase 6: a match is an entry whose title appears in the source text or the translation (whole words, ignoring case).
+- **Comments:** threads per image with a language (or *General*), replies, Resolve / Reopen, and Open / Resolved tabs with a language filter. **No categories** for now (the author may add them later). `@` suggests the project's people and inserts "@Full Name"; mentions are only highlighted, nobody is notified. The demo seeds one open and one resolved thread on the first image of the first project.
+- **Defaults (proposal):** autosave a short pause after typing (and when leaving the field, image or language), with "Saving… / All changes saved" in the header; the current image and language live in the URL (`?image=2&lang=es`); "Images in this item" (the design says "section"), with images named "<item> - <n>" (D29); demo images without a file show a placeholder; zoom steps 100–300 % and full screen; the **Note for translators** can be written or changed by managers; the comparison card starts on the first other language with text, and *Edit <language>* switches the editor to it.
+- **Storage:** IndexedDB v3 adds comment threads and comments and the `ready` flag.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
@@ -157,8 +165,8 @@ Decisions that are still open, with the phase they block:
 | Section Progress interaction and detail labels (D27, D28) | — | Proposal, pending the author's review |
 | Pages without a design (SPEC open 6) | — | Proposal D11: disabled |
 | Undesigned list and modal looks (D22 checkbox, active filter button, empty state; D23 look) | — | Proposal, pending the author's review (filter logic, required fields and project ID confirmed) |
-| Review transitions (SPEC open 1) | Phase 5 | To be proposed before the phase |
-| Editor glossary panel (SPEC open 7) | Phase 5 | To be proposed before the phase |
+| Editor glossary panel and what a match is (SPEC open 7, D30) | Phase 6 | Proposal in D30, built with the glossary |
+| Editor defaults and comment look (D30) | — | Proposal, pending the author's review |
 | Glossary A-Z list view (D9) | Phase 6 | Designed with the author during the phase |
 | Glossary internal link syntax (proposal `[[Title]]`) | Phase 6 | To be confirmed |
 | Members legend without sub-teams (D10) | Phase 7 | Text to be confirmed |

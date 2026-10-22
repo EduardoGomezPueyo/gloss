@@ -217,3 +217,90 @@ describe('local repositories: content and OCR', () => {
     expect(pending.map((p) => p.image.id)).toEqual([b!.image.id]);
   });
 });
+
+describe('local repositories: editor writes', () => {
+  async function fixture() {
+    const { db, repos } = setup();
+    await repos.demo.ensureSeeded();
+    const summary = (await repos.projects.listSummaries()).find(
+      (s) => s.project.name === 'Sample Project Beta',
+    )!;
+    const detail = (await repos.projects.getDetail(summary.project.id))!;
+    const section = detail.sections[0]!;
+    const item = section.items[0]!.item;
+    const { images } = await repos.images.listForItem(item.id);
+    const manager = (await db.members.toArray()).find((m) => m.category === 'manager');
+    return { db, repos, section, item, image: images[0]!, managerId: manager!.id };
+  }
+
+  it('runs a translation through mark, submit and review', async () => {
+    const { repos, section, image, managerId } = await fixture();
+    const read = async () =>
+      (await repos.images.listForItem(image.contentItemId)).translations.find(
+        (t) => t.imageId === image.id && t.language === 'es',
+      );
+
+    // Beta starts untranslated: saving empty text creates nothing.
+    await repos.translations.save(image.id, 'es', '', 'w1');
+    expect(await read()).toBeUndefined();
+
+    await repos.translations.save(image.id, 'es', 'Hola', 'w1');
+    expect(await read()).toMatchObject({ status: 'in-progress', ready: false, authorId: 'w1' });
+
+    await repos.translations.setReady(image.id, 'es', true, 'w1');
+    expect(await repos.translations.submitSectionForReview(section.section.id, 'w1')).toBe(1);
+    expect(await read()).toMatchObject({ status: 'under-review', ready: false });
+
+    await expect(repos.translations.review(image.id, 'es', 'approve', 'w1')).rejects.toThrow();
+    await repos.translations.review(image.id, 'es', 'approve', managerId);
+    expect(await read()).toMatchObject({ status: 'completed', reviewerId: managerId });
+
+    await repos.translations.save(image.id, 'es', 'Hola de nuevo', 'w1');
+    expect(await read()).toMatchObject({ status: 'in-progress', reviewerId: null });
+  });
+
+  it('corrects the source text and the note for translators', async () => {
+    const { repos, item, image } = await fixture();
+    await repos.images.updateSource(
+      image.id,
+      { text: 'Fixed line', speaker: ' Mira ', type: '', contextNote: null },
+      'm1',
+    );
+    const [updated] = (await repos.images.listForItem(item.id)).images;
+    expect(updated!.source).toMatchObject({
+      text: 'Fixed line',
+      speaker: 'Mira',
+      type: null,
+      ocrText: image.source.ocrText,
+    });
+
+    await repos.contentItems.updateNote(item.id, '  Keep it short. ', 'm1');
+    const detail = await repos.projects.getDetail(item.projectId);
+    const saved = detail!.sections.flatMap((s) => s.items).find((s) => s.item.id === item.id);
+    expect(saved!.item.translatorNote).toBe('Keep it short.');
+  });
+
+  it('starts, replies to, resolves and reopens comment threads', async () => {
+    const { repos, image } = await fixture();
+    await repos.comments.startThread(image.id, 'es', ' Is this formal? ', 'w1');
+    let [entry] = await repos.comments.listForImage(image.id);
+    expect(entry!.thread).toMatchObject({ language: 'es', resolvedAt: null });
+    expect(entry!.comments.map((c) => c.body)).toEqual(['Is this formal?']);
+
+    await repos.comments.reply(entry!.thread.id, 'Informal, please.', 'm1');
+    await repos.comments.resolve(entry!.thread.id, 'm1');
+    [entry] = await repos.comments.listForImage(image.id);
+    expect(entry!.comments).toHaveLength(2);
+    expect(entry!.thread).toMatchObject({ resolvedBy: 'm1' });
+
+    await repos.comments.reopen(entry!.thread.id, 'w1');
+    [entry] = await repos.comments.listForImage(image.id);
+    expect(entry!.thread.resolvedAt).toBeNull();
+  });
+
+  it('seeds two comment threads on the first project', async () => {
+    const { db } = await fixture();
+    expect(await db.commentThreads.count()).toBe(2);
+    expect(await db.comments.count()).toBe(3);
+  });
+});

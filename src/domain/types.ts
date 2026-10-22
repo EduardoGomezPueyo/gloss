@@ -136,6 +136,30 @@ export interface Translation extends Entity {
   language: LanguageCode;
   text: string;
   status: Status;
+  /**
+   * "Mark translated" (DECISIONS D30): an in-progress translation its translator
+   * considers finished. "Submit for review" moves these to Under Review.
+   */
+  ready: boolean;
   authorId: Id | null;
+  /** Manager who approved it (Completed); null otherwise. */
   reviewerId: Id | null;
+}
+
+/** A conversation about one image (Figma: Comments, "This image"). */
+export interface CommentThread extends Entity {
+  projectId: Id;
+  imageId: Id;
+  /** Language the thread is about; null for the source text or the image in general. */
+  language: LanguageCode | null;
+  resolvedAt: Timestamp | null;
+  resolvedBy: Id | null;
+}
+
+/** One message of a thread; the first one opens it. Mentions are plain "@Name" text. */
+export interface Comment extends Entity {
+  projectId: Id;
+  threadId: Id;
+  authorId: Id | null;
+  body: string;
 }

@@ -9,12 +9,14 @@
  * - ids are UUIDs and entities carry createdAt/updatedAt/createdBy/updatedBy.
  */
 
-import type { OcrOutcome } from '@/domain/images';
+import type { OcrOutcome, SourceTextPatch } from '@/domain/images';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import type { ProjectDetail, ProjectSummary } from '@/domain/progress';
 import type { SectionInput } from '@/domain/sections';
 import type {
+  Comment,
+  CommentThread,
   ContentItem,
   Id,
   LanguageCode,
@@ -22,6 +24,7 @@ import type {
   Project,
   SceneImage,
   Section,
+  Translation,
 } from '@/domain/types';
 
 export interface MemberRepository {
@@ -64,6 +67,8 @@ export interface ContentItemRepository {
    * Translations and progress are kept (SPEC 5.3).
    */
   moveToSection(itemIds: Id[], sectionId: Id, by: Id | null): Promise<void>;
+  /** Sets or clears the note for translators. */
+  updateNote(itemId: Id, note: string | null, by: Id | null): Promise<void>;
 }
 
 /** Demo sandbox controls (local data source only). */
@@ -89,6 +94,50 @@ export interface ImageRepository {
   saveOcrOutcome(imageId: Id, outcome: OcrOutcome): Promise<void>;
   /** Puts the item's failed images back in the OCR queue. */
   retryOcr(contentItemId: Id): Promise<void>;
+  /** An item's images in order, with their translations (the editor's data). */
+  listForItem(contentItemId: Id): Promise<ItemImages>;
+  /** Corrects the source text block by hand; OCR's own text is kept. */
+  updateSource(imageId: Id, patch: SourceTextPatch, by: Id | null): Promise<void>;
+}
+
+export interface ItemImages {
+  images: SceneImage[];
+  translations: Translation[];
+}
+
+/** Review decisions a manager can take on an Under Review translation. */
+export type ReviewDecision = 'approve' | 'requestChanges';
+
+/** Writes follow the status rules in src/domain/translationWorkflow.ts (DECISIONS D30). */
+export interface TranslationRepository {
+  /** Saves the text (autosave). Creates the translation on first save; no-op for empty new text. */
+  save(imageId: Id, language: LanguageCode, text: string, by: Id | null): Promise<void>;
+  /** "Mark translated" or undo it. */
+  setReady(imageId: Id, language: LanguageCode, ready: boolean, by: Id | null): Promise<void>;
+  /** Approve or request changes; the caller must be a manager. */
+  review(imageId: Id, language: LanguageCode, decision: ReviewDecision, by: Id): Promise<void>;
+  /** "Submit for review": moves the section's marked translations to Under Review. Returns how many. */
+  submitSectionForReview(sectionId: Id, by: Id | null): Promise<number>;
+}
+
+export interface ThreadWithComments {
+  thread: CommentThread;
+  /** Oldest first; the first one opened the thread. */
+  comments: Comment[];
+}
+
+export interface CommentRepository {
+  /** Threads about an image, newest first. */
+  listForImage(imageId: Id): Promise<ThreadWithComments[]>;
+  startThread(
+    imageId: Id,
+    language: LanguageCode | null,
+    body: string,
+    by: Id | null,
+  ): Promise<void>;
+  reply(threadId: Id, body: string, by: Id | null): Promise<void>;
+  resolve(threadId: Id, by: Id | null): Promise<void>;
+  reopen(threadId: Id, by: Id | null): Promise<void>;
 }
 
 export interface Repositories {
@@ -97,5 +146,7 @@ export interface Repositories {
   sections: SectionRepository;
   contentItems: ContentItemRepository;
   images: ImageRepository;
+  translations: TranslationRepository;
+  comments: CommentRepository;
   demo: DemoRepository;
 }

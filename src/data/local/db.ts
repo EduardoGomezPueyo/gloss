@@ -1,5 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type {
+  Comment,
+  CommentThread,
   ContentItem,
   Member,
   Project,
@@ -37,6 +39,8 @@ export class TranslatorDb extends Dexie {
   images!: EntityTable<SceneImage, 'id'>;
   translations!: EntityTable<Translation, 'id'>;
   files!: EntityTable<StoredFile, 'id'>;
+  commentThreads!: EntityTable<CommentThread, 'id'>;
+  comments!: EntityTable<Comment, 'id'>;
   meta!: EntityTable<MetaRecord, 'key'>;
 
   constructor(name = 'translator') {
@@ -66,6 +70,20 @@ export class TranslatorDb extends Dexie {
             image.ocrError ??= null;
           }),
       );
+    // Phase 5: comments, and the "Mark translated" flag (DECISIONS D30).
+    this.version(3)
+      .stores({
+        commentThreads: 'id, projectId, imageId',
+        comments: 'id, projectId, threadId',
+      })
+      .upgrade((tx) =>
+        tx
+          .table('translations')
+          .toCollection()
+          .modify((translation: Record<string, unknown>) => {
+            translation.ready ??= false;
+          }),
+      );
   }
 
   /** Tables that hold workspace data (everything except meta). */
@@ -78,6 +96,8 @@ export class TranslatorDb extends Dexie {
       this.images,
       this.translations,
       this.files,
+      this.commentThreads,
+      this.comments,
     ];
   }
 }

@@ -5,4 +5,7 @@ export const queryKeys = {
   members: ['members'] as const,
   projects: ['projects'] as const,
   project: (id: Id) => ['projects', id] as const,
+  /** Under "projects", so every project write also refreshes the editor. */
+  itemImages: (itemId: Id) => ['projects', 'items', itemId] as const,
+  comments: (imageId: Id) => ['comments', imageId] as const,
 };

@@ -1,4 +1,6 @@
 import type {
+  Comment,
+  CommentThread,
   ContentItem,
   Entity,
   Id,
@@ -31,6 +33,8 @@ export interface DemoData {
   items: ContentItem[];
   images: SceneImage[];
   translations: Translation[];
+  commentThreads: CommentThread[];
+  comments: Comment[];
 }
 
 export interface DemoSeedOptions {
@@ -219,6 +223,8 @@ export function createDemoData(options: DemoSeedOptions = {}): DemoData {
     items: [],
     images: [],
     translations: [],
+    commentThreads: [],
+    comments: [],
   };
 
   for (const plan of PROJECTS) {
@@ -298,6 +304,7 @@ export function createDemoData(options: DemoSeedOptions = {}): DemoData {
               language,
               text: `[${language}] ${text}`,
               status,
+              ready: false,
               authorId,
               reviewerId: status === 'completed' ? random.pick(managerIds) : null,
             });
@@ -307,7 +314,64 @@ export function createDemoData(options: DemoSeedOptions = {}): DemoData {
     });
   }
 
+  seedComments(data, entity, pastTimestamp);
   return data;
+}
+
+/** Two threads on the first image of the first project, so the editor shows both tabs. */
+function seedComments(
+  data: DemoData,
+  entity: (at: string, by?: Id | null) => Entity,
+  pastTimestamp: (maxDays: number) => string,
+) {
+  const project = data.projects[0]!;
+  const item = data.items.find((i) => i.projectId === project.id)!;
+  const image = data.images.find((i) => i.contentItemId === item.id)!;
+  const [manager] = project.managerIds;
+  const [worker, otherWorker] = project.memberIds;
+  const opened = pastTimestamp(2);
+  const replied = new Date(new Date(opened).getTime() + 30 * 60_000).toISOString();
+
+  const open: CommentThread = {
+    ...entity(opened, worker),
+    projectId: project.id,
+    imageId: image.id,
+    language: 'es',
+    resolvedAt: null,
+    resolvedBy: null,
+  };
+  const resolved: CommentThread = {
+    ...entity(opened, otherWorker),
+    projectId: project.id,
+    imageId: image.id,
+    language: 'fr',
+    resolvedAt: replied,
+    resolvedBy: manager!,
+  };
+  data.commentThreads.push(open, resolved);
+  data.comments.push(
+    {
+      ...entity(opened, worker),
+      projectId: project.id,
+      threadId: open.id,
+      authorId: worker!,
+      body: 'Should the speaker sound more urgent here? The scene is a chase.',
+    },
+    {
+      ...entity(replied, manager),
+      projectId: project.id,
+      threadId: open.id,
+      authorId: manager!,
+      body: 'Yes, keep it short and add exclamation marks to both lines.',
+    },
+    {
+      ...entity(opened, otherWorker),
+      projectId: project.id,
+      threadId: resolved.id,
+      authorId: otherWorker!,
+      body: 'Confirmed the word for "gate" with the glossary.',
+    },
+  );
 }
 
 function statusFor(profile: Profile, random: Random): Status {

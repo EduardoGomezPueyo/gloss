@@ -90,6 +90,7 @@ export function aTranslation(
     language,
     text: `${language}: ${image.source.text}`,
     status,
+    ready: false,
     authorId: null,
     reviewerId: null,
     ...overrides,

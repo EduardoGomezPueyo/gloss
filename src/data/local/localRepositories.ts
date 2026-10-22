@@ -5,14 +5,28 @@ import {
   type ProjectDetail,
   type ProjectSummary,
 } from '@/domain/progress';
-import { applyOcrOutcome, type OcrOutcome } from '@/domain/images';
+import {
+  applyOcrOutcome,
+  applySourceEdit,
+  type OcrOutcome,
+  type SourceTextPatch,
+} from '@/domain/images';
 import { addableTargetLanguages } from '@/domain/languages';
 import { planMove } from '@/domain/moveItems';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import { generateProjectCode } from '@/domain/projectCode';
 import { nextOrder, type SectionInput } from '@/domain/sections';
+import {
+  approve,
+  editTranslation,
+  requestChanges,
+  setReady,
+  submitForReview,
+} from '@/domain/translationWorkflow';
 import type {
+  Comment,
+  CommentThread,
   ContentItem,
   Entity,
   Id,
@@ -21,16 +35,22 @@ import type {
   Project,
   SceneImage,
   Section,
+  Translation,
 } from '@/domain/types';
 import type {
+  CommentRepository,
   ContentItemRepository,
   DemoRepository,
   ImageRepository,
+  ItemImages,
   MemberRepository,
   ProjectRepository,
   Repositories,
   PendingOcr,
+  ReviewDecision,
   SectionRepository,
+  ThreadWithComments,
+  TranslationRepository,
 } from '../repositories/types';
 import { createDemoData, type DemoSeedOptions } from '../seed/demoSeed';
 import { META_SEEDED_AT, TranslatorDb, type StoredFile } from './db';
@@ -265,6 +285,17 @@ class LocalContentItemRepository implements ContentItemRepository {
       );
     });
   }
+
+  async updateNote(itemId: Id, note: string | null, by: Id | null): Promise<void> {
+    const db = this.db;
+    await db.transaction('rw', db.contentItems, async () => {
+      await mustGet(db.contentItems.get(itemId), 'Content item', itemId);
+      await db.contentItems.update(itemId, {
+        translatorNote: note?.trim() ? note.trim() : null,
+        ...touched(by),
+      });
+    });
+  }
 }
 
 class LocalImageRepository implements ImageRepository {
@@ -303,6 +334,28 @@ class LocalImageRepository implements ImageRepository {
     });
   }
 
+  async listForItem(contentItemId: Id): Promise<ItemImages> {
+    const db = this.db;
+    return db.transaction('r', [db.images, db.translations], async () => {
+      const images = (await db.images.where({ contentItemId }).toArray()).sort(
+        (a, b) => a.order - b.order,
+      );
+      const translations = await db.translations
+        .where('imageId')
+        .anyOf(images.map((i) => i.id))
+        .toArray();
+      return { images, translations };
+    });
+  }
+
+  async updateSource(imageId: Id, patch: SourceTextPatch, by: Id | null): Promise<void> {
+    const db = this.db;
+    await db.transaction('rw', db.images, async () => {
+      const image = await mustGet(db.images.get(imageId), 'Image', imageId);
+      await db.images.put({ ...applySourceEdit(image, patch), ...touched(by) });
+    });
+  }
+
   async retryOcr(contentItemId: Id): Promise<void> {
     const db = this.db;
     await db.transaction('rw', db.images, async () => {
@@ -310,6 +363,155 @@ class LocalImageRepository implements ImageRepository {
         .where({ contentItemId })
         .filter((image) => image.ocrStatus === 'failed')
         .modify({ ocrStatus: 'pending', ocrError: null });
+    });
+  }
+}
+
+class LocalTranslationRepository implements TranslationRepository {
+  constructor(private readonly db: TranslatorDb) {}
+
+  async save(imageId: Id, language: LanguageCode, text: string, by: Id | null): Promise<void> {
+    await this.change(imageId, language, (current, image) => {
+      if (current) return editTranslation(current, text, by, new Date());
+      if (text === '') return undefined;
+      const created: Translation = {
+        ...newEntity(by),
+        projectId: image.projectId,
+        imageId,
+        language,
+        text: '',
+        status: 'not-started',
+        ready: false,
+        authorId: by,
+        reviewerId: null,
+      };
+      return editTranslation(created, text, by, new Date());
+    });
+  }
+
+  async setReady(imageId: Id, language: LanguageCode, ready: boolean, by: Id | null) {
+    await this.change(imageId, language, (current) =>
+      current ? setReady(current, ready, by, new Date()) : undefined,
+    );
+  }
+
+  async review(imageId: Id, language: LanguageCode, decision: ReviewDecision, by: Id) {
+    const reviewer = await this.db.members.get(by);
+    if (reviewer?.category !== 'manager') throw new Error('Only managers can review');
+    await this.change(imageId, language, (current) => {
+      if (!current) return undefined;
+      return decision === 'approve'
+        ? approve(current, by, new Date())
+        : requestChanges(current, by, new Date());
+    });
+  }
+
+  async submitSectionForReview(sectionId: Id, by: Id | null): Promise<number> {
+    const db = this.db;
+    return db.transaction('rw', [db.contentItems, db.images, db.translations], async () => {
+      const itemIds = (await db.contentItems.where({ sectionId }).toArray()).map((i) => i.id);
+      const imageIds = (await db.images.where('contentItemId').anyOf(itemIds).toArray()).map(
+        (i) => i.id,
+      );
+      const translations = await db.translations.where('imageId').anyOf(imageIds).toArray();
+      const submitted = submitForReview(translations, by, new Date());
+      await db.translations.bulkPut(submitted);
+      return submitted.length;
+    });
+  }
+
+  /** Reads the translation of (image, language), applies `update` and stores the result. */
+  private async change(
+    imageId: Id,
+    language: LanguageCode,
+    update: (current: Translation | undefined, image: SceneImage) => Translation | undefined,
+  ): Promise<void> {
+    const db = this.db;
+    await db.transaction('rw', [db.images, db.translations], async () => {
+      const image = await mustGet(db.images.get(imageId), 'Image', imageId);
+      const current = await db.translations.where({ imageId, language }).first();
+      const next = update(current, image);
+      if (next && next !== current) await db.translations.put(next);
+    });
+  }
+}
+
+class LocalCommentRepository implements CommentRepository {
+  constructor(private readonly db: TranslatorDb) {}
+
+  async listForImage(imageId: Id): Promise<ThreadWithComments[]> {
+    const db = this.db;
+    return db.transaction('r', [db.commentThreads, db.comments], async () => {
+      const threads = await db.commentThreads.where({ imageId }).toArray();
+      const comments = await db.comments
+        .where('threadId')
+        .anyOf(threads.map((t) => t.id))
+        .toArray();
+      return threads
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .map((thread) => ({
+          thread,
+          comments: comments
+            .filter((c) => c.threadId === thread.id)
+            .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+        }));
+    });
+  }
+
+  async startThread(imageId: Id, language: LanguageCode | null, body: string, by: Id | null) {
+    const db = this.db;
+    await db.transaction('rw', [db.images, db.commentThreads, db.comments], async () => {
+      const image = await mustGet(db.images.get(imageId), 'Image', imageId);
+      const thread: CommentThread = {
+        ...newEntity(by),
+        projectId: image.projectId,
+        imageId,
+        language,
+        resolvedAt: null,
+        resolvedBy: null,
+      };
+      const comment: Comment = {
+        ...newEntity(by),
+        projectId: image.projectId,
+        threadId: thread.id,
+        authorId: by,
+        body: body.trim(),
+      };
+      await db.commentThreads.add(thread);
+      await db.comments.add(comment);
+    });
+  }
+
+  async reply(threadId: Id, body: string, by: Id | null) {
+    const db = this.db;
+    await db.transaction('rw', [db.commentThreads, db.comments], async () => {
+      const thread = await mustGet(db.commentThreads.get(threadId), 'Thread', threadId);
+      await db.comments.add({
+        ...newEntity(by),
+        projectId: thread.projectId,
+        threadId,
+        authorId: by,
+        body: body.trim(),
+      });
+      await db.commentThreads.update(threadId, touched(by));
+    });
+  }
+
+  async resolve(threadId: Id, by: Id | null) {
+    const now = new Date().toISOString();
+    await this.db.commentThreads.update(threadId, {
+      resolvedAt: now,
+      resolvedBy: by,
+      updatedAt: now,
+      updatedBy: by,
+    });
+  }
+
+  async reopen(threadId: Id, by: Id | null) {
+    await this.db.commentThreads.update(threadId, {
+      resolvedAt: null,
+      resolvedBy: null,
+      ...touched(by),
     });
   }
 }
@@ -347,6 +549,8 @@ class LocalDemoRepository implements DemoRepository {
       db.contentItems.bulkAdd(data.items),
       db.images.bulkAdd(data.images),
       db.translations.bulkAdd(data.translations),
+      db.commentThreads.bulkAdd(data.commentThreads),
+      db.comments.bulkAdd(data.comments),
       db.meta.put({ key: META_SEEDED_AT, value: new Date().toISOString() }),
     ]);
   }
@@ -362,6 +566,8 @@ export function createLocalRepositories(
     sections: new LocalSectionRepository(db),
     contentItems: new LocalContentItemRepository(db),
     images: new LocalImageRepository(db),
+    translations: new LocalTranslationRepository(db),
+    comments: new LocalCommentRepository(db),
     demo: new LocalDemoRepository(db, seedOptions),
   };
 }
