@@ -20,6 +20,7 @@
   --popup: #18181b; /* Background/Popups */
   --fill-subtle: rgb(255 255 255 / 0.1); /* neutral buttons, selected nav item */
   --row-hover: #18181b; /* hovered list row (Background/Popups) */
+  --card: #18181b; /* cards on the detail pages (Background/Popups) */
 
   /* Borders */
   --border: #1d1d20; /* Border/Primary */
@@ -92,6 +93,7 @@
   --popup: #ffffff;
   --fill-subtle: rgb(0 0 0 / 0.06);
   --row-hover: #ececee;
+  --card: #f7f7f8;
 
   --border: #e4e4e7;
   --border-strong: #d4d4d8;

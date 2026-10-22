@@ -11,17 +11,13 @@ import {
   type NewProjectError,
 } from '@/domain/newProject';
 import { PLATFORMS, type Member } from '@/domain/types';
+import { primaryButton, secondaryButton } from '@/ui/buttons';
 import { CloseIcon } from '@/ui/CloseIcon';
+import { Field, inputClass } from '@/ui/form';
 import { LanguageFlag } from '@/ui/LanguageFlag';
+import { LanguageSelect } from '@/ui/LanguageSelect';
 import { PlatformDot } from '@/ui/PlatformChip';
-import {
-  Field,
-  inputClass,
-  LanguageSelect,
-  PeoplePicker,
-  PriorityPicker,
-  ToggleChip,
-} from './fields';
+import { PeoplePicker, PriorityPicker, ToggleChip } from './fields';
 
 function toggle<T>(list: readonly T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
@@ -240,17 +236,10 @@ function CreateProjectForm({ members, onDone }: { members: Member[]; onDone: () 
               {t('createProject.saveError')}
             </p>
           )}
-          <Dialog.Close
-            type="button"
-            className="rounded-xl bg-fill-subtle px-5 py-2.5 text-base text-text outline-none hover:bg-border-strong focus-visible:ring-2 focus-visible:ring-border-strong"
-          >
+          <Dialog.Close type="button" className={secondaryButton}>
             {t('createProject.cancel')}
           </Dialog.Close>
-          <button
-            type="submit"
-            disabled={createProject.isPending}
-            className="rounded-xl bg-button-primary px-5 py-2.5 text-base text-button-primary-foreground outline-none hover:opacity-90 focus-visible:ring-2 focus-visible:ring-border-strong disabled:opacity-60"
-          >
+          <button type="submit" disabled={createProject.isPending} className={primaryButton}>
             {createProject.isPending ? t('createProject.submitting') : t('createProject.submit')}
           </button>
         </div>

@@ -53,3 +53,13 @@ export function withoutSource(
 ): LanguageCode[] {
   return targets.filter((code) => code !== source);
 }
+
+/** Catalog languages that can still be added as targets: not the source, not already added. */
+export function addableTargetLanguages(
+  source: LanguageCode,
+  targets: readonly LanguageCode[],
+): LanguageCode[] {
+  return LANGUAGES.map(({ code }) => code).filter(
+    (code) => code !== source && !targets.includes(code),
+  );
+}

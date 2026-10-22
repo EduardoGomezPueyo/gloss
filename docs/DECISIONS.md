@@ -118,6 +118,20 @@ Log of technical and design decisions and the reasons behind them. Product decis
 ### D26. Theme switch and language toggle next to the avatar (2026-10-20) — *replaces part of D6*
 - **Decision:** at the author's request, the theme is a **light/dark switch** to the right of the avatar instead of a menu option. The switch shows the theme in use; until it is flipped the app follows the system preference, so the explicit *System* option is gone. The interface language follows the same idea as a compact **EN / ES** toggle beside it (proposal: with more languages it would go back to a menu). The avatar menu keeps the current user and the demo reset.
 
+### D27. Project and section detail: undesigned flows (2026-10-22) — *phase 3, confirmed by the author*
+- **Add section:** a dialog with *Section name* (required) and *Description* (optional), styled like Add new project. **Create section** adds it at the end and stays on the project; **Create and add content** creates it and opens the new section (from phase 4 it also opens "Add content to section"; the intent is passed as router state `addContent`).
+- **Edit section:** a pencil next to the title on the section card opens the same dialog, filled in, with **Save changes**.
+- **Add language:** a popover above the button with one language dropdown (the catalog minus the original language and the languages already added) and **Add**. The new language starts at 0 % / *Not started*. Removing a language is out of scope.
+- **Section Progress interaction (proposal):** the triangle expands or collapses a section (the first one starts expanded, several can be open); the section name is a link to its detail.
+- **Not built yet, shown disabled with a tooltip:** *Export to code* (phase 8), the Glossary link (phase 6) and **+ Add** content (phase 4). The arrow of each content item opens `/projects/:id/items/:itemId`, a placeholder until the editor (phase 5).
+- **Sidebar:** kept on the section detail (the Figma frame omits it). Making it collapsible is noted for a later iteration.
+
+### D28. Section detail numbers (2026-10-22)
+- **Languages Progress in the section detail** shows that section's own per-language progress (confirmed by the author), computed with the same rules as the project's (D18).
+- **Managers and priority** on the section card are the project's (SPEC 3, inherited); the language counter is the project's target languages.
+- **Labels (proposal for SPEC minor open decisions):** the overview says *Manager* with one manager and *Managers* with several; "Not-started" is written *Not started*; an empty release date shows *Not set*. "Updated 2h ago" uses the most recent change to the item, its images or translations, with its author's avatar.
+- **Move to section** appends the items after the destination's last item, in their current order; nothing else about them changes, so translations and progress are kept. Selected items that leave the section drop out of the selection.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
@@ -129,6 +143,8 @@ Decisions that are still open, with the phase they block:
 | Light theme review (D5) | — | Proposal, pending the author's review |
 | User menu on the avatar (D6, D20) | — | Proposal, pending confirmation |
 | EN / ES toggle next to the avatar (D26) | — | Proposal, pending the author's review |
+| Collapsible sidebar (D27) | — | Requested by the author for a later iteration |
+| Section Progress interaction and detail labels (D27, D28) | — | Proposal, pending the author's review |
 | Pages without a design (SPEC open 6) | — | Proposal D11: disabled |
 | Undesigned list and modal looks (D22 checkbox, active filter button, empty state; D23 look) | — | Proposal, pending the author's review (filter logic, required fields and project ID confirmed) |
 | Incomplete "Add content to section" modal (SPEC open 3) | Phase 4 | To be proposed before the phase |

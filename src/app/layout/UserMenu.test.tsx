@@ -31,7 +31,7 @@ describe('User menu', () => {
   it('switches the simulated current user and remembers it', async () => {
     renderApp('/projects');
     const { user, menu } = await openMenu();
-    await user.click(within(menu).getByRole('menuitemradio', { name: /Chloé Martin/ }));
+    await user.click(await within(menu).findByRole('menuitemradio', { name: /Chloé Martin/ }));
 
     expect(await screen.findByRole('button', { name: 'Open user menu' })).toHaveAttribute(
       'title',

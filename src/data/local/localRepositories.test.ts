@@ -93,3 +93,63 @@ describe('local repositories', () => {
     expect(summary?.languages.map((l) => l.language)).toEqual(['es', 'fr']);
   });
 });
+
+describe('local repositories: sections, items and languages', () => {
+  async function alpha() {
+    const { db, repos } = setup();
+    await repos.demo.ensureSeeded();
+    const summary = (await repos.projects.listSummaries()).find(
+      (s) => s.project.name === 'Sample Project Alpha',
+    )!;
+    const detail = (await repos.projects.getDetail(summary.project.id))!;
+    return { db, repos, detail };
+  }
+
+  it('creates a section after the last one and edits it', async () => {
+    const { repos, detail } = await alpha();
+    const created = await repos.sections.create(
+      detail.project.id,
+      { name: 'Act 5 - Epilogue', description: '' },
+      'm1',
+    );
+    expect(created.order).toBe(4);
+
+    const updated = await repos.sections.update(
+      created.id,
+      { name: 'Act 5 - Afterword', description: 'Credits.' },
+      'm2',
+    );
+    expect(updated).toMatchObject({ name: 'Act 5 - Afterword', updatedBy: 'm2', order: 4 });
+    const after = await repos.projects.getDetail(detail.project.id);
+    expect(after?.sections.at(-1)?.section.name).toBe('Act 5 - Afterword');
+  });
+
+  it('moves items to another section and keeps their progress', async () => {
+    const { repos, detail } = await alpha();
+    const [first, second] = detail.sections;
+    const moving = first!.items.slice(0, 2);
+
+    await repos.contentItems.moveToSection(
+      moving.map((s) => s.item.id),
+      second!.section.id,
+      'm1',
+    );
+
+    const after = (await repos.projects.getDetail(detail.project.id))!;
+    expect(after.sections[0]!.items).toHaveLength(first!.items.length - 2);
+    const moved = after.sections[1]!.items.slice(-2);
+    expect(moved.map((s) => s.item.id)).toEqual(moving.map((s) => s.item.id));
+    expect(moved.map((s) => s.progress)).toEqual(moving.map((s) => s.progress));
+  });
+
+  it('adds a target language that starts not started, and rejects invalid ones', async () => {
+    const { repos, detail } = await alpha();
+    const project = await repos.projects.addLanguage(detail.project.id, 'ko', 'm1');
+    expect(project.targetLanguages.at(-1)).toBe('ko');
+
+    const after = (await repos.projects.getDetail(detail.project.id))!;
+    expect(after.languages.at(-1)).toEqual({ language: 'ko', progress: 0, status: 'not-started' });
+    await expect(repos.projects.addLanguage(detail.project.id, 'ko', 'm1')).rejects.toThrow();
+    await expect(repos.projects.addLanguage(detail.project.id, 'en', 'm1')).rejects.toThrow();
+  });
+});

@@ -1,12 +1,12 @@
-import { DropdownMenu, RadioGroup, Select } from 'radix-ui';
+import { DropdownMenu, RadioGroup } from 'radix-ui';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LANGUAGES, languageName } from '@/domain/languages';
-import { PRIORITIES, type Id, type LanguageCode, type Member, type Priority } from '@/domain/types';
+import { PRIORITIES, type Id, type Member, type Priority } from '@/domain/types';
 import { Avatar } from '@/ui/Avatar';
 import { CheckboxBox } from '@/ui/CheckboxBox';
 import { CloseIcon } from '@/ui/CloseIcon';
-import { LanguageFlag } from '@/ui/LanguageFlag';
+import { menuClass, menuItemClass } from '@/ui/form';
+import { CheckIcon, PlusIcon } from '@/ui/icons';
 import { PriorityIcon } from '@/ui/PriorityIcon';
 
 /*
@@ -14,68 +14,6 @@ import { PriorityIcon } from '@/ui/PriorityIcon';
  * the language fields have no design yet (DECISIONS D8): they reuse the look of
  * Team members and Platforms.
  */
-
-export const inputClass =
-  'h-[42px] w-full rounded-lg border border-border-input bg-popup px-4 text-base text-text outline-none placeholder:text-text-tertiary focus-visible:border-text-tertiary aria-invalid:border-danger';
-
-const menuClass =
-  'z-[60] flex max-h-64 min-w-56 flex-col gap-0.5 overflow-y-auto rounded-2xl border border-border-strong bg-popup p-1.5 shadow-lg';
-const menuItemClass =
-  'flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm text-text outline-none select-none data-[highlighted]:bg-fill-subtle';
-
-export function Field({
-  label,
-  htmlFor,
-  required,
-  aside,
-  help,
-  error,
-  errorId,
-  children,
-}: {
-  label: string;
-  htmlFor?: string;
-  required?: boolean;
-  aside?: ReactNode;
-  help?: string;
-  error?: string;
-  errorId?: string;
-  children: ReactNode;
-}) {
-  const LabelTag = htmlFor ? 'label' : 'span';
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-baseline justify-between gap-4">
-        <LabelTag htmlFor={htmlFor} className="text-sm text-text">
-          {label}
-          {required && <span aria-hidden> *</span>}
-        </LabelTag>
-        {aside && <span className="text-sm text-text-secondary">{aside}</span>}
-      </div>
-      {children}
-      {help && <p className="-mt-1 text-sm text-text-secondary">{help}</p>}
-      {error && (
-        <p id={errorId} className="-mt-1 text-sm text-danger">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function CheckGlyph() {
-  return (
-    <svg aria-hidden viewBox="0 0 16 16" fill="none" className="size-4">
-      <path
-        d="m3.5 8.5 3 3 6-7"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 /** Selectable chip with a check when pressed (Figma: Platforms). */
 export function ToggleChip({
@@ -97,7 +35,7 @@ export function ToggleChip({
       }`}
     >
       {children}
-      {pressed && <CheckGlyph />}
+      {pressed && <CheckIcon />}
     </button>
   );
 }
@@ -153,14 +91,7 @@ export function PeoplePicker({
           aria-describedby={describedBy}
           className="inline-flex w-fit items-center gap-2 rounded-md text-base text-text outline-none hover:text-text-secondary focus-visible:ring-2 focus-visible:ring-border-strong"
         >
-          <svg aria-hidden viewBox="0 0 16 16" fill="none" className="size-4">
-            <path
-              d="M8 2.5v11M2.5 8h11"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-            />
-          </svg>
+          <PlusIcon />
           {addLabel}
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
@@ -190,74 +121,6 @@ export function PeoplePicker({
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
     </div>
-  );
-}
-
-/** Original language dropdown. */
-export function LanguageSelect({
-  id,
-  value,
-  onChange,
-  invalid,
-  describedBy,
-}: {
-  id: string;
-  value: LanguageCode | null;
-  onChange: (code: LanguageCode) => void;
-  invalid?: boolean;
-  describedBy?: string;
-}) {
-  const { t, i18n } = useTranslation();
-  const locale = i18n.resolvedLanguage ?? 'en';
-
-  return (
-    <Select.Root value={value ?? ''} onValueChange={onChange}>
-      <Select.Trigger
-        id={id}
-        aria-invalid={invalid || undefined}
-        aria-describedby={describedBy}
-        className={`${inputClass} flex items-center justify-between gap-3 text-left data-[placeholder]:text-text-tertiary`}
-      >
-        <Select.Value placeholder={t('createProject.sourceLanguagePlaceholder')}>
-          {value && (
-            <span className="flex items-center gap-2">
-              <LanguageFlag code={value} />
-              {languageName(value, locale)}
-            </span>
-          )}
-        </Select.Value>
-        <Select.Icon>
-          <svg aria-hidden viewBox="0 0 16 16" fill="none" className="size-4 text-text">
-            <path
-              d="m4 6 4 4 4-4"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </Select.Icon>
-      </Select.Trigger>
-      <Select.Portal>
-        <Select.Content
-          position="popper"
-          sideOffset={6}
-          className={`${menuClass} w-[var(--radix-select-trigger-width)]`}
-        >
-          <Select.Viewport>
-            {LANGUAGES.map(({ code }) => (
-              <Select.Item key={code} value={code} className={menuItemClass}>
-                <LanguageFlag code={code} />
-                <Select.ItemText>{languageName(code, locale)}</Select.ItemText>
-                <Select.ItemIndicator className="ml-auto">
-                  <CheckGlyph />
-                </Select.ItemIndicator>
-              </Select.Item>
-            ))}
-          </Select.Viewport>
-        </Select.Content>
-      </Select.Portal>
-    </Select.Root>
   );
 }
 

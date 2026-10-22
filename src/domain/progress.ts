@@ -17,7 +17,8 @@ import type {
  * - item     = completed translations ÷ (images × target languages)
  * - section  = average of its items
  * - project  = average of its sections
- * - language = completed translations in that language ÷ total images
+ * - language = completed translations in that language ÷ total images (of the
+ *   project, or of one section for the section detail)
  * Progress is a fraction between 0 and 1.
  */
 
@@ -42,6 +43,8 @@ export interface SectionSummary {
   wordCount: number;
   progress: number;
   status: Status;
+  /** Per-language progress of this section's images only (DECISIONS D28). */
+  languages: LanguageProgress[];
 }
 
 export interface LanguageProgress {
@@ -139,6 +142,12 @@ export function summarizeProject(data: ProjectData): ProjectDetail {
     };
   };
 
+  const languageProgressOf = (images: readonly SceneImage[]): LanguageProgress[] =>
+    languages.map((language) => {
+      const statuses = cellStatuses(images, [language], translationOf);
+      return { language, progress: completedShare(statuses), status: aggregateStatus(statuses) };
+    });
+
   const sections: SectionSummary[] = [...data.sections].sort(byOrder).map((section) => {
     const sectionItems = data.items.filter((item) => item.sectionId === section.id).sort(byOrder);
     const images = sectionItems.flatMap((item) => imagesByItem.get(item.id) ?? []);
@@ -149,6 +158,7 @@ export function summarizeProject(data: ProjectData): ProjectDetail {
       wordCount: items.reduce((sum, i) => sum + i.wordCount, 0),
       progress: average(items.map((i) => i.progress)),
       status: aggregateStatus(cellStatuses(images, languages, translationOf)),
+      languages: languageProgressOf(images),
     };
   });
 
@@ -156,22 +166,13 @@ export function summarizeProject(data: ProjectData): ProjectDetail {
     data.items.some((item) => item.id === image.contentItemId),
   );
 
-  const languageProgress: LanguageProgress[] = languages.map((language) => {
-    const statuses = cellStatuses(projectImages, [language], translationOf);
-    return {
-      language,
-      progress: completedShare(statuses),
-      status: aggregateStatus(statuses),
-    };
-  });
-
   return {
     project,
     sections,
     wordCount: sections.reduce((sum, s) => sum + s.wordCount, 0),
     progress: average(sections.map((s) => s.progress)),
     status: aggregateStatus(cellStatuses(projectImages, languages, translationOf)),
-    languages: languageProgress,
+    languages: languageProgressOf(projectImages),
   };
 }
 

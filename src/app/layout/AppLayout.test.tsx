@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import i18n from '@/i18n';
 import { renderApp } from '@/test/renderApp';
 
@@ -29,7 +29,10 @@ describe('App shell', () => {
   it('opens Settings > Members with its own navigation', async () => {
     renderApp('/settings');
     expect(await screen.findByRole('heading', { name: 'Settings' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Members' })).toHaveAttribute('aria-current', 'page');
+    // /settings redirects to /settings/members after the first render.
+    await waitFor(() =>
+      expect(screen.getByRole('link', { name: 'Members' })).toHaveAttribute('aria-current', 'page'),
+    );
     expect(screen.getByRole('link', { name: /Back to translation space/ })).toBeInTheDocument();
   });
 });

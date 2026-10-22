@@ -70,6 +70,16 @@ describe('summarizeProject', () => {
     ]);
   });
 
+  it('computes per-language progress of each section over its own images', () => {
+    const detail = summarizeProject(fixture().data);
+    const [first, empty] = detail.sections;
+    expect(first!.languages).toEqual(detail.languages);
+    expect(empty!.languages).toEqual([
+      { language: 'es', progress: 0, status: 'not-started' },
+      { language: 'fr', progress: 0, status: 'not-started' },
+    ]);
+  });
+
   it('reports the most recent update of an item, its images or translations', () => {
     const { data, ids } = fixture();
     const image = data.images.find((i) => i.contentItemId === ids.itemB)!;
