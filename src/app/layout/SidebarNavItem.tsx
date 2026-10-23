@@ -11,7 +11,7 @@ interface SidebarNavItemProps {
   to?: string;
 }
 
-const baseClass = 'flex w-full items-center gap-1 rounded-sm p-1 text-[10px] leading-none';
+const baseClass = 'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm leading-none';
 
 export function SidebarNavItem({ icon: IconComponent, label, to }: SidebarNavItemProps) {
   const { t } = useTranslation();
@@ -23,7 +23,7 @@ export function SidebarNavItem({ icon: IconComponent, label, to }: SidebarNavIte
         title={t('nav.notAvailable')}
         className={`${baseClass} cursor-not-allowed text-nav-unselected`}
       >
-        <IconComponent aria-hidden className="size-3 shrink-0" />
+        <IconComponent aria-hidden className="size-4 shrink-0" />
         {label}
       </span>
     );
@@ -40,7 +40,7 @@ export function SidebarNavItem({ icon: IconComponent, label, to }: SidebarNavIte
         }`
       }
     >
-      <IconComponent aria-hidden className="size-3 shrink-0" />
+      <IconComponent aria-hidden className="size-4 shrink-0" />
       {label}
     </NavLink>
   );

@@ -1,6 +1,7 @@
 {
   "name": "translator-tool",
   "private": true,
+  "license": "AGPL-3.0-only",
   "version": "0.0.0",
   "type": "module",
   "description": "Video game translation tool that combines game scenes, a per-project glossary and peer review.",
