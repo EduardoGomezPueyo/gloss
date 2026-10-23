@@ -2,6 +2,8 @@
 
 A video game translation tool that brings together the **game scene** (images with the original text, read by OCR), **world knowledge** (a per-project Markdown glossary) and **peer review**.
 
+**Live demo:** [translator-tool-six.vercel.app](https://translator-tool-six.vercel.app). Press **Load demo** at the bottom left to explore a sample workspace.
+
 > Status: early development (v1, local-first showcase). See [`docs/SPEC.md`](docs/SPEC.md) for the specification and [`docs/DECISIONS.md`](docs/DECISIONS.md) for technical decisions.
 
 ## Getting started

@@ -44,7 +44,7 @@ Vertical phases; the app stays runnable after each one.
   - [x] A. Demo outside the repository, app starts empty (D34).
   - [x] B. License AGPL-3.0 (D35).
   - [x] C. Code-splitting: every page is lazy; React, data, UI and CodeMirror in separate chunks (first load ~236 kB gzip, was 277 kB in one file).
-  - [ ] E. Early Vercel deployment (redeploys on every push).
+  - [x] E. Vercel deployment at https://translator-tool-six.vercel.app (redeploys on every push to `main`; `VITE_DEMO_URL` set in the project settings).
   - [ ] D. Screen-by-screen fidelity review against Figma, with the author.
 - [ ] **10. Pages without a design** (D37), each designed in code from a short spec the author approves, and added to the demo data:
   - [ ] Comments
