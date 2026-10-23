@@ -50,7 +50,7 @@ Log of technical and design decisions and the reasons behind them. Product decis
 ### D10. No sub-teams (2026-10-18) — resolves open decision 4
 - **Decision:** the *Sub-team* column and filter are removed from Settings > Members, and there is no field in the model. The legend texts that mention them will be adjusted with the author.
 
-### D11. Navigation without a design shown disabled (2026-10-18) — *proposal for open decision 6*
+### D11. Navigation without a design shown disabled (2026-10-18) — *proposal for open decision 6; superseded by D37 page by page*
 - **Decision:** Notifications, Assigned to me, Comments, General settings and Workspace projects are shown **disabled** (with the tooltip "Not available yet") and have no route.
 
 ### D12. Project detail (2026-10-18)
@@ -85,11 +85,11 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Reason:** the design shows a status on projects, sections, items and languages but the spec never says who sets it. Deriving it keeps every screen consistent (CLAUDE.md requires consistent data) and avoids statuses drifting from the real work. Implemented in `src/domain/status.ts` and `src/domain/progress.ts`, with tests.
 - Word counts are also derived from the source texts (`countWords`).
 
-### D19. Placeholder demo content (2026-10-19)
+### D19. Placeholder demo content (2026-10-19) — *superseded by D34: the placeholder seed is now the test fixture*
 - **Decision:** until the demo world is chosen (SPEC open decision 9), the seed uses neutral placeholder content: "Sample Project Alpha…Theta", "Act 1 - Opening", "Scene 1.1", "Placeholder line…", fictional members with `@example.com` emails.
 - **How:** `createDemoData()` in `src/data/seed/demoSeed.ts` is pure and deterministic (seeded PRNG), so a backend seeder could reuse it. Each section has a progress profile so the list shows every status. Images have no file yet (`fileId: null`); scene art arrives with phase 4 / the demo world.
 
-### D20. Simulated current user and demo reset in the avatar menu (2026-10-19) — *extends D6*
+### D20. Simulated current user and demo reset in the avatar menu (2026-10-19) — *extends D6; the reset item was removed by D34*
 - **Decision:** the avatar menu adds **Current user** (active members only; invited members cannot be selected) and **Reset demo data** (after a browser confirmation, deletes the sandbox and seeds it again). The default current user is the first manager, so the demo opens with the full view. The selection is stored in localStorage.
 - **Spanish labels (confirmed):** *Manager* stays "Manager" in Spanish; *Worker* → "Colaborador".
 
@@ -176,22 +176,39 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **CSV:** the same rows with one column per language (`key,id,section,item,position,speaker,type,context,source,<languages…>`), RFC 4180 quoting, CRLF line endings, UTF-8 with a byte order mark so spreadsheet apps read accents.
 - **Architecture:** the export is built once in a format-independent shape (`src/export/buildExport.ts`); each format is a `TranslationExporter` adapter (`json.ts`, `csv.ts`) listed in `src/export/registry.ts`, so PO/XLIFF (v2) are new adapters only. The file is assembled in the browser; nothing is uploaded.
 
+### D34. Demo outside the repository, app starts empty (2026-10-23) — *phase 9, resolves SPEC open decision 9 (confirmed by the author)*
+- **Empty start:** a new workspace has no projects and a single active manager, **Alex Morgan** (`alex@example.com`), so the current-user selector and permissions work. There is no automatic seed anymore.
+- **Demo outside the repo:** the demo lives in its own repository (`translator-tool-demo`), so forks carry no demo content. The app reads it from `VITE_DEMO_URL`; without it the demo controls are hidden. `VITE_DEMO_IMAGES_URL` (optional) adds a "Try with real images" link to the author's separate repository of real screenshots, which are not part of this project or its license.
+- **Separate workspace:** *Load demo* (below the avatar) downloads the demo and opens it in its **own IndexedDB database** (`translator-demo`); the user's data (`translator`) is never touched. While it is open, a *Demo* badge and *Exit demo* replace the button. Loading it again resets it. The open workspace and the simulated current user are remembered per workspace (`localStorage`).
+- **Format:** a workspace snapshot `{ format: "translator-tool-workspace", version: 1, exportedAt, data, files }` (`src/domain/workspace.ts`). `data` holds every entity list; `files` lists image files with URLs relative to the snapshot, stored with the snapshot's MIME type (raw hosts serve SVG as text). On import every `…At` timestamp moves forward by the time since `exportedAt`, so the demo always looks recent.
+- **Content:** project names are real game titles from the design, used as labels only; everything inside (story, characters, dialogue and its translations into es/fr/de/it/ja/pt-BR, glossary, generated SVG scenes) is original. 2 managers, 5 workers and 1 invited member; section profiles cover every status.
+- **Tests:** the neutral placeholder data of D19 is now a test fixture (`src/test/fixtures`), loaded through `workspace.replace`.
+
+### D35. License: AGPL-3.0 (2026-10-23) — *confirmed by the author*
+- **Decision:** the code is licensed under the **GNU Affero General Public License v3.0 only** (`LICENSE`, `"license": "AGPL-3.0-only"` in `package.json`). Anyone can fork it, but derivatives stay open source, including modified versions run as a hosted web service (the reason to prefer it over GPL-3.0 for a web app).
+- **Scope:** the code and this repository's docs. The demo repository has its own license, and real game screenshots linked from the app belong to their owners.
+
+### D36. Larger sidebar text (2026-10-23) — *requested by the author, deviates from Figma*
+- **Decision:** the general and settings navigation use 14px text with 16px icons (the design uses 10px/12px, too small to read comfortably); the demo controls below the avatar use 12px.
+
+### D37. Building the pages without a design (2026-10-23) — *confirmed by the author, revises D11*
+- **Decision:** Notifications, Assigned to me, Comments, Settings > General and Settings > Workspace projects will be built (ROADMAP phase 10), after the fidelity review so they reuse the polished components.
+- **How:** there are no Figma frames, so each page is designed in code: a short spec (content, actions, data) is approved by the author first, then built with the existing components and tokens, and recorded here. Each page ends by adding its data to the demo. Until its turn, an entry stays disabled as in D11.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
 
 | Topic | Blocks | Status |
 |---|---|---|
-| Repository license | Open-source release | Undecided (none declared in `package.json`) |
 | `docs/design/` screenshots (FFVII art) | Public repo | Excluded from git (D16); replace with original material if they should be versioned |
 | Light theme review (D5) | — | Proposal, pending the author's review |
 | User menu on the avatar (D6, D20) | — | Proposal, pending confirmation |
 | EN / ES toggle next to the avatar (D26) | — | Proposal, pending the author's review |
 | Collapsible sidebar (D27) | — | Requested by the author for a later iteration |
 | Section Progress interaction and detail labels (D27, D28) | — | Proposal, pending the author's review |
-| Pages without a design (SPEC open 6) | — | Proposal D11: disabled |
+| Pages without a design (SPEC open 6) | Phase 10 | Will be built (D37); each page's spec is approved before building |
 | Undesigned list and modal looks (D22 checkbox, active filter button, empty state; D23 look) | — | Proposal, pending the author's review (filter logic, required fields and project ID confirmed) |
 | Editor defaults and comment look (D30) | — | Proposal, pending the author's review |
 | Glossary defaults and looks (D31) | — | Proposal, pending the author's review |
 | Member permission rules (D32) | — | Proposal, pending the author's review |
-| Demo content (SPEC open 9) | Phase 9 (demo) | Neutral placeholder content in the seed for now (decided 2026-10-19); the real world is chosen later and swapped in |

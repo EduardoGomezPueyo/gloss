@@ -288,7 +288,7 @@ Three-column layout.
 6. **Navigation pages without a design:** Notifications, Assigned to me, Comments, General settings, Workspace projects. **[Proposal]** they stay out of v1.
 7. **Editor glossary panel.** Redesign it to show the Markdown entry (title, short description, tags) and define what a match is.
 8. **Glossary version comparison:** choose between page A and modal B (see 5.5).
-9. **Demo content.** There is no original game. Options under discussion: a fictional world with CC0 art, a public-domain work as the glossary universe, or an open-source game with a compatible license. Until decided, use original fictional content.
+9. ~~**Demo content.**~~ Resolved (DECISIONS D34): the app starts empty; an original demo, published from a separate repository, is loaded on demand into its own workspace.
 
 ### Open — minor
 

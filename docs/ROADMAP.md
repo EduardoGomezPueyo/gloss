@@ -11,7 +11,6 @@ src/
   data/
     repositories/   interfaces (contracts)
     local/          IndexedDB implementation (Dexie) + schema and migrations
-    seed/           coherent fictional demo project
   services/
     ocr/            OcrProvider + TesseractOcrProvider
     export/         TranslationExporter + json/ + csv/ + registry
@@ -41,11 +40,22 @@ Vertical phases; the app stays runnable after each one.
 - [x] **6. Glossary:** overview, category filter, list view (designed together), detail, editing with CodeMirror, history and the Compare versions page. Tests for versions and diff.
 - [x] **7. Settings > Members** (local, no sub-teams): search, filter by category, change category, Remove and Invite (*Invited* status).
 - [x] **8. Export to code:** JSON and CSV. *Before starting: propose the JSON schema and where the CSV goes (open 5).* Tests for the exporters.
-- [ ] **9. Polish and demo:** screen-by-screen fidelity review against Figma and Vercel deployment.
+- [ ] **9. Polish and demo** (order agreed 2026-10-23):
+  - [x] A. Demo outside the repository, app starts empty (D34).
+  - [x] B. License AGPL-3.0 (D35).
+  - [x] C. Code-splitting: every page is lazy; React, data, UI and CodeMirror in separate chunks (first load ~236 kB gzip, was 277 kB in one file).
+  - [ ] E. Early Vercel deployment (redeploys on every push).
+  - [ ] D. Screen-by-screen fidelity review against Figma, with the author.
+- [ ] **10. Pages without a design** (D37), each designed in code from a short spec the author approves, and added to the demo data:
+  - [ ] Comments
+  - [ ] Assigned to me
+  - [ ] Notifications (activity log)
+  - [ ] Settings > General and Settings > Workspace projects
+  - [ ] Final demo pass and redeploy
 
 ## Verification
 
 - Per phase: `npm run dev` and walk through the phase's flow against the Figma frame. `npm test`, `npm run lint` and `npm run build` pass.
-- Persistence: reloading the browser keeps changes; if IndexedDB is cleared, the seed is regenerated.
+- Persistence: reloading the browser keeps changes; if IndexedDB is cleared, the app starts again with an empty workspace (the demo is loaded on demand, D34).
 - OCR (phase 4): upload an original test image with text and check that the text, boxes and editing with "edited" work.
 - Export (phase 8): the downloaded file validates against the agreed schema.

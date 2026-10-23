@@ -20,7 +20,7 @@ It is a portfolio project that will become **open source**. v1 is a local, singl
 - Users, roles and permissions are simulated with a current-user selector. Do not implement authentication, a backend, real invitation emails or notifications. Settings > Members is built locally only.
 - Text detected by OCR is **edited by clicking on it** and shows an "edited" label if it changes. Do not build an image-by-image review step.
 - Do **not** implement AI translation or the preview of the translated text over the image (it is discarded, not "for later").
-- Do **not** build the pages without a design (Notifications, Assigned to me, Comments, General settings, Workspace projects) or sub-teams (see D10 and D11 in `DECISIONS.md`).
+- The pages without a design (Notifications, Assigned to me, Comments, General settings, Workspace projects) are built in phase 10, each from a short spec the author approves first (D37). Do **not** build sub-teams (D10).
 - Do not build screens or features that are not in the design or the spec. Some flows are undesigned (the "Add content to section" modal has no confirm or item name, the action to edit the source text, the OCR status): propose a solution and wait for confirmation.
 
 ## Canonical vocabulary
@@ -56,7 +56,7 @@ Decided (see `docs/DECISIONS.md`): a **local-first** SPA deployed on Vercel, rea
 - Code, variable names, commits and comments in English. Documentation in English too.
 - Small, reusable components. Use the design's color and typography variables instead of loose values (for example, in the glossary version comparison: added `#353967`, removed struck through on `#272729`).
 - Write tests for domain logic (progress, sorting, filters, statuses, moving items, glossary versions, export).
-- Demo data: original, free or public-domain content. **Never** text, screenshots or art from commercial games in the repo or the demo (the design screenshots use Final Fantasy VII material: do not copy it into the sample data). Until the demo world is decided (open decision 9), use fictional content. Keep the data **consistent across screens**: the percentages and statuses in the design are filler, not requirements.
+- Demo data: original, free or public-domain content. **Never** text, screenshots or art from commercial games in the repo or the demo (the design screenshots use Final Fantasy VII material: do not copy it into the sample data). Real game titles may appear only as demo project names (labels, nothing inside them). The demo lives in a separate repository and is loaded with *Load demo* (D34); this repo only holds neutral test fixtures. Keep the data **consistent across screens**: the percentages and statuses in the design are filler, not requirements.
 - Keep `docs/DECISIONS.md` up to date with important technical decisions and their reasons.
 
 ## Workflow
