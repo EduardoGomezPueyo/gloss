@@ -1,43 +1,82 @@
 import { Navigate, type RouteObject } from 'react-router';
-import { EditorPage } from '@/features/editor/EditorPage';
-import { ProjectDetailPage } from '@/features/project-detail/ProjectDetailPage';
-import { EntryPage } from '@/features/glossary/EntryPage';
-import { GlossaryPage } from '@/features/glossary/GlossaryPage';
-import { SectionDetailPage } from '@/features/project-detail/SectionDetailPage';
-import { ProjectsPage } from '@/features/projects/ProjectsPage';
-import { MembersPage } from '@/features/settings/MembersPage';
 import { AppLayout } from './layout/AppLayout';
 import { SettingsLayout } from './layout/SettingsLayout';
 import { NotFoundPage } from './NotFoundPage';
 import { ProjectAccessGate } from './ProjectAccessGate';
 
-const loadEntryEditPage = async () => ({
-  Component: (await import('@/features/glossary/EntryEditPage')).EntryEditPage,
-});
+/*
+ * Every page is its own chunk, loaded on first visit: the editor, the glossary
+ * (Markdown, CodeMirror, diff), drag and drop and the export formats stay out of
+ * the first load.
+ */
+const page =
+  <M,>(load: () => Promise<M>, pick: (module: M) => React.ComponentType) =>
+  async () => ({ Component: pick(await load()) });
+
+const loadEntryEditPage = page(
+  () => import('@/features/glossary/EntryEditPage'),
+  (m) => m.EntryEditPage,
+);
 
 export const routes: RouteObject[] = [
   {
     element: <AppLayout />,
     children: [
       { index: true, element: <Navigate to="/projects" replace /> },
-      { path: 'projects', element: <ProjectsPage /> },
+      {
+        path: 'projects',
+        lazy: page(
+          () => import('@/features/projects/ProjectsPage'),
+          (m) => m.ProjectsPage,
+        ),
+      },
       {
         path: 'projects/:projectId',
         element: <ProjectAccessGate />,
         children: [
-          { index: true, element: <ProjectDetailPage /> },
-          { path: 'sections/:sectionId', element: <SectionDetailPage /> },
-          { path: 'items/:itemId', element: <EditorPage /> },
-          { path: 'glossary', element: <GlossaryPage /> },
-          // The Markdown editor and the diff load only when needed.
+          {
+            index: true,
+            lazy: page(
+              () => import('@/features/project-detail/ProjectDetailPage'),
+              (m) => m.ProjectDetailPage,
+            ),
+          },
+          {
+            path: 'sections/:sectionId',
+            lazy: page(
+              () => import('@/features/project-detail/SectionDetailPage'),
+              (m) => m.SectionDetailPage,
+            ),
+          },
+          {
+            path: 'items/:itemId',
+            lazy: page(
+              () => import('@/features/editor/EditorPage'),
+              (m) => m.EditorPage,
+            ),
+          },
+          {
+            path: 'glossary',
+            lazy: page(
+              () => import('@/features/glossary/GlossaryPage'),
+              (m) => m.GlossaryPage,
+            ),
+          },
           { path: 'glossary/new', lazy: loadEntryEditPage },
-          { path: 'glossary/:entryId', element: <EntryPage /> },
+          {
+            path: 'glossary/:entryId',
+            lazy: page(
+              () => import('@/features/glossary/EntryPage'),
+              (m) => m.EntryPage,
+            ),
+          },
           { path: 'glossary/:entryId/edit', lazy: loadEntryEditPage },
           {
             path: 'glossary/:entryId/compare/:versionId',
-            lazy: async () => ({
-              Component: (await import('@/features/glossary/ComparePage')).ComparePage,
-            }),
+            lazy: page(
+              () => import('@/features/glossary/ComparePage'),
+              (m) => m.ComparePage,
+            ),
           },
         ],
       },
@@ -49,7 +88,13 @@ export const routes: RouteObject[] = [
     element: <SettingsLayout />,
     children: [
       { index: true, element: <Navigate to="/settings/members" replace /> },
-      { path: 'members', element: <MembersPage /> },
+      {
+        path: 'members',
+        lazy: page(
+          () => import('@/features/settings/MembersPage'),
+          (m) => m.MembersPage,
+        ),
+      },
     ],
   },
 ];

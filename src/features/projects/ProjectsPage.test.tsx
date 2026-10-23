@@ -28,7 +28,7 @@ describe('Project list', () => {
     expect(projectNames(table)[0]).toBe('Sample Project Alpha');
 
     await user.click(within(table).getByRole('link', { name: 'Sample Project Beta' }));
-    expect(router.state.location.pathname).toMatch(/^\/projects\/.+/);
+    await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/projects\/.+/));
   });
 
   it('searches by name and shows an empty state with no matches', async () => {

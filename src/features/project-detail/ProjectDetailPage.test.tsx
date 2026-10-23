@@ -55,7 +55,7 @@ describe('Project detail', () => {
     expect(await within(sections).findByText('Scene 2.1')).toBeInTheDocument();
 
     await user.click(within(sections).getByRole('link', { name: 'Act 2 - The journey' }));
-    expect(router.state.location.pathname).toMatch(/\/sections\/.+/);
+    await waitFor(() => expect(router.state.location.pathname).toMatch(/\/sections\/.+/));
     expect(await screen.findByRole('heading', { name: 'Act 2 - The journey' })).toBeInTheDocument();
   });
 
@@ -87,7 +87,7 @@ describe('Project detail', () => {
     expect(
       await screen.findByRole('dialog', { name: 'Add content to section' }),
     ).toBeInTheDocument();
-    expect(router.state.location.pathname).toMatch(/\/sections\/.+/);
+    await waitFor(() => expect(router.state.location.pathname).toMatch(/\/sections\/.+/));
     await user.click(screen.getByRole('button', { name: 'Close' }));
     expect(await screen.findByRole('heading', { name: 'Act 6 - Credits' })).toBeInTheDocument();
     expect(screen.getByText('Thanks for playing.')).toBeInTheDocument();
@@ -193,11 +193,11 @@ describe('Section detail', () => {
     const { user, items, router } = await openFirstSection();
     await user.click(within(items).getByRole('checkbox', { name: 'Select Scene 1.1' }));
     expect(within(items).getByText('1 item selected')).toBeInTheDocument();
-    expect(router.state.location.pathname).toMatch(/\/sections\//);
+    await waitFor(() => expect(router.state.location.pathname).toMatch(/\/sections\//));
 
     // The link is stretched over the card with CSS, which jsdom does not lay out: click it directly.
     await user.click(within(items).getByRole('link', { name: 'Open Scene 1.2 in the editor' }));
-    expect(router.state.location.pathname).toMatch(/\/items\/.+/);
+    await waitFor(() => expect(router.state.location.pathname).toMatch(/\/items\/.+/));
   });
 
   it('edits the section name and description', async () => {
