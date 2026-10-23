@@ -15,6 +15,7 @@ import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem'
 import type { NewProjectInput } from '@/domain/newProject';
 import type { ProjectData, ProjectDetail, ProjectSummary } from '@/domain/progress';
 import type { SectionInput } from '@/domain/sections';
+import type { WorkspaceData, WorkspaceFile } from '@/domain/workspace';
 import type {
   Comment,
   CommentThread,
@@ -88,12 +89,15 @@ export interface ContentItemRepository {
   updateNote(itemId: Id, note: string | null, by: Id | null): Promise<void>;
 }
 
-/** Demo sandbox controls (local data source only). */
-export interface DemoRepository {
-  /** Seeds the demo data if the store is empty. Safe to call more than once. */
-  ensureSeeded(): Promise<void>;
-  /** Deletes all data and seeds the demo again. */
-  reset(): Promise<void>;
+/** The workspace as a whole (DECISIONS D34). */
+export interface WorkspaceRepository {
+  /**
+   * Prepares a new workspace the first time it opens: empty, with a single
+   * manager (the workspace owner). Safe to call more than once.
+   */
+  ensureInitialized(): Promise<void>;
+  /** Deletes all data and stores `data` and `files` in its place (used to load the demo). */
+  replace(data: WorkspaceData, files: WorkspaceFile[]): Promise<void>;
 }
 
 /** An image waiting for OCR, with the language to read it in (the project's source language). */
@@ -186,5 +190,5 @@ export interface Repositories {
   translations: TranslationRepository;
   comments: CommentRepository;
   glossary: GlossaryRepository;
-  demo: DemoRepository;
+  workspace: WorkspaceRepository;
 }

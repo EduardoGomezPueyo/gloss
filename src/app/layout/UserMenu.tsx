@@ -1,33 +1,20 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { DropdownMenu } from 'radix-ui';
 import { useTranslation } from 'react-i18next';
 import UserAvatarIcon from '@/assets/icons/user-avatar.svg?react';
-import { useRepositories } from '@/data/RepositoryContext';
 import { useCurrentUser } from '../currentUser/useCurrentUser';
 
 const itemClass =
   'flex cursor-pointer items-center justify-between gap-4 rounded-sm px-2 py-1.5 text-xs text-text-secondary outline-none data-[highlighted]:bg-fill-subtle data-[highlighted]:text-text';
 const labelClass = 'px-2 pt-1.5 pb-1 text-[10px] text-text-tertiary uppercase';
-const separatorClass = 'my-1 h-px bg-border-strong';
 
 /**
  * Menu opened from the avatar at the bottom of the sidebar. Not in the design
- * (DECISIONS D6, D20, D26): simulated current user and demo reset. Theme and
+ * (DECISIONS D6, D20, D26): simulated current user. Theme and
  * language live next to it, in ThemeSwitch and LanguageToggle.
  */
 export function UserMenu() {
   const { t } = useTranslation();
   const { currentUser, selectableMembers, setCurrentUserId } = useCurrentUser();
-  const { demo } = useRepositories();
-  const queryClient = useQueryClient();
-
-  const resetDemo = async () => {
-    if (!window.confirm(t('userMenu.resetDemoConfirm'))) return;
-    await demo.reset();
-    await queryClient.invalidateQueries({
-      predicate: (query) => query.queryKey[0] !== 'bootstrap',
-    });
-  };
 
   return (
     <DropdownMenu.Root>
@@ -62,12 +49,6 @@ export function UserMenu() {
               </DropdownMenu.RadioItem>
             ))}
           </DropdownMenu.RadioGroup>
-
-          <DropdownMenu.Separator className={separatorClass} />
-
-          <DropdownMenu.Item className={itemClass} onSelect={() => void resetDemo()}>
-            {t('userMenu.resetDemo')}
-          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

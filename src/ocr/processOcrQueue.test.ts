@@ -1,6 +1,7 @@
 import 'fake-indexeddb/auto';
 import { TranslatorDb } from '@/data/local/db';
 import { createLocalRepositories } from '@/data/local/localRepositories';
+import { createFixtureData } from '@/test/fixtures/workspaceFixture';
 import { processOcrQueue } from './processOcrQueue';
 import type { OcrProvider } from './types';
 
@@ -9,7 +10,7 @@ let counter = 0;
 async function setup() {
   const db = new TranslatorDb(`ocr-queue-${++counter}`);
   const repos = createLocalRepositories(db);
-  await repos.demo.ensureSeeded();
+  await repos.workspace.replace(createFixtureData(), []);
   const [summary] = await repos.projects.listSummaries();
   const detail = (await repos.projects.getDetail(summary!.project.id))!;
   const sectionId = detail.sections[0]!.section.id;

@@ -19,7 +19,8 @@ export interface MetaRecord {
   value: string;
 }
 
-export const META_SEEDED_AT = 'seededAt';
+/** Set once the workspace is initialized. The key predates D34, when it marked the seed. */
+export const META_INITIALIZED_AT = 'seededAt';
 
 /**
  * An uploaded file. Stored as bytes rather than a Blob so it survives every

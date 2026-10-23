@@ -10,9 +10,8 @@ import type {
 } from '@/domain/types';
 
 /*
- * Demo glossary: original, fictional entries (CLAUDE.md: never content from
- * commercial games). The world is a placeholder until the demo world is chosen
- * (SPEC open 9). "North Gate" and "Lantern" let the editor show glossary matches.
+ * Fixture glossary: original, fictional entries (CLAUDE.md: never content from
+ * commercial games). "North Gate" and "Lantern" let the editor show glossary matches.
  */
 
 interface EntryPlan {

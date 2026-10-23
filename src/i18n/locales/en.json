@@ -17,9 +17,7 @@
   },
   "userMenu": {
     "open": "Open user menu",
-    "currentUser": "Current user",
-    "resetDemo": "Reset demo data",
-    "resetDemoConfirm": "This deletes all your changes and restores the demo data. Continue?"
+    "currentUser": "Current user"
   },
   "sidebar": {
     "darkMode": "Dark mode",
@@ -556,5 +554,14 @@
     "close": "Close",
     "loading": "Reading the project…",
     "error": "The file could not be created. Try again."
+  },
+  "demo": {
+    "load": "Load demo",
+    "loading": "Loading demo…",
+    "exit": "Exit demo",
+    "active": "Demo",
+    "activeHint": "You are in the demo workspace. Your own data is kept apart.",
+    "realImages": "Try with real images",
+    "loadError": "Could not load the demo. Try again later."
   }
 }

@@ -17,9 +17,7 @@
   },
   "userMenu": {
     "open": "Abrir menú de usuario",
-    "currentUser": "Usuario actual",
-    "resetDemo": "Restablecer datos de demo",
-    "resetDemoConfirm": "Esto borra todos tus cambios y restaura los datos de demo. ¿Continuar?"
+    "currentUser": "Usuario actual"
   },
   "sidebar": {
     "darkMode": "Modo oscuro",
@@ -556,5 +554,14 @@
     "close": "Cerrar",
     "loading": "Leyendo el proyecto…",
     "error": "No se pudo crear el archivo. Inténtalo de nuevo."
+  },
+  "demo": {
+    "load": "Cargar demo",
+    "loading": "Cargando demo…",
+    "exit": "Salir de la demo",
+    "active": "Demo",
+    "activeHint": "Estás en el espacio de la demo. Tus propios datos se guardan aparte.",
+    "realImages": "Probar con imágenes reales",
+    "loadError": "No se pudo cargar la demo. Inténtalo más tarde."
   }
 }

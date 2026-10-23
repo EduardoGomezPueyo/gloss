@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import i18n from '@/i18n';
 import { renderApp } from '@/test/renderApp';
@@ -38,20 +38,5 @@ describe('User menu', () => {
       'Chloé Martin',
     );
     expect(localStorage.getItem('translator.currentUser')).not.toBeNull();
-  });
-
-  it('resets the demo data after confirmation', async () => {
-    const { repositories, db } = renderApp('/projects');
-    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const reset = vi.spyOn(repositories.demo, 'reset');
-    await waitFor(async () => expect(await db.projects.count()).toBe(8));
-
-    const { user, menu } = await openMenu();
-    await user.click(within(menu).getByRole('menuitem', { name: 'Reset demo data' }));
-
-    expect(confirm).toHaveBeenCalled();
-    await waitFor(() => expect(reset).toHaveBeenCalledOnce());
-    expect(await db.projects.count()).toBe(8);
-    confirm.mockRestore();
   });
 });

@@ -1,11 +1,7 @@
 import type {
-  Comment,
   CommentThread,
   ContentItem,
   Entity,
-  GlossaryCategory,
-  GlossaryEntry,
-  GlossaryVersion,
   Id,
   LanguageCode,
   Member,
@@ -17,34 +13,21 @@ import type {
   SceneImage,
   Section,
   Status,
-  Translation,
 } from '@/domain/types';
-import { seedGlossary } from './glossarySeed';
+import type { WorkspaceData } from '@/domain/workspace';
+import { seedGlossary } from './glossaryFixture';
 import { createRandom, type Random } from './random';
 
 /*
- * Demo data: neutral placeholder content (DECISIONS D19) until the demo world is
- * chosen (SPEC open decision 9). Never use text or art from commercial games.
+ * Test fixture: a neutral, fictional workspace that tests load through
+ * `workspace.replace` (the app itself starts empty and loads its demo from
+ * outside the repository, DECISIONS D34). Never use text or art from commercial games.
  *
  * Pure and deterministic for a given `now`: statuses, authors and dates come from
- * a seeded PRNG, so every screen shows the same, consistent data.
+ * a seeded PRNG, so every test sees the same, consistent data.
  */
 
-export interface DemoData {
-  members: Member[];
-  projects: Project[];
-  sections: Section[];
-  items: ContentItem[];
-  images: SceneImage[];
-  translations: Translation[];
-  commentThreads: CommentThread[];
-  comments: Comment[];
-  glossaryCategories: GlossaryCategory[];
-  glossaryEntries: GlossaryEntry[];
-  glossaryVersions: GlossaryVersion[];
-}
-
-export interface DemoSeedOptions {
+export interface FixtureOptions {
   now?: Date;
   randomId?: () => Id;
 }
@@ -195,7 +178,7 @@ const SPEAKERS = ['Speaker A', 'Speaker B', 'Speaker C', 'Narrator'];
 const LINE_TYPES = ['Dialogue', 'Narration', 'Tutorial'];
 const MINUTES_PER_DAY = 24 * 60;
 
-export function createDemoData(options: DemoSeedOptions = {}): DemoData {
+export function createFixtureData(options: FixtureOptions = {}): WorkspaceData {
   const now = (options.now ?? new Date()).getTime();
   const randomId = options.randomId ?? (() => crypto.randomUUID());
   const random: Random = createRandom(20261018);
@@ -223,7 +206,7 @@ export function createDemoData(options: DemoSeedOptions = {}): DemoData {
   }));
   const memberId = (index: number) => members[index]!.id;
 
-  const data: DemoData = {
+  const data: WorkspaceData = {
     members,
     projects: [],
     sections: [],
@@ -334,7 +317,7 @@ export function createDemoData(options: DemoSeedOptions = {}): DemoData {
 
 /** Two threads on the first image of the first project, so the editor shows both tabs. */
 function seedComments(
-  data: DemoData,
+  data: WorkspaceData,
   entity: (at: string, by?: Id | null) => Entity,
   pastTimestamp: (maxDays: number) => string,
 ) {

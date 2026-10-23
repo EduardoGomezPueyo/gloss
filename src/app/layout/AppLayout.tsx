@@ -6,6 +6,7 @@ import NotificationsIcon from '@/assets/icons/nav-notifications.svg?react';
 import ProjectsIcon from '@/assets/icons/nav-projects.svg?react';
 import SettingsIcon from '@/assets/icons/nav-settings.svg?react';
 import { ContentPanel } from './ContentPanel';
+import { DemoControls } from './DemoControls';
 import { LanguageToggle } from './LanguageToggle';
 import { SidebarNavItem } from './SidebarNavItem';
 import { ThemeSwitch } from './ThemeSwitch';
@@ -34,6 +35,7 @@ export function AppLayout() {
           <ThemeSwitch />
           <LanguageToggle />
         </div>
+        <DemoControls />
       </nav>
 
       <ContentPanel>

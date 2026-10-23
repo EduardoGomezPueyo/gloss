@@ -1,8 +1,14 @@
 import 'fake-indexeddb/auto';
 import { TranslatorDb } from './db';
+import type { Repositories } from '../repositories/types';
+import { createFixtureData } from '@/test/fixtures/workspaceFixture';
 import { createLocalRepositories } from './localRepositories';
 
 let dbCounter = 0;
+
+function loadFixture(repos: Repositories) {
+  return repos.workspace.replace(createFixtureData(), []);
+}
 
 function setup() {
   const db = new TranslatorDb(`test-${++dbCounter}`);
@@ -10,28 +16,34 @@ function setup() {
 }
 
 describe('local repositories', () => {
-  it('seeds the demo data only once', async () => {
+  it('initializes an empty workspace with its owner only once', async () => {
     const { db, repos } = setup();
-    await Promise.all([repos.demo.ensureSeeded(), repos.demo.ensureSeeded()]);
-    await repos.demo.ensureSeeded();
-    expect(await db.projects.count()).toBe(8);
-    expect(await db.members.count()).toBe(8);
+    await Promise.all([repos.workspace.ensureInitialized(), repos.workspace.ensureInitialized()]);
+    await repos.workspace.ensureInitialized();
+    expect(await db.projects.count()).toBe(0);
+    expect(await repos.members.list()).toMatchObject([
+      { name: 'Alex Morgan', category: 'manager', status: 'active' },
+    ]);
   });
 
-  it('resets the sandbox to the demo data', async () => {
+  it('replaces all data and files with a loaded workspace', async () => {
     const { db, repos } = setup();
-    await repos.demo.ensureSeeded();
-    await db.projects.clear();
-    expect(await db.projects.count()).toBe(0);
-
-    await repos.demo.reset();
+    await repos.workspace.ensureInitialized();
+    await repos.workspace.replace(createFixtureData(), [
+      { id: 'file-1', name: 'scene.svg', data: new Blob(['<svg/>'], { type: 'image/svg+xml' }) },
+    ]);
     expect(await db.projects.count()).toBe(8);
+    expect(await db.members.count()).toBe(8);
+    expect(await db.files.get('file-1')).toMatchObject({ type: 'image/svg+xml', size: 6 });
+
+    // Already initialized: opening it again keeps the loaded data as it is.
+    await repos.workspace.ensureInitialized();
     expect(await db.members.count()).toBe(8);
   });
 
   it('lists members by name, without removed ones', async () => {
     const { db, repos } = setup();
-    await repos.demo.ensureSeeded();
+    await loadFixture(repos);
     const [first] = await repos.members.list();
     await db.members.update(first!.id, { removedAt: new Date().toISOString() });
 
@@ -43,7 +55,7 @@ describe('local repositories', () => {
 
   it('summarizes every project and returns the same numbers in the detail', async () => {
     const { repos } = setup();
-    await repos.demo.ensureSeeded();
+    await loadFixture(repos);
     const summaries = await repos.projects.listSummaries();
     expect(summaries).toHaveLength(8);
 
@@ -65,13 +77,13 @@ describe('local repositories', () => {
 
   it('returns undefined for an unknown project', async () => {
     const { repos } = setup();
-    await repos.demo.ensureSeeded();
+    await loadFixture(repos);
     expect(await repos.projects.getDetail('missing')).toBeUndefined();
   });
 
   it('creates an empty project with a generated, unique code', async () => {
     const { repos } = setup();
-    await repos.demo.ensureSeeded();
+    await loadFixture(repos);
     const input = {
       name: 'Moonfall',
       sourceLanguage: 'ja',
@@ -97,7 +109,7 @@ describe('local repositories', () => {
 describe('local repositories: sections, items and languages', () => {
   async function alpha() {
     const { db, repos } = setup();
-    await repos.demo.ensureSeeded();
+    await loadFixture(repos);
     const summary = (await repos.projects.listSummaries()).find(
       (s) => s.project.name === 'Sample Project Alpha',
     )!;
@@ -157,7 +169,7 @@ describe('local repositories: sections, items and languages', () => {
 describe('local repositories: content and OCR', () => {
   async function firstSection() {
     const { db, repos } = setup();
-    await repos.demo.ensureSeeded();
+    await loadFixture(repos);
     const summary = (await repos.projects.listSummaries()).find(
       (s) => s.project.name === 'Sample Project Alpha',
     )!;
@@ -221,7 +233,7 @@ describe('local repositories: content and OCR', () => {
 describe('local repositories: editor writes', () => {
   async function fixture() {
     const { db, repos } = setup();
-    await repos.demo.ensureSeeded();
+    await loadFixture(repos);
     const summary = (await repos.projects.listSummaries()).find(
       (s) => s.project.name === 'Sample Project Beta',
     )!;
@@ -298,7 +310,7 @@ describe('local repositories: editor writes', () => {
     expect(entry!.thread.resolvedAt).toBeNull();
   });
 
-  it('seeds two comment threads on the first project', async () => {
+  it('loads two comment threads on the first project', async () => {
     const { db } = await fixture();
     expect(await db.commentThreads.count()).toBe(2);
     expect(await db.comments.count()).toBe(3);
@@ -308,14 +320,14 @@ describe('local repositories: editor writes', () => {
 describe('local repositories: glossary', () => {
   async function fixture() {
     const { db, repos } = setup();
-    await repos.demo.ensureSeeded();
+    await loadFixture(repos);
     const alpha = (await repos.projects.listSummaries()).find(
       (s) => s.project.name === 'Sample Project Alpha',
     )!.project;
     return { db, repos, projectId: alpha.id };
   }
 
-  it('seeds default categories for every project and entries for the first one', async () => {
+  it('loads default categories for every project and entries for the first one', async () => {
     const { db, repos, projectId } = await fixture();
     expect((await repos.glossary.listCategories(projectId)).map((c) => c.name)).toEqual([
       'Characters',
@@ -392,7 +404,7 @@ describe('local repositories: glossary', () => {
 describe('local repositories: members', () => {
   async function fixture() {
     const { db, repos } = setup();
-    await repos.demo.ensureSeeded();
+    await loadFixture(repos);
     const members = await repos.members.list();
     const byName = (name: string) => members.find((m) => m.name === name)!;
     return {

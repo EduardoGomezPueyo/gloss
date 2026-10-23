@@ -20,6 +20,7 @@ import {
   type InviteRow,
 } from '@/domain/members';
 import { planMove } from '@/domain/moveItems';
+import { createWorkspaceOwner, type WorkspaceData, type WorkspaceFile } from '@/domain/workspace';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import { generateProjectCode } from '@/domain/projectCode';
@@ -52,7 +53,6 @@ import type {
 import type {
   CommentRepository,
   ContentItemRepository,
-  DemoRepository,
   GlossaryRepository,
   ImageRepository,
   ItemImages,
@@ -64,9 +64,9 @@ import type {
   SectionRepository,
   ThreadWithComments,
   TranslationRepository,
+  WorkspaceRepository,
 } from '../repositories/types';
-import { createDemoData, type DemoSeedOptions } from '../seed/demoSeed';
-import { META_SEEDED_AT, TranslatorDb, type StoredFile } from './db';
+import { META_INITIALIZED_AT, TranslatorDb, type StoredFile } from './db';
 
 const nameCollator = new Intl.Collator(undefined, { sensitivity: 'base' });
 
@@ -709,53 +709,54 @@ class LocalGlossaryRepository implements GlossaryRepository {
   }
 }
 
-class LocalDemoRepository implements DemoRepository {
-  constructor(
-    private readonly db: TranslatorDb,
-    private readonly seedOptions: DemoSeedOptions,
-  ) {}
+class LocalWorkspaceRepository implements WorkspaceRepository {
+  constructor(private readonly db: TranslatorDb) {}
 
-  async ensureSeeded(): Promise<void> {
+  async ensureInitialized(): Promise<void> {
     const db = this.db;
     await db.transaction('rw', [db.meta, ...db.dataTables], async () => {
-      if (await db.meta.get(META_SEEDED_AT)) return;
-      await this.seed();
+      if (await db.meta.get(META_INITIALIZED_AT)) return;
+      const now = new Date().toISOString();
+      await db.members.add(createWorkspaceOwner(crypto.randomUUID(), now));
+      await db.meta.put({ key: META_INITIALIZED_AT, value: now });
     });
   }
 
-  async reset(): Promise<void> {
+  async replace(data: WorkspaceData, files: WorkspaceFile[]): Promise<void> {
+    // Read the files before the transaction: awaiting anything but Dexie inside it would end it.
+    const stored: StoredFile[] = await Promise.all(
+      files.map(async (file) => ({
+        id: file.id,
+        name: file.name,
+        type: file.data.type,
+        size: file.data.size,
+        data: await file.data.arrayBuffer(),
+        createdAt: new Date().toISOString(),
+      })),
+    );
     const db = this.db;
     await db.transaction('rw', [db.meta, ...db.dataTables], async () => {
       await Promise.all([db.meta.clear(), ...db.dataTables.map((table) => table.clear())]);
-      await this.seed();
+      await Promise.all([
+        db.members.bulkAdd(data.members),
+        db.projects.bulkAdd(data.projects),
+        db.sections.bulkAdd(data.sections),
+        db.contentItems.bulkAdd(data.items),
+        db.images.bulkAdd(data.images),
+        db.translations.bulkAdd(data.translations),
+        db.commentThreads.bulkAdd(data.commentThreads),
+        db.comments.bulkAdd(data.comments),
+        db.glossaryCategories.bulkAdd(data.glossaryCategories),
+        db.glossaryEntries.bulkAdd(data.glossaryEntries),
+        db.glossaryVersions.bulkAdd(data.glossaryVersions),
+        db.files.bulkAdd(stored),
+        db.meta.put({ key: META_INITIALIZED_AT, value: new Date().toISOString() }),
+      ]);
     });
-  }
-
-  /** Must run inside a read-write transaction over every table. */
-  private async seed(): Promise<void> {
-    const db = this.db;
-    const data = createDemoData(this.seedOptions);
-    await Promise.all([
-      db.members.bulkAdd(data.members),
-      db.projects.bulkAdd(data.projects),
-      db.sections.bulkAdd(data.sections),
-      db.contentItems.bulkAdd(data.items),
-      db.images.bulkAdd(data.images),
-      db.translations.bulkAdd(data.translations),
-      db.commentThreads.bulkAdd(data.commentThreads),
-      db.comments.bulkAdd(data.comments),
-      db.glossaryCategories.bulkAdd(data.glossaryCategories),
-      db.glossaryEntries.bulkAdd(data.glossaryEntries),
-      db.glossaryVersions.bulkAdd(data.glossaryVersions),
-      db.meta.put({ key: META_SEEDED_AT, value: new Date().toISOString() }),
-    ]);
   }
 }
 
-export function createLocalRepositories(
-  db: TranslatorDb = new TranslatorDb(),
-  seedOptions: DemoSeedOptions = {},
-): Repositories {
+export function createLocalRepositories(db: TranslatorDb = new TranslatorDb()): Repositories {
   return {
     members: new LocalMemberRepository(db),
     projects: new LocalProjectRepository(db),
@@ -765,6 +766,6 @@ export function createLocalRepositories(
     translations: new LocalTranslationRepository(db),
     comments: new LocalCommentRepository(db),
     glossary: new LocalGlossaryRepository(db),
-    demo: new LocalDemoRepository(db, seedOptions),
+    workspace: new LocalWorkspaceRepository(db),
   };
 }

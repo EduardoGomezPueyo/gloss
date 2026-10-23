@@ -1,5 +1,5 @@
 import { summarizeProject } from '@/domain/progress';
-import { createDemoData } from './demoSeed';
+import { createFixtureData } from './workspaceFixture';
 
 const NOW = new Date('2026-10-19T12:00:00.000Z');
 
@@ -8,11 +8,11 @@ function sequentialIds() {
   return () => `id-${++n}`;
 }
 
-describe('createDemoData', () => {
-  const data = createDemoData({ now: NOW, randomId: sequentialIds() });
+describe('createFixtureData', () => {
+  const data = createFixtureData({ now: NOW, randomId: sequentialIds() });
 
   it('is deterministic for the same clock and id generator', () => {
-    expect(createDemoData({ now: NOW, randomId: sequentialIds() })).toEqual(data);
+    expect(createFixtureData({ now: NOW, randomId: sequentialIds() })).toEqual(data);
   });
 
   it('only references entities that exist', () => {
