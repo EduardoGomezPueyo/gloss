@@ -2,7 +2,6 @@ import { Checkbox, DropdownMenu } from 'radix-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentUser } from '@/app/currentUser/useCurrentUser';
-import SearchIcon from '@/assets/icons/search.svg?react';
 import { useMembers, useRemoveMembers, useSetMemberCategory } from '@/data/hooks';
 import {
   canManageMembers,
@@ -22,7 +21,8 @@ import { InviteDialog } from './InviteDialog';
 
 const CATEGORIES: MemberCategory[] = ['manager', 'worker'];
 const ALL = 'all';
-const rowGrid = 'grid grid-cols-[2rem_minmax(0,1fr)_10rem_8rem_7rem] items-center gap-4';
+/** Figma: checkbox, member, 118px category, 92px status, 70px actions, 16px apart. */
+const rowGrid = 'grid grid-cols-[1rem_minmax(0,1fr)_118px_92px_auto] items-center gap-4';
 
 /**
  * Settings > Members (Figma 370:11028, SPEC 5.6), local only. No sub-teams (D10).
@@ -75,11 +75,13 @@ export function MembersPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-baseline gap-3">
-          <h2 className="font-heading text-xl font-bold text-text">{t('members.title')}</h2>
-          <span className="text-sm text-text-secondary">
+          <h2 className="font-heading text-lg leading-tight font-bold text-text">
+            {t('members.title')}
+          </h2>
+          <span className="text-[13px] text-text-secondary">
             {t('members.count', { count: members.length })}
           </span>
         </div>
@@ -92,8 +94,8 @@ export function MembersPage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <label className="flex min-w-60 flex-1 items-center gap-3 rounded-lg border border-border-input px-3 py-2 text-text-secondary focus-within:border-text-tertiary">
-          <SearchIcon aria-hidden className="size-4 shrink-0" />
+        {/* Figma: no search icon, on the page background (as in the section detail). */}
+        <label className="flex min-w-60 flex-1 items-center rounded-lg border border-border-strong bg-surface px-2 py-1.5 text-text-secondary focus-within:border-text-tertiary">
           <input
             type="search"
             value={query}
@@ -111,7 +113,7 @@ export function MembersPage() {
             { value: ALL, label: t('members.allCategories') },
             ...CATEGORIES.map((c) => ({ value: c, label: t(`memberCategory.${c}`) })),
           ]}
-          className="h-10 w-auto min-w-44 shrink-0 rounded-lg border border-border-input px-4 text-sm whitespace-nowrap text-text-secondary outline-none focus-visible:border-text-tertiary"
+          className="h-[34px] w-[142px] shrink-0 rounded-lg border border-border-strong px-3 text-[13px] whitespace-nowrap text-text-secondary outline-none focus-visible:border-text-tertiary"
         />
       </div>
 
@@ -174,7 +176,7 @@ export function MembersPage() {
         <div role="rowgroup">
           <div
             role="row"
-            className={`${rowGrid} border-b border-border-strong px-5 py-3 text-sm text-text-secondary`}
+            className={`${rowGrid} border-b border-border-strong px-4 py-[11px] text-xs leading-4 text-text-secondary`}
           >
             <div role="columnheader" className="flex">
               {manage && (
@@ -193,7 +195,7 @@ export function MembersPage() {
         </div>
         <div role="rowgroup" className="flex min-h-40 flex-col">
           {!isPending && visible.length === 0 && (
-            <p className="px-5 py-6 text-sm text-text-tertiary">{t('members.noMatches')}</p>
+            <p className="px-4 py-6 text-sm text-text-tertiary">{t('members.noMatches')}</p>
           )}
           {visible.map((member) => (
             <MemberRow
@@ -211,7 +213,7 @@ export function MembersPage() {
             />
           ))}
         </div>
-        <div className="mt-auto flex flex-wrap justify-between gap-3 border-t border-border-strong px-5 py-4 text-sm text-text-secondary">
+        <div className="mt-auto flex flex-wrap justify-between gap-3 border-t border-border-strong px-4 py-4 text-xs text-text-secondary">
           <span>
             {visible.length === members.length
               ? t('members.showingAll', { count: members.length })
@@ -227,7 +229,7 @@ export function MembersPage() {
         </div>
       </div>
 
-      <dl className="grid gap-x-12 gap-y-3 text-sm md:grid-cols-2">
+      <dl className="grid gap-x-12 gap-y-3 text-xs md:grid-cols-2">
         <div className="flex flex-col gap-1">
           <dt className="font-semibold text-text">{t('memberCategory.manager')}</dt>
           <dd className="text-text-secondary">{t('members.legend.manager')}</dd>
@@ -237,7 +239,7 @@ export function MembersPage() {
           <dd className="text-text-secondary">{t('members.legend.worker')}</dd>
         </div>
       </dl>
-      <p className="-mt-2 text-sm text-text-secondary">{t('members.legend.removal')}</p>
+      <p className="-mt-1 text-xs text-text-secondary">{t('members.legend.removal')}</p>
 
       <InviteDialog open={inviting} onOpenChange={setInviting} members={members} />
     </div>
@@ -258,10 +260,10 @@ function SelectBox({
       checked={checked}
       onCheckedChange={(value) => onChange(value === true)}
       aria-label={label}
-      className="inline-flex size-5 shrink-0 items-center justify-center rounded-[4px] border border-text-tertiary outline-none focus-visible:ring-2 focus-visible:ring-border-strong data-[state=checked]:border-accent data-[state=checked]:bg-accent"
+      className="inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-text-tertiary outline-none focus-visible:ring-2 focus-visible:ring-border-strong data-[state=checked]:border-accent data-[state=checked]:bg-accent"
     >
       <Checkbox.Indicator>
-        <CheckIcon className="size-3.5 text-accent-foreground" />
+        <CheckIcon className="size-3 text-accent-foreground" />
       </Checkbox.Indicator>
     </Checkbox.Root>
   );
@@ -286,7 +288,7 @@ function MemberRow({
   return (
     <div
       role="row"
-      className={`${rowGrid} border-b border-border-strong px-5 py-4 last:border-b-0`}
+      className={`${rowGrid} border-b border-border-strong px-4 py-3 last:border-b-0`}
     >
       <div role="cell" className="flex">
         {manage && (
@@ -298,10 +300,12 @@ function MemberRow({
         )}
       </div>
       <div role="cell" className="flex min-w-0 items-center gap-3">
-        <Avatar member={member} size="lg" />
-        <span className="flex min-w-0 flex-col">
-          <span className="truncate text-base text-text">{member.name}</span>
-          <span className="truncate text-sm text-text-secondary">{member.email}</span>
+        <Avatar member={member} size="row" />
+        <span className="flex min-w-0 flex-col gap-[3px]">
+          <span className="truncate text-[13px] leading-4 text-text">{member.name}</span>
+          <span className="truncate text-xs leading-[15px] text-text-secondary">
+            {member.email}
+          </span>
         </span>
       </div>
       <div role="cell">
@@ -311,13 +315,13 @@ function MemberRow({
             onChange={(value) => onCategoryChange(value as MemberCategory)}
             label={t('members.categoryOf', { name: member.name })}
             options={CATEGORIES.map((c) => ({ value: c, label: t(`memberCategory.${c}`) }))}
-            className="h-9 w-36 rounded-lg bg-fill-subtle px-3 text-sm text-text outline-none focus-visible:ring-2 focus-visible:ring-border-strong"
+            className="h-7 w-full rounded-md bg-fill-subtle px-3 text-[13px] text-text outline-none focus-visible:ring-2 focus-visible:ring-border-strong"
           />
         ) : (
-          <span className="text-sm text-text">{t(`memberCategory.${member.category}`)}</span>
+          <span className="text-[13px] text-text">{t(`memberCategory.${member.category}`)}</span>
         )}
       </div>
-      <div role="cell" className="flex items-center gap-2 text-sm text-text">
+      <div role="cell" className="flex items-center gap-1.5 text-[13px] text-text-secondary">
         <StatusIcon status={member.status === 'active' ? 'completed' : 'under-review'} decorative />
         {t(`members.status.${member.status}`)}
       </div>
@@ -327,9 +331,9 @@ function MemberRow({
             type="button"
             onClick={onRemove}
             aria-label={t('members.removeMember', { name: member.name })}
-            className={textButton}
+            className="inline-flex items-center gap-1 rounded-md text-[13px] whitespace-nowrap text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
           >
-            <UserMinusIcon />
+            <UserMinusIcon className="size-3.5" />
             {t('members.remove')}
           </button>
         )}

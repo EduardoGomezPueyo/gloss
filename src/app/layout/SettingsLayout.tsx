@@ -4,7 +4,6 @@ import ArrowLeftIcon from '@/assets/icons/arrow-left.svg?react';
 import GeneralIcon from '@/assets/icons/nav-settings.svg?react';
 import MembersIcon from '@/assets/icons/settings-members.svg?react';
 import WorkspaceProjectsIcon from '@/assets/icons/settings-workspace-projects.svg?react';
-import { PageTitle } from '@/ui/PageTitle';
 import { ContentPanel } from './ContentPanel';
 import { SidebarNavItem } from './SidebarNavItem';
 import { UserMenu } from './UserMenu';
@@ -16,7 +15,10 @@ export function SettingsLayout() {
   return (
     <div className="flex h-full p-4">
       <ContentPanel>
-        <PageTitle>{t('settings.title')}</PageTitle>
+        {/* Figma: 22px here (24px on the list pages), with 16px of air below. */}
+        <h1 className="pb-4 font-heading text-[22px] leading-[26px] font-bold text-text">
+          {t('settings.title')}
+        </h1>
 
         <div className="flex min-h-0 flex-1 gap-6">
           <div className="flex w-[200px] shrink-0 flex-col gap-3 border-r border-surface">

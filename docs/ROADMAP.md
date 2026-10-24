@@ -40,12 +40,12 @@ Vertical phases; the app stays runnable after each one.
 - [x] **6. Glossary:** overview, category filter, list view (designed together), detail, editing with CodeMirror, history and the Compare versions page. Tests for versions and diff.
 - [x] **7. Settings > Members** (local, no sub-teams): search, filter by category, change category, Remove and Invite (*Invited* status).
 - [x] **8. Export to code:** JSON and CSV. *Before starting: propose the JSON schema and where the CSV goes (open 5).* Tests for the exporters.
-- [ ] **9. Polish and demo** (order agreed 2026-10-23):
+- [x] **9. Polish and demo** (order agreed 2026-10-23):
   - [x] A. Demo outside the repository, app starts empty (D34).
   - [x] B. License AGPL-3.0 (D35).
   - [x] C. Code-splitting: every page is lazy; React, data, UI and CodeMirror in separate chunks (first load ~236 kB gzip, was 277 kB in one file).
   - [x] E. Vercel deployment at https://translator-tool-six.vercel.app (redeploys on every push to `main`; `VITE_DEMO_URL` set in the project settings).
-  - [ ] D. Screen-by-screen fidelity review against Figma, with the author.
+  - [x] D. Screen-by-screen fidelity review against Figma, with the author (2026-10-24): project list, project and section detail, Add content, glossary (5 frames) and Settings > Members. Also added on request: editing project details from the Overview (D38) and a two-column "Add new project" modal (D39). **Exception:** the Translator view is skipped while the author redesigns it (see the pending table in `DECISIONS.md`).
 - [ ] **10. Pages without a design** (D37), each designed in code from a short spec the author approves, and added to the demo data:
   - [ ] Comments
   - [ ] Assigned to me

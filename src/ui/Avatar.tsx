@@ -25,6 +25,8 @@ function initials(name: string): string {
 const SIZES = {
   sm: 'size-4 text-[7px]',
   md: 'size-6 text-[10px]',
+  /** Member rows of Settings > Members (Figma: 30px). */
+  row: 'size-[30px] text-[11px]',
   lg: 'size-9 text-xs',
 };
 
