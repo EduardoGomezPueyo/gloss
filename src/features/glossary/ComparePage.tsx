@@ -4,7 +4,7 @@ import { useCurrentUser } from '@/app/currentUser/useCurrentUser';
 import { useGlossaryEntry, useGlossaryVersions, useRestoreVersion } from '@/data/hooks';
 import type { GlossaryContent } from '@/domain/types';
 import { diffParagraphs, diffTags, diffText, type DiffSegment } from '@/domain/versionDiff';
-import { primaryButton, textButton } from '@/ui/buttons';
+import { largeTextButton, pageButton } from '@/ui/buttons';
 import { Tag } from '@/ui/Tag';
 import { PageMessage } from '../project-detail/shared';
 import { glossaryPaths, useVersionDate } from './format';
@@ -43,20 +43,23 @@ export function ComparePage() {
     );
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-heading text-[28px] leading-tight font-bold text-text">
+        <h1 className="font-heading text-2xl leading-7 font-bold text-text">
           {t('glossary.compare.title')}
         </h1>
-        <div className="flex items-center gap-4">
-          <Link to={glossaryPaths.edit(projectId, entryId)} className={`${textButton} text-lg`}>
+        <div className="flex items-center gap-1">
+          <Link
+            to={glossaryPaths.edit(projectId, entryId)}
+            className={`${largeTextButton} px-3 py-1`}
+          >
             {t('glossary.compare.goBack')}
           </Link>
           <button
             type="button"
             onClick={onRestore}
             disabled={restore.isPending}
-            className={primaryButton}
+            className={pageButton}
           >
             {restore.isPending ? t('glossary.compare.restoring') : t('glossary.compare.restore')}
           </button>
@@ -99,12 +102,14 @@ function Column({
     : content.tags.map((text) => ({ kind: 'same' as const, text }));
 
   return (
-    <section aria-label={label} className="flex min-w-0 flex-col gap-6">
-      <p className="flex items-center gap-3 text-base font-semibold text-text">
-        <span aria-hidden className={`size-2.5 rounded-full ${dot}`} />
+    <section aria-label={label} className="flex min-w-0 flex-col gap-6 px-5">
+      <p className="flex items-center gap-3 text-sm text-text">
+        <span aria-hidden className={`size-2 rounded-full ${dot}`} />
         {label}
       </p>
-      <h2 className="font-heading text-2xl font-bold text-text">
+      {/* Shown as Markdown source, like the editor: "# Title". */}
+      <h2 className="font-heading text-xl leading-7 font-bold text-text">
+        <span aria-hidden># </span>
         <Segments segments={older ? diffText(older.title, content.title) : plain(content.title)} />
       </h2>
       <p className="text-sm text-text-secondary">
@@ -144,11 +149,15 @@ function Column({
           ))}
         </div>
       )}
-      <div className="flex flex-col gap-4 text-base leading-relaxed whitespace-pre-wrap text-text-secondary">
+      <div className="flex flex-col text-sm leading-[22px] whitespace-pre-wrap text-text-tertiary">
         {paragraphs.map((paragraph, index) => (
           <p
             key={index}
-            className={paragraph.changed ? '-ml-4 border-l-2 border-diff-added pl-3.5' : ''}
+            className={`${
+              isHeading(paragraph.segments)
+                ? 'mt-6 mb-1 font-heading text-xl leading-7 font-bold text-text first:mt-0'
+                : ''
+            } ${paragraph.changed ? '-ml-3 border-l-2 border-diff-added pl-2.5' : ''}`}
           >
             <Segments segments={paragraph.segments} />
           </p>
@@ -159,6 +168,9 @@ function Column({
 }
 
 const plain = (text: string): DiffSegment[] => [{ kind: 'same', text }];
+
+/** Markdown headings ("## History") are styled as headings, keeping their marks. */
+const isHeading = (segments: DiffSegment[]) => /^#{1,6}\s/.test(segments[0]?.text ?? '');
 
 function segmentClass(kind: DiffSegment['kind']) {
   if (kind === 'added') return 'bg-diff-added text-text';

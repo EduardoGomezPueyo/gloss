@@ -6,6 +6,7 @@ import { useMembers, useProjectSummaries } from '@/data/hooks';
 import { EMPTY_FILTERS, filterProjects, hasActiveFilters } from '@/domain/filters';
 import { canSeeProject } from '@/domain/members';
 import { DEFAULT_PROJECT_SORT, sortProjects } from '@/domain/sorting';
+import { pageButton } from '@/ui/buttons';
 import { PageTitle } from '@/ui/PageTitle';
 import { CreateProjectDialog } from './createProject/CreateProjectDialog';
 import { FilterChips } from './FilterChips';
@@ -35,11 +36,7 @@ export function ProjectsPage() {
     <>
       <header className="flex items-center justify-between gap-4">
         <PageTitle>{t('projects.title')}</PageTitle>
-        <button
-          type="button"
-          onClick={() => setCreating(true)}
-          className="rounded-xl bg-fill-subtle px-3 py-1 text-base text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
-        >
+        <button type="button" onClick={() => setCreating(true)} className={pageButton}>
           {t('projects.addProject')}
         </button>
       </header>

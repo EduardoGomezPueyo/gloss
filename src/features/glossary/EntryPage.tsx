@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router';
 import { useGlossary, useGlossaryEntry, useRecordView } from '@/data/hooks';
-import { textButton } from '@/ui/buttons';
+import { largeTextButton } from '@/ui/buttons';
 import { Tag } from '@/ui/Tag';
 import { PageMessage } from '../project-detail/shared';
 import { glossaryPaths } from './format';
@@ -35,16 +35,16 @@ export function EntryPage() {
   const { title, tags, imageFileIds, body } = entry.data;
 
   return (
-    <article className="flex flex-col gap-8">
+    <article className="flex flex-col gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Link
             to={glossaryPaths.overview(projectId)}
             aria-label={t('glossary.entry.back')}
             title={t('glossary.entry.back')}
-            className="inline-flex size-9 items-center justify-center rounded-lg text-text outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
+            className="inline-flex size-6 items-center justify-center rounded-md text-text outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
           >
-            <svg aria-hidden viewBox="0 0 16 16" fill="none" className="size-5">
+            <svg aria-hidden viewBox="0 0 16 16" fill="none" className="size-6">
               <path
                 d="m10 3-5 5 5 5"
                 stroke="currentColor"
@@ -54,9 +54,12 @@ export function EntryPage() {
               />
             </svg>
           </Link>
-          <h1 className="font-heading text-[28px] leading-tight font-bold text-text">{title}</h1>
+          <h1 className="font-heading text-2xl leading-7 font-bold text-text">{title}</h1>
         </div>
-        <Link to={glossaryPaths.edit(projectId, entryId)} className={`${textButton} text-lg`}>
+        <Link
+          to={glossaryPaths.edit(projectId, entryId)}
+          className={`${largeTextButton} px-4 py-3`}
+        >
           {t('glossary.entry.edit')}
         </Link>
       </header>

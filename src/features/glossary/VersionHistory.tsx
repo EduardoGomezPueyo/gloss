@@ -27,7 +27,10 @@ export function VersionHistory({
 
   return (
     <nav aria-labelledby={`history-${entryId}`} className="flex flex-col gap-5">
-      <h2 id={`history-${entryId}`} className="font-heading text-xl font-bold text-text">
+      <h2
+        id={`history-${entryId}`}
+        className="font-heading text-base leading-7 font-semibold text-text"
+      >
         {t('glossary.history.title')}
       </h2>
       {!current ? (
@@ -39,8 +42,8 @@ export function VersionHistory({
               aria-hidden
               className="absolute top-1.5 -left-[25px] size-2.5 rounded-full bg-text"
             />
-            <p className="text-sm font-semibold text-text">{t('glossary.history.current')}</p>
-            <p className="text-sm text-text-secondary">
+            <p className="text-xs font-semibold text-text">{t('glossary.history.current')}</p>
+            <p className="text-xs text-text-tertiary">
               {formatDate(current.createdAt)} · {nameOf(current.createdBy)}
             </p>
           </li>
@@ -57,8 +60,8 @@ export function VersionHistory({
                   aria-label={t('glossary.history.compare', { date })}
                   className="flex flex-col rounded-md outline-none hover:underline focus-visible:ring-2 focus-visible:ring-border-strong"
                 >
-                  <span className="text-sm font-semibold text-text">{date}</span>
-                  <span className="text-sm text-text-secondary">{nameOf(version.createdBy)}</span>
+                  <span className="text-xs font-semibold text-text">{date}</span>
+                  <span className="text-xs text-text-tertiary">{nameOf(version.createdBy)}</span>
                 </Link>
               </li>
             );

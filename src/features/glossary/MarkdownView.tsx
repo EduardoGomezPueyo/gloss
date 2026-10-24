@@ -74,7 +74,7 @@ export function MarkdownView({
   );
 
   return (
-    <div className="flex flex-col gap-4 text-base leading-relaxed text-text-secondary [&_blockquote]:border-l-2 [&_blockquote]:border-border-strong [&_blockquote]:pl-4 [&_code]:rounded [&_code]:bg-fill-subtle [&_code]:px-1 [&_h1]:font-heading [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:text-text [&_h2]:mt-2 [&_h2]:font-heading [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-text [&_h3]:font-heading [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-text [&_li]:ml-5 [&_ol]:list-decimal [&_section.footnotes]:mt-4 [&_section.footnotes]:border-t [&_section.footnotes]:border-border [&_section.footnotes]:pt-4 [&_section.footnotes]:text-sm [&_strong]:text-text [&_sup]:text-xs [&_ul]:list-disc">
+    <div className="text-sm leading-[22px] text-text-tertiary [&_:is(h1,h2,h3)+*]:mt-1 [&_blockquote]:border-l-2 [&_blockquote]:border-border-strong [&_blockquote]:pl-4 [&_code]:rounded [&_code]:bg-fill-subtle [&_code]:px-1 [&_h1]:font-heading [&_h1]:text-xl [&_h1]:leading-7 [&_h1]:font-bold [&_h1]:text-text [&_h2]:font-heading [&_h2]:text-xl [&_h2]:leading-7 [&_h2]:font-bold [&_h2]:text-text [&_h3]:font-heading [&_h3]:text-base [&_h3]:leading-7 [&_h3]:font-bold [&_h3]:text-text [&_li]:ml-5 [&_ol]:list-decimal [&_section.footnotes]:mt-4 [&_section.footnotes]:border-t [&_section.footnotes]:border-border [&_section.footnotes]:pt-4 [&_section.footnotes]:text-sm [&_strong]:text-text [&_sup]:text-xs [&_ul]:list-disc [&>*+*]:mt-[22px]">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         remarkRehypeOptions={{

@@ -5,7 +5,7 @@ import SearchIcon from '@/assets/icons/search.svg?react';
 import { useGlossary, useProjectDetail } from '@/data/hooks';
 import { mostViewed, searchEntries, sortByTitle } from '@/domain/glossary';
 import type { GlossaryEntry } from '@/domain/types';
-import { neutralButton, textButton } from '@/ui/buttons';
+import { largeTextButton, pageButton } from '@/ui/buttons';
 import { PageMessage } from '../project-detail/shared';
 import { CreateCategoryDialog } from './CreateCategoryDialog';
 import { EntryCard } from './EntryCard';
@@ -58,51 +58,58 @@ export function GlossaryPage() {
     <>
       <header className="flex items-center gap-4">
         <BookIcon />
-        <h1 className="font-heading text-[28px] leading-tight font-bold text-text">
+        <h1 className="font-heading text-2xl leading-7 font-bold text-text">
           {t('glossary.title', { project: detail.data.project.name })}
         </h1>
       </header>
 
-      <label className="flex items-center gap-3 rounded-lg border border-border-input px-4 py-3 text-text-secondary focus-within:border-text-tertiary">
-        <SearchIcon aria-hidden className="size-4 shrink-0" />
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => update({ q: e.target.value })}
-          placeholder={t('glossary.searchPlaceholder')}
-          aria-label={t('glossary.searchLabel')}
-          className="w-full bg-transparent text-base text-text outline-none placeholder:text-text-secondary"
-        />
-      </label>
+      {/* Search and category chips sit 8px apart in the design. */}
+      <div className="flex flex-col gap-2">
+        <label className="flex items-center gap-3 rounded-lg border border-border-input px-4 py-3 text-text-secondary focus-within:border-text-tertiary">
+          <SearchIcon aria-hidden className="size-4 shrink-0" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => update({ q: e.target.value })}
+            placeholder={t('glossary.searchPlaceholder')}
+            aria-label={t('glossary.searchLabel')}
+            className="w-full bg-transparent text-base leading-[19px] text-text outline-none placeholder:text-text-secondary"
+          />
+        </label>
 
-      <div
-        role="group"
-        aria-label={t('glossary.categories')}
-        className="flex flex-wrap items-center gap-3"
-      >
-        {categories.map((c) => {
-          const selected = c.id === category?.id;
-          return (
+        <div
+          role="group"
+          aria-label={t('glossary.categories')}
+          className="flex flex-wrap items-center gap-2"
+        >
+          {categories.map((c) => {
+            const selected = c.id === category?.id;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => update({ category: selected ? null : c.id })}
+                className={`rounded-full border px-4 py-3 text-base leading-[19px] outline-none focus-visible:ring-2 focus-visible:ring-border-strong ${
+                  selected
+                    ? 'border-text text-text'
+                    : 'border-border-strong text-nav-unselected hover:text-text'
+                }`}
+              >
+                {c.name}
+              </button>
+            );
+          })}
+          {category && (
             <button
-              key={c.id}
               type="button"
-              aria-pressed={selected}
-              onClick={() => update({ category: selected ? null : c.id })}
-              className={`rounded-full border px-5 py-2.5 text-base outline-none focus-visible:ring-2 focus-visible:ring-border-strong ${
-                selected
-                  ? 'border-text text-text'
-                  : 'border-border-strong text-text-secondary hover:text-text'
-              }`}
+              onClick={() => update({ category: null })}
+              className="rounded-md px-2 text-base text-nav-unselected outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
             >
-              {c.name}
+              {t('glossary.clearFilters')}
             </button>
-          );
-        })}
-        {category && (
-          <button type="button" onClick={() => update({ category: null })} className={textButton}>
-            {t('glossary.clearFilters')}
-          </button>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -122,11 +129,15 @@ export function GlossaryPage() {
             <ListIcon />
           </ViewButton>
         </div>
-        <div className="flex items-center gap-4">
-          <button type="button" onClick={() => setCreatingCategory(true)} className={textButton}>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setCreatingCategory(true)}
+            className={`${largeTextButton} px-3 py-1`}
+          >
             {t('glossary.createCategory')}
           </button>
-          <Link to={glossaryPaths.newEntry(projectId)} className={neutralButton}>
+          <Link to={glossaryPaths.newEntry(projectId)} className={pageButton}>
             {t('glossary.addEntry')}
           </Link>
         </div>
@@ -143,22 +154,24 @@ export function GlossaryPage() {
           <CardGrid projectId={projectId} entries={sortByTitle(visible)} />
         </CategorySection>
       ) : (
-        categories.map((c) => {
-          const inCategory = entries.filter((e) => e.categoryId === c.id);
-          return (
-            <CategorySection
-              key={c.id}
-              name={c.name}
-              onViewAll={inCategory.length > 0 ? () => update({ category: c.id }) : undefined}
-            >
-              {inCategory.length === 0 ? (
-                <p className="text-sm text-text-tertiary">{t('glossary.emptyCategory')}</p>
-              ) : (
-                <CardGrid projectId={projectId} entries={mostViewed(inCategory)} />
-              )}
-            </CategorySection>
-          );
-        })
+        <div className="flex flex-col gap-10">
+          {categories.map((c) => {
+            const inCategory = entries.filter((e) => e.categoryId === c.id);
+            return (
+              <CategorySection
+                key={c.id}
+                name={c.name}
+                onViewAll={inCategory.length > 0 ? () => update({ category: c.id }) : undefined}
+              >
+                {inCategory.length === 0 ? (
+                  <p className="text-sm text-text-tertiary">{t('glossary.emptyCategory')}</p>
+                ) : (
+                  <CardGrid projectId={projectId} entries={mostViewed(inCategory)} />
+                )}
+              </CategorySection>
+            );
+          })}
+        </div>
       )}
 
       <CreateCategoryDialog
@@ -182,14 +195,19 @@ function CategorySection({
 }) {
   const { t } = useTranslation();
   return (
-    <section className="flex flex-col gap-4" aria-label={name}>
+    <section className="flex flex-col gap-2" aria-label={name}>
       {name && (
-        <div className="flex items-center gap-4">
-          <h2 className="text-2xl text-text">{name}</h2>
-          <span aria-hidden className="h-px flex-1 bg-text-tertiary/60" />
+        <div className="flex items-center gap-2.5">
+          <h2 className="text-xl leading-6 text-text">{name}</h2>
+          <span aria-hidden className="h-px flex-1 bg-text" />
           {onViewAll && (
-            <button type="button" onClick={onViewAll} className={`${textButton} text-lg`}>
-              {t('glossary.viewAll')} »
+            <button
+              type="button"
+              onClick={onViewAll}
+              className={`${largeTextButton} gap-1 leading-[19px]`}
+            >
+              {t('glossary.viewAll')}
+              <ChevronsRightIcon />
             </button>
           )}
         </div>
@@ -201,7 +219,7 @@ function CategorySection({
 
 function CardGrid({ projectId, entries }: { projectId: string; entries: GlossaryEntry[] }) {
   return (
-    <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
       {entries.map((entry) => (
         <li key={entry.id} className="flex">
           <EntryCard projectId={projectId} entry={entry} />
@@ -229,7 +247,7 @@ function ViewButton({
       title={label}
       aria-pressed={pressed}
       onClick={onClick}
-      className={`inline-flex size-9 items-center justify-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-border-strong ${
+      className={`inline-flex size-8 items-center justify-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-border-strong ${
         pressed ? 'bg-fill-subtle text-text' : 'text-text-secondary hover:text-text'
       }`}
     >
@@ -240,7 +258,7 @@ function ViewButton({
 
 function BookIcon() {
   return (
-    <svg aria-hidden viewBox="0 0 24 24" fill="none" className="size-9 text-accent-text">
+    <svg aria-hidden viewBox="0 0 24 24" fill="none" className="size-7 text-accent-text">
       <path
         d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15ZM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"
         stroke="currentColor"
@@ -248,6 +266,20 @@ function BookIcon() {
         strokeLinejoin="round"
       />
       <path d="M8 7.5h8M8 11h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ChevronsRightIcon() {
+  return (
+    <svg aria-hidden viewBox="0 0 16 16" fill="none" className="size-4">
+      <path
+        d="m4 4 4 4-4 4m4.5-8 4 4-4 4"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

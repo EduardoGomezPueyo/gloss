@@ -18,7 +18,7 @@ import { useEffect, useRef } from 'react';
  */
 
 const highlight = HighlightStyle.define([
-  { tag: tags.heading1, fontSize: '1.5rem', fontWeight: '700', color: 'var(--text)' },
+  { tag: tags.heading1, fontSize: '1.25rem', fontWeight: '700', color: 'var(--text)' },
   { tag: tags.heading2, fontSize: '1.25rem', fontWeight: '700', color: 'var(--text)' },
   { tag: [tags.heading3, tags.heading4], fontWeight: '700', color: 'var(--text)' },
   { tag: tags.strong, fontWeight: '700', color: 'var(--text)' },
@@ -29,13 +29,13 @@ const highlight = HighlightStyle.define([
 ]);
 
 const theme = EditorView.theme({
-  '&': { color: 'var(--text-secondary)', backgroundColor: 'transparent', fontSize: '1rem' },
+  '&': { color: 'var(--text-tertiary)', backgroundColor: 'transparent', fontSize: '0.875rem' },
   '&.cm-focused': { outline: 'none' },
   // The design writes Markdown in the normal text font, with the syntax visible.
   '.cm-scroller': { fontFamily: 'inherit' },
   '.cm-content': {
     fontFamily: 'inherit',
-    lineHeight: '1.7',
+    lineHeight: '22px',
     padding: '0',
     caretColor: 'var(--text)',
   },

@@ -16,8 +16,11 @@ import {
   type GlossaryError,
 } from '@/domain/glossary';
 import type { GlossaryCategory, GlossaryEntry } from '@/domain/types';
-import { primaryButton, textButton } from '@/ui/buttons';
+import { largeTextButton, pageButton } from '@/ui/buttons';
 import { Field, inputClass, SelectInput } from '@/ui/form';
+
+/** The fields the design does not show (D31) are kept compact. */
+const compactInput = inputClass.replace('h-[42px]', 'h-9').replace('text-base', 'text-sm');
 import { PageMessage } from '../project-detail/shared';
 import { GalleryEditor, TagEditor } from './EntryFields';
 import { glossaryPaths } from './format';
@@ -143,35 +146,35 @@ function EntryForm({
   };
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-8">
+    <form onSubmit={submit} noValidate className="flex flex-col gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-heading text-[28px] leading-tight font-bold text-text">
+        <h1 className="font-heading text-2xl leading-7 font-bold text-text">
           {entry
             ? t('glossary.edit.editTitle', { title: entry.title })
             : t('glossary.edit.newTitle')}
         </h1>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1">
           {save.isError && (
             <p role="alert" className="text-sm text-danger">
               {t('glossary.edit.saveError')}
             </p>
           )}
-          <button type="button" onClick={discard} className={`${textButton} text-lg`}>
+          <button type="button" onClick={discard} className={`${largeTextButton} px-3 py-1`}>
             {t('glossary.edit.discard')}
           </button>
-          <button type="submit" disabled={save.isPending} className={primaryButton}>
+          <button type="submit" disabled={save.isPending} className={pageButton}>
             {save.isPending ? t('glossary.edit.saving') : t('glossary.edit.save')}
           </button>
         </div>
       </header>
 
-      <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_254px]">
         <div className="flex min-w-0 flex-col gap-6">
           <div className="flex flex-col gap-2">
             <label htmlFor={ids.title} className="sr-only">
               {t('glossary.edit.title')}
             </label>
-            <div className="flex items-baseline gap-2 font-heading text-2xl font-bold text-text">
+            <div className="flex items-baseline gap-2 font-heading text-xl leading-7 font-bold text-text">
               <span aria-hidden className="text-text-tertiary">
                 #
               </span>
@@ -213,7 +216,7 @@ function EntryForm({
                 }
                 aria-describedby={ids.descriptionError}
                 autoComplete="off"
-                className={inputClass}
+                className={compactInput}
               />
             </Field>
             <Field
@@ -234,7 +237,7 @@ function EntryForm({
           </div>
 
           <div className="flex flex-col gap-3">
-            <span id={ids.tags} className="text-sm text-text">
+            <span id={ids.tags} className="text-[13px] text-text">
               {t('glossary.edit.tags')}
             </span>
             <TagEditor
@@ -245,7 +248,7 @@ function EntryForm({
           </div>
 
           <div className="flex flex-col gap-3">
-            <span id={ids.images} className="text-sm text-text">
+            <span id={ids.images} className="text-[13px] text-text">
               {t('glossary.edit.images')}
             </span>
             <GalleryEditor
@@ -256,10 +259,10 @@ function EntryForm({
           </div>
 
           <div className="flex flex-col gap-3">
-            <span id={ids.body} className="text-sm text-text">
+            <span id={ids.body} className="text-[13px] text-text">
               {t('glossary.edit.body')}
             </span>
-            <p id={ids.bodyHelp} className="-mt-1 text-sm text-text-secondary">
+            <p id={ids.bodyHelp} className="-mt-1 text-[13px] text-text-secondary">
               {t('glossary.edit.bodyHelp')}
             </p>
             <MarkdownEditor
@@ -274,7 +277,7 @@ function EntryForm({
         </div>
 
         {entry && (
-          <aside className="xl:border-l xl:border-border xl:pl-8">
+          <aside>
             <VersionHistory
               projectId={projectId}
               entryId={entry.id}

@@ -9,6 +9,9 @@ const base =
 /** "Add section", "Add language", "Export to code", "Move to section" (Figma: 36px tall, 14px text). */
 export const neutralButton = `${base} bg-fill-subtle px-3 py-2 text-sm text-text-secondary hover:text-text`;
 
+/** Page header actions "Add project", "Add entry" (Figma: 32px tall, 16px text). */
+export const pageButton = `${base} bg-fill-subtle px-3 py-1 text-base text-text-secondary hover:text-text`;
+
 /** "+ Add", "Move N items". */
 export const accentButton = `${base} bg-accent px-3 py-2 text-sm font-semibold text-accent-foreground hover:opacity-90`;
 
@@ -20,3 +23,6 @@ export const secondaryButton = `${base} bg-fill-subtle px-5 py-2.5 text-base tex
 
 /** Text-only action ("Clear selection", "Cancel" in popovers). */
 export const textButton = `${base} rounded-md text-sm text-text-secondary hover:text-text`;
+
+/** Larger text-only action ("Create new category", "View all" in the glossary). */
+export const largeTextButton = `${base} rounded-md text-base text-text-secondary hover:text-text`;

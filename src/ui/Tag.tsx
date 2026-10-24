@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 export function Tag({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border border-tag-border bg-tag-bg px-3 py-1.5 font-heading text-xs leading-none font-semibold whitespace-nowrap text-text ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border border-tag-border bg-tag-bg px-3 py-[5px] font-heading text-xs leading-4 font-semibold whitespace-nowrap text-text ${className}`}
     >
       {children}
     </span>
