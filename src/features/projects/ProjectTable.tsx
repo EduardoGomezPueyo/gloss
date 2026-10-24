@@ -65,16 +65,17 @@ function HeaderCell({
           type="button"
           title={t('projects.sortBy', { column: label })}
           onClick={() => onSortChange(nextSort(sort, column.sortKey!))}
-          className="group inline-flex items-center gap-1 rounded-sm text-xs text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
+          className="group relative inline-flex items-center rounded-sm text-xs text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
         >
           {label}
-          {/* Spec 5.1: the arrow appears on hover; the active column keeps it once changed. */}
+          {/* Spec 5.1: the arrow appears on hover; the active column keeps it once changed.
+              It sits outside the label's box so centred labels stay over their column. */}
           <span
-            className={
+            className={`absolute left-full ml-1 ${
               isSorted && (sort.key !== 'name' || sort.direction === 'desc')
                 ? 'opacity-100'
                 : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'
-            }
+            }`}
           >
             <SortArrow direction={isSorted ? sort.direction : 'asc'} />
           </span>
@@ -99,18 +100,18 @@ function ProjectRow({
   return (
     <div
       role="row"
-      className={`${rowGrid} relative rounded-lg p-3 transition-colors hover:bg-row-hover has-[a:focus-visible]:bg-row-hover`}
+      className={`${rowGrid} group relative rounded-lg p-3 transition-colors hover:bg-row-hover has-[a:focus-visible]:bg-row-hover`}
     >
       <div role="cell" className="min-w-0">
         {/* The link stretches over the whole row: clicking anywhere opens the project (SPEC 5.1). */}
         <Link
           to={`/projects/${project.id}`}
-          className="block truncate text-base text-text outline-none after:absolute after:inset-0 after:rounded-lg"
+          className="block truncate text-base text-text-secondary outline-none group-hover:text-text after:absolute after:inset-0 after:rounded-lg focus-visible:text-text"
         >
           {project.name}
         </Link>
       </div>
-      <div role="cell" className="flex flex-wrap justify-end gap-3">
+      <div role="cell" className="flex flex-wrap justify-end gap-2">
         {project.platforms.map((platform) => (
           <PlatformChip key={platform} platform={platform} />
         ))}
@@ -148,7 +149,7 @@ export function ProjectTable({
   return (
     <div role="table" aria-label={t('projects.title')} className="flex flex-col gap-2">
       <div role="rowgroup">
-        <div role="row" className={`${rowGrid} px-3 pb-2`}>
+        <div role="row" className={`${rowGrid} p-3`}>
           {COLUMNS.map((column) => (
             <HeaderCell key={column.key} column={column} sort={sort} onSortChange={onSortChange} />
           ))}

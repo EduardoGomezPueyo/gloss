@@ -38,15 +38,15 @@ export function ProjectsPage() {
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="rounded-xl bg-fill-subtle px-3 py-2 text-base text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
+          className="rounded-xl bg-fill-subtle px-3 py-1 text-base text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
         >
           {t('projects.addProject')}
         </button>
       </header>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <ProjectFilterMenu filters={filters} members={members} onChange={setFilters} />
-        <label className="flex flex-1 items-center gap-3 rounded-lg border border-border-input px-3 py-1.5 text-text-secondary focus-within:border-text-tertiary">
+        <label className="flex flex-1 items-center gap-3 rounded-lg border border-border-input px-3 py-[5px] text-text-secondary focus-within:border-text-tertiary">
           <SearchIcon aria-hidden className="size-4 shrink-0" />
           <input
             type="search"
