@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SourceTextPatch } from '@/domain/images';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
+import type { ProjectDetailsPatch } from '@/domain/projectDetails';
 import type { SectionInput } from '@/domain/sections';
 import type { InviteRow } from '@/domain/members';
 import type { GlossaryContent, Id, LanguageCode, MemberCategory } from '@/domain/types';
@@ -50,6 +51,16 @@ export function useAddLanguage() {
   return useMutation({
     mutationFn: (vars: { projectId: Id; language: LanguageCode; by: Id | null }) =>
       projects.addLanguage(vars.projectId, vars.language, vars.by),
+    onSuccess,
+  });
+}
+
+export function useUpdateProjectDetails() {
+  const { projects } = useRepositories();
+  const onSuccess = useInvalidateProjects();
+  return useMutation({
+    mutationFn: (vars: { projectId: Id; patch: ProjectDetailsPatch; by: Id | null }) =>
+      projects.updateDetails(vars.projectId, vars.patch, vars.by),
     onSuccess,
   });
 }

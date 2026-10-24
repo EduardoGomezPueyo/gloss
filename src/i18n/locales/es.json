@@ -171,7 +171,19 @@
     "language": "Idioma",
     "add": "Añadir",
     "allLanguagesAdded": "Todos los idiomas disponibles ya están en el proyecto.",
-    "addLanguageError": "No se pudo añadir el idioma. Inténtalo de nuevo."
+    "addLanguageError": "No se pudo añadir el idioma. Inténtalo de nuevo.",
+    "edit": {
+      "platforms": "Cambiar plataformas",
+      "managers": "Cambiar managers",
+      "members": "Cambiar miembros",
+      "releaseDate": "Cambiar fecha de lanzamiento",
+      "priority": "Cambiar prioridad",
+      "releaseDateTitle": "Fecha de lanzamiento",
+      "quarter": "Trimestre",
+      "year": "Año",
+      "lastManager": "Un proyecto necesita al menos un manager.",
+      "saveError": "No se pudo guardar el cambio. Inténtalo de nuevo."
+    }
   },
   "sectionDetail": {
     "breadcrumb": "Ruta de navegación",

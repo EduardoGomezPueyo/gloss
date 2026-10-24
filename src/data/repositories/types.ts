@@ -14,6 +14,7 @@ import type { InviteRow } from '@/domain/members';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import type { ProjectData, ProjectDetail, ProjectSummary } from '@/domain/progress';
+import type { ProjectDetailsPatch } from '@/domain/projectDetails';
 import type { SectionInput } from '@/domain/sections';
 import type { WorkspaceData, WorkspaceFile } from '@/domain/workspace';
 import type {
@@ -60,6 +61,8 @@ export interface ProjectRepository {
   create(input: NewProjectInput, by: Id | null): Promise<Project>;
   /** Adds a target language (not the source, not already added); it starts not started. */
   addLanguage(projectId: Id, language: LanguageCode, by: Id | null): Promise<Project>;
+  /** Changes details from the Overview; rejects a patch that breaks checkProjectDetails. */
+  updateDetails(projectId: Id, patch: ProjectDetailsPatch, by: Id | null): Promise<Project>;
 }
 
 export interface SectionRepository {

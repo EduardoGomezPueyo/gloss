@@ -164,6 +164,25 @@ describe('local repositories: sections, items and languages', () => {
     await expect(repos.projects.addLanguage(detail.project.id, 'ko', 'm1')).rejects.toThrow();
     await expect(repos.projects.addLanguage(detail.project.id, 'en', 'm1')).rejects.toThrow();
   });
+
+  it('updates project details and rejects a project without managers', async () => {
+    const { repos, detail } = await alpha();
+    const id = detail.project.id;
+    const project = await repos.projects.updateDetails(
+      id,
+      { priority: 'low', releaseDate: 'Q1 2027', platforms: ['pc'] },
+      'm1',
+    );
+    expect(project).toMatchObject({ priority: 'low', releaseDate: 'Q1 2027', platforms: ['pc'] });
+    expect(project.updatedBy).toBe('m1');
+    expect(project.code).toBe(detail.project.code);
+
+    await expect(repos.projects.updateDetails(id, { managerIds: [] }, 'm1')).rejects.toThrow();
+    const [manager] = detail.project.managerIds;
+    await expect(
+      repos.projects.updateDetails(id, { memberIds: [manager!] }, 'm1'),
+    ).rejects.toThrow();
+  });
 });
 
 describe('local repositories: content and OCR', () => {

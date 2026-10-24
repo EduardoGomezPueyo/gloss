@@ -195,6 +195,14 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Decision:** Notifications, Assigned to me, Comments, Settings > General and Settings > Workspace projects will be built (ROADMAP phase 10), after the fidelity review so they reuse the polished components.
 - **How:** there are no Figma frames, so each page is designed in code: a short spec (content, actions, data) is approved by the author first, then built with the existing components and tokens, and recorded here. Each page ends by adding its data to the demo. Until its turn, an entry stays disabled as in D11.
 
+### D38. Editing project details from the Overview (2026-10-24) — *requested by the author, not in the design*
+- **Decision:** on the project detail, clicking **platforms, managers, members, release date or the priority pill** opens a picker; each change saves at once (no Save button). Platforms, managers and members use checkbox menus like the "Add new project" modal, priority a radio menu, and the release date a popover with *Quarter* (*Not set*, Q1–Q4) and *Year* (last year to ten years ahead). This resolves SPEC minor open decision "Release Date": it is a quarter, stored as "Q3 2026"; *Not set* clears it.
+- **Rules:** only active managers can edit (as D32); workers see the values read-only. A project keeps at least one manager (the last one cannot be unchecked) and nobody is both manager and member (D23). The name, project ID and original language are not editable here; target languages keep *Add language* (D27).
+- **Data:** `ProjectRepository.updateDetails` with the rules in `domain/projectDetails.ts`.
+
+### D39. Two-column "Add new project" modal (2026-10-24) — *requested by the author, deviates from Figma*
+- **Decision:** the modal is 920px wide (Figma: 540px). Name on top; platforms, original language and priority on the left; managers and team members on the right; target languages full width below. The language fields of D23 made the Figma layout too tall; this fits at 1440×900 without scrolling. Priority options use 14px text to fit the column. If it still feels cramped, the fallback is a wider single column with scrolling.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:

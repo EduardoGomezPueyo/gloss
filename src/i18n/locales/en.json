@@ -171,7 +171,19 @@
     "language": "Language",
     "add": "Add",
     "allLanguagesAdded": "Every available language is already in the project.",
-    "addLanguageError": "The language could not be added. Try again."
+    "addLanguageError": "The language could not be added. Try again.",
+    "edit": {
+      "platforms": "Change platforms",
+      "managers": "Change managers",
+      "members": "Change members",
+      "releaseDate": "Change release date",
+      "priority": "Change priority",
+      "releaseDateTitle": "Release date",
+      "quarter": "Quarter",
+      "year": "Year",
+      "lastManager": "A project needs at least one manager.",
+      "saveError": "The change could not be saved. Try again."
+    }
   },
   "sectionDetail": {
     "breadcrumb": "Breadcrumb",

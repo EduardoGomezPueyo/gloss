@@ -150,7 +150,7 @@ Two-column layout. There are two versions of the screenshot: in one, the _Sectio
 
 **Left column**
 
-- **Overview**: priority badge (_Urgent_), platforms, manager(s) and members (avatars), Project ID, Release Date, Word Count. The label says "Manager" even though there can be several.
+- **Overview**: priority badge (_Urgent_), platforms, manager(s) and members (avatars), Project ID, Release Date, Word Count. The label says "Manager" even though there can be several. Managers change the priority, platforms, managers, members and release date by clicking them (DECISIONS D38).
 - **Section Progress**: _Add section_ button. Each section is collapsible and shows its name, % completion and a circular indicator (partial; dashed if _Not started_). When expanded, it lists its content items with name, status badge and a progress bar colored by status (green Completed, orange Under Review, yellow In progress). No per-language breakdown. Clicking a section opens its detail view (5.3).
 
 **Right column**
@@ -292,7 +292,7 @@ Three-column layout.
 
 ### Open — minor
 
-- **Release Date** as a quarter ("Q3 2025"): model it as a quarter or free text.
+- ~~**Release Date** as a quarter ("Q3 2025"): model it as a quarter or free text.~~ Resolved: a quarter (DECISIONS D38).
 - **"Manager" label** in the overview with several managers: change to "Managers".
 - **Project tags** (genre, etc.) from the notes: they do not appear in any design.
 - **Naming:** "Not-started" with a hyphen in Languages Progress; "Started" in the earlier filter.

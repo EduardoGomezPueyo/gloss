@@ -42,7 +42,7 @@ export function CreateProjectDialog({
         <Dialog.Overlay className="fixed inset-0 z-30 bg-overlay" />
         <Dialog.Content
           aria-describedby={undefined}
-          className="fixed top-1/2 left-1/2 z-30 flex max-h-[calc(100dvh-2rem)] w-[540px] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl border border-border-strong bg-surface shadow-2xl outline-none"
+          className="fixed top-1/2 left-1/2 z-30 flex max-h-[calc(100dvh-2rem)] w-[920px] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl border border-border-strong bg-surface shadow-2xl outline-none"
         >
           {/* Remounted on every open, so the form always starts empty. */}
           {open && <CreateProjectForm members={members} onDone={() => onOpenChange(false)} />}
@@ -110,7 +110,7 @@ function CreateProjectForm({ members, onDone }: { members: Member[]; onDone: () 
         </Dialog.Close>
       </header>
 
-      <div className="flex min-h-0 flex-col gap-8 overflow-y-auto px-8 pt-6 pb-8">
+      <div className="flex min-h-0 flex-col gap-6 overflow-y-auto px-8 pt-6 pb-8">
         <Field
           label={t('createProject.name')}
           htmlFor={ids.name}
@@ -130,70 +130,89 @@ function CreateProjectForm({ members, onDone }: { members: Member[]; onDone: () 
           />
         </Field>
 
-        <Field label={t('createProject.platforms')} help={t('createProject.platformsHelp')}>
-          <div className="flex flex-wrap gap-3">
-            {PLATFORMS.map((platform) => (
-              <ToggleChip
-                key={platform}
-                pressed={draft.platforms.includes(platform)}
-                onToggle={() => update({ platforms: toggle(draft.platforms, platform) })}
-              >
-                <PlatformDot platform={platform} />
-                {t(`platform.${platform}`)}
-              </ToggleChip>
-            ))}
+        {/* Two columns so the form fits without scrolling (DECISIONS D39). */}
+        <div className="grid gap-x-8 gap-y-6 md:grid-cols-2">
+          <div className="flex min-w-0 flex-col gap-6">
+            <Field label={t('createProject.platforms')} help={t('createProject.platformsHelp')}>
+              <div className="flex flex-wrap gap-3">
+                {PLATFORMS.map((platform) => (
+                  <ToggleChip
+                    key={platform}
+                    pressed={draft.platforms.includes(platform)}
+                    onToggle={() => update({ platforms: toggle(draft.platforms, platform) })}
+                  >
+                    <PlatformDot platform={platform} />
+                    {t(`platform.${platform}`)}
+                  </ToggleChip>
+                ))}
+              </div>
+            </Field>
+
+            <Field
+              label={t('createProject.sourceLanguage')}
+              htmlFor={ids.source}
+              required
+              error={errorFor('sourceLanguageRequired')}
+              errorId={ids.sourceError}
+            >
+              <LanguageSelect
+                id={ids.source}
+                value={draft.sourceLanguage}
+                onChange={(sourceLanguage) =>
+                  update({
+                    sourceLanguage,
+                    targetLanguages: withoutSource(draft.targetLanguages, sourceLanguage),
+                  })
+                }
+                invalid={errors.includes('sourceLanguageRequired')}
+                describedBy={
+                  errors.includes('sourceLanguageRequired') ? ids.sourceError : undefined
+                }
+              />
+            </Field>
+
+            <div className="flex flex-col gap-3">
+              <span id={ids.priority} className="text-sm text-text">
+                {t('createProject.priority')}
+              </span>
+              <PriorityPicker
+                labelId={ids.priority}
+                value={draft.priority}
+                onChange={(priority) => update({ priority })}
+              />
+            </div>
           </div>
-        </Field>
+          <div className="flex min-w-0 flex-col gap-6">
+            <Field
+              label={t('createProject.managers')}
+              required
+              aside={t('createProject.added', { count: draft.managerIds.length })}
+              error={errorFor('managerRequired')}
+              errorId={ids.managersError}
+            >
+              <PeoplePicker
+                addLabel={t('createProject.addManagers')}
+                options={managers}
+                selected={draft.managerIds}
+                onChange={(managerIds) => update({ managerIds })}
+                invalid={errors.includes('managerRequired')}
+                describedBy={errors.includes('managerRequired') ? ids.managersError : undefined}
+              />
+            </Field>
 
-        <Field
-          label={t('createProject.managers')}
-          required
-          aside={t('createProject.added', { count: draft.managerIds.length })}
-          error={errorFor('managerRequired')}
-          errorId={ids.managersError}
-        >
-          <PeoplePicker
-            addLabel={t('createProject.addManagers')}
-            options={managers}
-            selected={draft.managerIds}
-            onChange={(managerIds) => update({ managerIds })}
-            invalid={errors.includes('managerRequired')}
-            describedBy={errors.includes('managerRequired') ? ids.managersError : undefined}
-          />
-        </Field>
-
-        <Field
-          label={t('createProject.teamMembers')}
-          aside={t('createProject.added', { count: draft.memberIds.length })}
-        >
-          <PeoplePicker
-            addLabel={t('createProject.addTeamMembers')}
-            options={workers}
-            selected={draft.memberIds}
-            onChange={(memberIds) => update({ memberIds })}
-          />
-        </Field>
-
-        <Field
-          label={t('createProject.sourceLanguage')}
-          htmlFor={ids.source}
-          required
-          error={errorFor('sourceLanguageRequired')}
-          errorId={ids.sourceError}
-        >
-          <LanguageSelect
-            id={ids.source}
-            value={draft.sourceLanguage}
-            onChange={(sourceLanguage) =>
-              update({
-                sourceLanguage,
-                targetLanguages: withoutSource(draft.targetLanguages, sourceLanguage),
-              })
-            }
-            invalid={errors.includes('sourceLanguageRequired')}
-            describedBy={errors.includes('sourceLanguageRequired') ? ids.sourceError : undefined}
-          />
-        </Field>
+            <Field
+              label={t('createProject.teamMembers')}
+              aside={t('createProject.added', { count: draft.memberIds.length })}
+            >
+              <PeoplePicker
+                addLabel={t('createProject.addTeamMembers')}
+                options={workers}
+                selected={draft.memberIds}
+                onChange={(memberIds) => update({ memberIds })}
+              />
+            </Field>
+          </div>
+        </div>
 
         <Field
           label={t('createProject.targetLanguages')}
@@ -212,17 +231,6 @@ function CreateProjectForm({ members, onDone }: { members: Member[]; onDone: () 
             ))}
           </div>
         </Field>
-
-        <div className="flex flex-col gap-3">
-          <span id={ids.priority} className="text-sm text-text">
-            {t('createProject.priority')}
-          </span>
-          <PriorityPicker
-            labelId={ids.priority}
-            value={draft.priority}
-            onChange={(priority) => update({ priority })}
-          />
-        </div>
       </div>
 
       <footer className="flex items-center justify-between gap-4 border-t border-border px-8 py-6">

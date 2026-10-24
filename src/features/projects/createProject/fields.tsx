@@ -141,13 +141,13 @@ export function PriorityPicker({
       value={value}
       onValueChange={(v) => onChange(v as Priority)}
       orientation="horizontal"
-      className="grid grid-cols-5 gap-2.5"
+      className="grid grid-cols-5 gap-2"
     >
       {[...PRIORITIES].reverse().map((priority) => (
         <RadioGroup.Item
           key={priority}
           value={priority}
-          className="inline-flex h-[54px] items-center justify-center gap-2 rounded-lg border border-border-input text-base text-text outline-none hover:border-text-tertiary focus-visible:ring-2 focus-visible:ring-border-strong data-[state=checked]:border-text-secondary data-[state=checked]:bg-fill-subtle"
+          className="inline-flex h-11 items-center justify-center gap-1.5 rounded-lg border border-border-input px-1 text-sm text-text outline-none hover:border-text-tertiary focus-visible:ring-2 focus-visible:ring-border-strong data-[state=checked]:border-text-secondary data-[state=checked]:bg-fill-subtle"
         >
           <PriorityIcon priority={priority} decorative className="size-4" />
           {t(`priority.${priority}`)}

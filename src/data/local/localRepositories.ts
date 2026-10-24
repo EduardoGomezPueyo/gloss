@@ -24,6 +24,7 @@ import { createWorkspaceOwner, type WorkspaceData, type WorkspaceFile } from '@/
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import { generateProjectCode } from '@/domain/projectCode';
+import { checkProjectDetails, type ProjectDetailsPatch } from '@/domain/projectDetails';
 import { nextOrder, type SectionInput } from '@/domain/sections';
 import {
   approve,
@@ -223,6 +224,18 @@ class LocalProjectRepository implements ProjectRepository {
         ...touched(by),
         targetLanguages: [...project.targetLanguages, language],
       };
+      await db.projects.put(updated);
+      return updated;
+    });
+  }
+
+  async updateDetails(projectId: Id, patch: ProjectDetailsPatch, by: Id | null): Promise<Project> {
+    const db = this.db;
+    return db.transaction('rw', db.projects, async () => {
+      const project = await mustGet(db.projects.get(projectId), 'Project', projectId);
+      const error = checkProjectDetails(project, patch);
+      if (error) throw new Error(`Invalid project details (${error}) for project ${projectId}`);
+      const updated: Project = { ...project, ...patch, ...touched(by) };
       await db.projects.put(updated);
       return updated;
     });

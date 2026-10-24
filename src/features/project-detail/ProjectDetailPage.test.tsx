@@ -46,6 +46,49 @@ describe('Project detail', () => {
     expect(within(languages).getByText('Japanese')).toBeInTheDocument();
   });
 
+  it('lets a manager change the details from the overview', async () => {
+    const { user } = await openAlpha();
+    const overview = region('Overview');
+
+    await user.click(within(overview).getByRole('button', { name: 'Change priority' }));
+    await user.click(await screen.findByRole('menuitemradio', { name: 'Low' }));
+    expect(await within(overview).findByText('Low')).toBeInTheDocument();
+
+    await user.click(within(overview).getByRole('button', { name: 'Change platforms' }));
+    await user.click(await screen.findByRole('menuitemcheckbox', { name: 'Xbox' }));
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(within(overview).queryByText('Xbox')).not.toBeInTheDocument());
+    expect(within(overview).getByText('Switch')).toBeInTheDocument();
+
+    // The last manager cannot be unchecked.
+    await user.click(within(overview).getByRole('button', { name: 'Change managers' }));
+    await user.click(await screen.findByRole('menuitemcheckbox', { name: /Ben Carter/ }));
+    await waitFor(() =>
+      expect(screen.getByRole('menuitemcheckbox', { name: /Ana Torres/ })).toHaveAttribute(
+        'data-disabled',
+      ),
+    );
+    expect(screen.getByText('A project needs at least one manager.')).toBeInTheDocument();
+    await user.keyboard('{Escape}');
+    expect(await within(overview).findByText('Manager')).toBeInTheDocument();
+
+    await user.click(within(overview).getByRole('button', { name: 'Change release date' }));
+    await user.click(await screen.findByRole('combobox', { name: 'Quarter' }));
+    await user.click(await screen.findByRole('option', { name: 'Q1' }));
+    expect(await within(overview).findByText('Q1 2026')).toBeInTheDocument();
+  });
+
+  it('shows the details read-only to workers', async () => {
+    const { user } = await openAlpha();
+    await user.click(screen.getByRole('button', { name: 'Open user menu' }));
+    await user.click(await screen.findByRole('menuitemradio', { name: /Chloé Martin/ }));
+    const overview = region('Overview');
+    await waitFor(() =>
+      expect(within(overview).queryByRole('button', { name: /^Change / })).not.toBeInTheDocument(),
+    );
+    expect(within(overview).getByText('Q3 2026')).toBeInTheDocument();
+  });
+
   it('expands a section and opens its detail from the name', async () => {
     const { user, router } = await openAlpha();
     const sections = region('Section Progress');

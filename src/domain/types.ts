@@ -49,7 +49,7 @@ export interface Project extends Entity {
   name: string;
   /** Human-readable identifier, e.g. "DEMO-A-2026". */
   code: string;
-  /** Free text, e.g. "Q3 2026" (SPEC minor open decision). */
+  /** A quarter, e.g. "Q3 2026" (DECISIONS D38); null when not set. */
   releaseDate: string | null;
   sourceLanguage: LanguageCode;
   /** Never includes the source language. */
