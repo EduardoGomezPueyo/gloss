@@ -11,9 +11,9 @@ import { Pill } from './shared';
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex min-h-7 items-center justify-between gap-4">
-      <dt className="shrink-0 text-sm text-text-secondary">{label}</dt>
-      <dd className="flex min-w-0 flex-wrap justify-end gap-2 text-sm font-semibold text-text">
+    <div className="flex items-center justify-between gap-3">
+      <dt className="shrink-0 text-[13px] leading-4 text-text-secondary">{label}</dt>
+      <dd className="flex min-w-0 flex-wrap justify-end gap-2 text-[13px] leading-4 font-semibold text-text">
         {children}
       </dd>
     </div>
@@ -34,7 +34,7 @@ export function OverviewCard({ summary, members }: { summary: ProjectSummary; me
   );
 
   return (
-    <Card labelledBy={titleId}>
+    <Card labelledBy={titleId} className="gap-5">
       <div className="flex items-center justify-between gap-4">
         <CardTitle id={titleId}>{t('projectDetail.overview')}</CardTitle>
         <Pill>
@@ -42,7 +42,8 @@ export function OverviewCard({ summary, members }: { summary: ProjectSummary; me
           {t(`priority.${project.priority}`)}
         </Pill>
       </div>
-      <div className="grid gap-x-12 gap-y-3 lg:grid-cols-2">
+      {/* Figma's left column is just wide enough for four platform chips on one line. */}
+      <div className="grid gap-x-10 gap-y-3 lg:grid-cols-2 xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
         <dl className="flex flex-col gap-3">
           <Row label={t('projectDetail.platforms')}>
             {project.platforms.length > 0

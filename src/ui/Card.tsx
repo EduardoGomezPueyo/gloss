@@ -14,7 +14,7 @@ export function Card({
   return (
     <section
       aria-labelledby={labelledBy}
-      className={`flex min-w-0 flex-col gap-6 rounded-2xl bg-card p-6 ${className}`}
+      className={`flex min-w-0 flex-col gap-4 rounded-2xl bg-card p-5 ${className}`}
     >
       {children}
     </section>

@@ -6,8 +6,8 @@
 const base =
   'inline-flex items-center justify-center gap-2 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-border-strong aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:opacity-60';
 
-/** "Add section", "Add language", "Export to code", "Move to section". */
-export const neutralButton = `${base} bg-fill-subtle px-3 py-2 text-base text-text-secondary hover:text-text`;
+/** "Add section", "Add language", "Export to code", "Move to section" (Figma: 36px tall, 14px text). */
+export const neutralButton = `${base} bg-fill-subtle px-3 py-2 text-sm text-text-secondary hover:text-text`;
 
 /** "+ Add", "Move N items". */
 export const accentButton = `${base} bg-accent px-3 py-2 text-base font-semibold text-accent-foreground hover:opacity-90`;

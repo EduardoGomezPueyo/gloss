@@ -13,7 +13,7 @@ export function StatusBadge({ status }: { status: Status }) {
   const { t } = useTranslation();
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-md px-1.5 py-0.5 font-heading text-[11px] leading-none font-semibold whitespace-nowrap ${BADGE_CLASS[status]}`}
+      className={`inline-flex shrink-0 items-center rounded-md px-1.5 py-0.5 font-heading text-[11px] leading-[13px] font-semibold whitespace-nowrap ${BADGE_CLASS[status]}`}
     >
       {t(`status.${status}`)}
     </span>

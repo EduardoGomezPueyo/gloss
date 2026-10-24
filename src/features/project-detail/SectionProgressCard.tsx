@@ -14,7 +14,7 @@ import { StatusIcon } from '@/ui/StatusIcon';
 export function CompletionLabel({ summary }: { summary: SectionSummary }) {
   const { t } = useTranslation();
   return (
-    <span className="flex shrink-0 items-center gap-3 text-sm text-text-secondary">
+    <span className="flex shrink-0 items-center gap-4 text-[13px] text-text-secondary">
       {summary.status === 'not-started'
         ? t('status.not-started')
         : t('projectDetail.completion', { percent: toPercent(summary.progress) })}
@@ -54,7 +54,7 @@ export function SectionProgressCard({
         <Accordion.Root
           type="multiple"
           defaultValue={[sections[0]!.section.id]}
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-4"
         >
           {sections.map((summary) => (
             <SectionRow key={summary.section.id} projectId={projectId} summary={summary} />
@@ -74,32 +74,35 @@ function SectionRow({ projectId, summary }: { projectId: string; summary: Sectio
       value={section.id}
       className="rounded-xl border border-transparent data-[state=open]:border-border-strong"
     >
-      <Accordion.Header className="flex items-center gap-3 px-4 py-4">
+      <Accordion.Header className="flex items-center gap-2 py-[13px] pr-3 pl-1.5">
         <Accordion.Trigger
           aria-label={t('projectDetail.toggleSection', { name: section.name })}
-          className="group inline-flex size-6 shrink-0 items-center justify-center rounded-md text-text outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
+          className="group inline-flex size-5 shrink-0 items-center justify-center rounded-md text-text outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
         >
           <DisclosureTriangle className="size-2.5 transition-transform group-data-[state=open]:rotate-90" />
         </Accordion.Trigger>
         <Link
           to={`/projects/${projectId}/sections/${section.id}`}
-          className="min-w-0 flex-1 truncate rounded-sm text-lg text-text outline-none hover:underline focus-visible:ring-2 focus-visible:ring-border-strong"
+          className="min-w-0 flex-1 truncate rounded-sm text-base text-text outline-none hover:underline focus-visible:ring-2 focus-visible:ring-border-strong"
         >
           {section.name}
         </Link>
         <CompletionLabel summary={summary} />
       </Accordion.Header>
-      <Accordion.Content className="px-4 pb-5 pl-[52px]">
+      {/* Items line up with the section name on the left and the completion text on the right. */}
+      <Accordion.Content className="pr-[45px] pb-6 pl-9">
         {items.length === 0 ? (
           <p className="text-sm text-text-tertiary">{t('projectDetail.noItemsInSection')}</p>
         ) : (
-          <ul className="flex flex-col gap-5">
+          <ul className="flex flex-col gap-4">
             {items.map(({ item, progress, status }) => (
-              <li key={item.id} className="flex flex-col gap-2.5">
+              <li key={item.id} className="flex flex-col gap-2">
                 <div className="flex items-center gap-2.5">
-                  <span className="truncate text-base font-semibold text-text">{item.name}</span>
+                  <span className="truncate text-sm leading-4 font-semibold text-text">
+                    {item.name}
+                  </span>
                   <StatusBadge status={status} />
-                  <span className="ml-auto text-sm text-text-secondary">
+                  <span className="ml-auto text-xs text-text-secondary">
                     {toPercent(progress)}%
                   </span>
                 </div>
@@ -107,7 +110,7 @@ function SectionRow({ projectId, summary }: { projectId: string; summary: Sectio
                   value={progress}
                   status={status}
                   label={t('projectDetail.itemProgress', { name: item.name })}
-                  className="h-1.5"
+                  className="h-2"
                 />
               </li>
             ))}

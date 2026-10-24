@@ -17,10 +17,10 @@ export function ProjectHeader({
   const { project, status, progress } = summary;
 
   return (
-    <header className="flex flex-wrap items-start justify-between gap-4">
+    <header className="flex flex-wrap items-center justify-between gap-4">
       <div className="flex min-w-0 flex-col gap-2">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-heading text-[28px] leading-tight font-bold text-text">
+          <h1 className="font-heading text-[28px] leading-[33px] font-bold text-text">
             {project.name}
           </h1>
           <Pill>
@@ -32,7 +32,7 @@ export function ProjectHeader({
             {t('projectDetail.translated', { percent: toPercent(progress) })}
           </Pill>
         </div>
-        <p className="text-base text-text-secondary">{t('projectDetail.subtitle')}</p>
+        <p className="text-sm leading-tight text-text-secondary">{t('projectDetail.subtitle')}</p>
       </div>
       {actions}
     </header>

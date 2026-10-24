@@ -22,7 +22,7 @@ export function GlossaryCard({ projectId }: { projectId: string }) {
           <ExternalLinkIcon className="size-5" />
         </Link>
       </div>
-      <p className="text-base text-text-secondary">{t('projectDetail.glossaryDescription')}</p>
+      <p className="text-sm text-text-secondary">{t('projectDetail.glossaryDescription')}</p>
     </Card>
   );
 }

@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 /** Rounded label with an icon (Figma: status and "% translated" pills, priority badge). */
 export function Pill({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full bg-tag-bg px-3 py-1.5 font-heading text-sm leading-none font-semibold whitespace-nowrap text-text">
+    <span className="inline-flex items-center gap-2 rounded-full bg-tag-bg px-2.5 py-1.5 font-heading text-xs leading-none font-semibold whitespace-nowrap text-text">
       {children}
     </span>
   );
@@ -18,7 +18,7 @@ export function Pill({ children }: { children: ReactNode }) {
  */
 export function DetailGrid({ children }: { children: ReactNode }) {
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_356px] [&>*]:min-w-0">{children}</div>
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] [&>*]:min-w-0">{children}</div>
   );
 }
 

@@ -24,24 +24,21 @@ export function LanguagesProgressCard({
     <Card labelledBy={titleId} className="h-full">
       <div className="flex items-center justify-between gap-4">
         <CardTitle id={titleId}>{t('projectDetail.languagesProgress')}</CardTitle>
-        <span className="rounded-full bg-tag-bg px-3 py-1 text-xs font-semibold text-text-secondary">
+        <span className="rounded-full bg-tag-bg px-2.5 py-1.5 text-xs leading-[14px] font-semibold text-text-secondary">
           {t('projectDetail.languageCount', { count: languages.length })}
         </span>
       </div>
       {languages.length === 0 ? (
         <p className="text-sm text-text-tertiary">{t('projectDetail.noLanguages')}</p>
       ) : (
-        <ul className="flex flex-col gap-4">
+        <ul className="flex flex-col gap-3">
           {languages.map(({ language, progress, status }) => (
-            <li
-              key={language}
-              className="grid grid-cols-[minmax(0,1fr)_3rem_6.5rem] items-center gap-2"
-            >
-              <span className="truncate text-base font-semibold text-text">
+            <li key={language} className="grid grid-cols-[minmax(0,1fr)_118px] items-center gap-2">
+              <span className="truncate text-[13px] leading-4 font-semibold text-text">
                 {languageName(language, locale)}
               </span>
-              <span className="text-sm text-text-secondary">{toPercent(progress)}%</span>
-              <span className="flex justify-end">
+              <span className="flex items-center justify-between gap-2">
+                <span className="text-xs text-text-secondary">{toPercent(progress)}%</span>
                 <StatusBadge status={status} />
               </span>
             </li>
