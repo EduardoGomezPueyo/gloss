@@ -65,7 +65,7 @@ export function ImageOrdering({
 
   if (images.length === 0) {
     return (
-      <p className="flex h-[100px] items-center justify-center text-base text-text-secondary italic">
+      <p className="flex h-[78px] items-center justify-center text-[13px] text-text-secondary italic">
         {t('addContent.orderingEmpty')}
       </p>
     );
@@ -82,7 +82,7 @@ export function ImageOrdering({
       }}
     >
       <SortableContext items={ids} strategy={horizontalListSortingStrategy}>
-        <ol className="flex min-h-[100px] items-center gap-6 overflow-x-auto pt-1 pb-3">
+        <ol className="flex min-h-[78px] items-center gap-6 overflow-x-auto pt-1 pb-2">
           {images.map((image, index) => (
             <SortableThumbnail
               key={image.id}

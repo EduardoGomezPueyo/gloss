@@ -18,6 +18,8 @@ import { ImageOrdering } from './ImageOrdering';
 import { ImageSelector } from './ImageSelector';
 import { useUploads } from './useUploads';
 
+const compactInput = inputClass.replace('h-[42px]', 'h-9').replace('text-base', 'text-sm');
+
 /**
  * "Add content to section" modal (Figma 370:11493 / 11733 / 11978). Not in the
  * design (DECISIONS D29): the name and type row, the footer, and OCR, which runs
@@ -112,19 +114,20 @@ function AddContentForm({
 
   return (
     <form onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col">
-      <header className="flex items-center justify-between gap-4 bg-surface px-8 py-5">
-        <Dialog.Title className="text-base font-semibold text-text">
+      <header className="flex h-12 shrink-0 items-center justify-between gap-4 bg-surface px-6">
+        <Dialog.Title className="text-[13px] font-semibold text-text">
           {t('addContent.title')}
         </Dialog.Title>
         <Dialog.Close
           aria-label={t('addContent.close')}
-          className="inline-flex size-8 items-center justify-center rounded-lg text-text outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
+          className="-mr-1 inline-flex size-6 items-center justify-center rounded-md text-text outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
         >
-          <CloseIcon className="size-5" />
+          <CloseIcon className="size-4" />
         </Dialog.Close>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-6 px-8 pt-6">
+      <div className="flex min-h-0 flex-1 flex-col gap-6 px-6 pt-4">
+        {/* The name and type row is not in the design (D29); compact so the images keep their room. */}
         <div className="grid gap-4 sm:grid-cols-2">
           <Field
             label={t('addContent.name')}
@@ -143,7 +146,7 @@ function AddContentForm({
               aria-invalid={errors.includes('nameRequired') || undefined}
               aria-describedby={errors.includes('nameRequired') ? ids.nameError : undefined}
               autoComplete="off"
-              className={inputClass}
+              className={compactInput}
             />
           </Field>
           <Field label={t('addContent.type')} htmlFor={ids.type}>
@@ -154,7 +157,7 @@ function AddContentForm({
               onChange={(e) => setDraft((d) => ({ ...d, type: e.target.value }))}
               placeholder={t('addContent.typePlaceholder')}
               autoComplete="off"
-              className={inputClass}
+              className={compactInput}
             />
             <datalist id={ids.types}>
               {suggestedItemTypes(existingTypes).map((type) => (
@@ -166,10 +169,10 @@ function AddContentForm({
 
         <section aria-labelledby={ids.ordering} className="flex flex-col gap-2">
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h3 id={ids.ordering} className="text-base font-semibold text-text">
+            <h3 id={ids.ordering} className="text-[13px] font-semibold text-text">
               {t('addContent.orderingTitle')}
             </h3>
-            <p className="text-sm text-text-secondary">{t('addContent.orderingHint')}</p>
+            <p className="text-[11px] text-text-secondary">{t('addContent.orderingHint')}</p>
           </div>
           <ImageOrdering
             images={uploads.ordered}
@@ -179,13 +182,13 @@ function AddContentForm({
           />
         </section>
 
-        <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_200px] gap-6">
-          <section aria-labelledby={ids.preview} className="flex min-h-0 flex-col gap-4">
+        <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_202px] pb-4">
+          <section aria-labelledby={ids.preview} className="flex min-h-0 flex-col gap-6 pr-6">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h3 id={ids.preview} className="text-base font-semibold text-text">
+              <h3 id={ids.preview} className="text-[13px] font-semibold text-text">
                 {t('addContent.previewTitle')}
               </h3>
-              <p className="text-sm text-text-secondary">{t('addContent.previewHint')}</p>
+              <p className="text-[11px] text-text-secondary">{t('addContent.previewHint')}</p>
             </div>
             <div className="flex min-h-0 flex-1 items-center justify-center">
               {preview ? (
@@ -199,7 +202,7 @@ function AddContentForm({
               )}
             </div>
           </section>
-          <div className="flex min-h-0 border-l border-border-strong pl-5">
+          <div className="flex min-h-0 border-l border-border-strong pl-4">
             <ImageSelector
               uploads={uploads.uploads}
               selected={uploads.selected}
@@ -211,8 +214,8 @@ function AddContentForm({
         </div>
       </div>
 
-      <footer className="flex flex-wrap items-center justify-end gap-3 px-8 py-5">
-        <div className="mr-auto flex flex-col gap-1 text-sm">
+      <footer className="flex flex-wrap items-center justify-end gap-3 border-t border-border-strong px-6 py-3">
+        <div className="mr-auto flex flex-col gap-1 text-[13px]">
           {uploads.rejected.length > 0 && (
             <p role="alert" className="text-danger">
               {t('addContent.rejected', { names: uploads.rejected.join(', ') })}

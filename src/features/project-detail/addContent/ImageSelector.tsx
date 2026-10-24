@@ -39,21 +39,21 @@ export function ImageSelector({
       }}
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}
-      className={`flex min-h-0 flex-col gap-4 rounded-lg p-1 ${dragging ? 'bg-fill-subtle' : ''}`}
+      className={`flex min-h-0 w-full flex-col gap-6 rounded-lg ${dragging ? 'bg-fill-subtle' : ''}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h3 className="text-sm font-semibold text-text">{t('addContent.selectorTitle')}</h3>
-          <p className="text-sm text-text-secondary">{t('addContent.selectorHint')}</p>
+          <h3 className="text-[13px] font-semibold text-text">{t('addContent.selectorTitle')}</h3>
+          <p className="text-[13px] text-text-secondary">{t('addContent.selectorHint')}</p>
         </div>
         <button
           type="button"
           onClick={() => input.current?.click()}
           aria-label={t('addContent.browse')}
           title={t('addContent.browse')}
-          className="inline-flex size-6 shrink-0 items-center justify-center rounded-md border border-border-strong text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
+          className="inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-border-strong text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
         >
-          <PlusIcon className="size-3.5" />
+          <PlusIcon className="size-3" />
         </button>
         <input
           ref={input}
@@ -69,7 +69,7 @@ export function ImageSelector({
         />
       </div>
 
-      <ul className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
+      <ul className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-0.5">
         {uploads.map((upload) => {
           const position = selected.indexOf(upload.id) + 1;
           return (
@@ -84,7 +84,7 @@ export function ImageSelector({
                   position > 0 ? 'ring-2 ring-accent' : ''
                 }`}
               >
-                <img src={upload.url} alt="" className="aspect-video w-full object-cover" />
+                <img src={upload.url} alt="" className="aspect-[186/130] w-full object-cover" />
               </button>
               {position > 0 && (
                 <span
