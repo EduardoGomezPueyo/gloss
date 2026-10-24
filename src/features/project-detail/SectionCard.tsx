@@ -31,10 +31,10 @@ export function SectionCard({
   const managers = project.managerIds.flatMap((id) => members.find((m) => m.id === id) ?? []);
 
   return (
-    <Card labelledBy={titleId}>
+    <Card labelledBy={titleId} className="gap-3.5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-2">
-          <h2 id={titleId} className="font-heading text-2xl leading-tight font-bold text-text">
+          <h2 id={titleId} className="font-heading text-2xl leading-7 font-bold text-text">
             {section.name}
           </h2>
           <button
@@ -42,30 +42,28 @@ export function SectionCard({
             onClick={onEdit}
             aria-label={t('sectionDetail.editSection')}
             title={t('sectionDetail.editSection')}
-            className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-text-secondary outline-none hover:bg-fill-subtle hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
+            className="inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-text-secondary outline-none hover:bg-fill-subtle hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
           >
             <PencilIcon />
           </button>
         </div>
         <CompletionLabel summary={summary} />
       </div>
-      {section.description && (
-        <p className="-mt-2 text-base text-text-secondary">{section.description}</p>
-      )}
+      {section.description && <p className="text-sm text-text-secondary">{section.description}</p>}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <ul className="flex flex-wrap gap-6 text-base text-text-secondary">
+        <ul className="flex flex-wrap gap-4 text-[13px] leading-4 text-text-secondary">
           <li>{t('sectionDetail.contentItemCount', { count: items.length })}</li>
           <li>{t('projectDetail.words', { count: wordCount, value: formatNumber(wordCount) })}</li>
           <li>{t('projectDetail.languageCount', { count: project.targetLanguages.length })}</li>
         </ul>
-        <div className="flex items-center gap-3 text-sm text-text-secondary">
+        <div className="flex items-center gap-2 text-[13px] leading-4 text-text-secondary">
           {managers.length > 0 && (
             <>
               {t('sectionDetail.managers')}
               <AvatarStack members={managers} />
             </>
           )}
-          <span className="flex items-center gap-1.5 font-semibold text-text">
+          <span className="flex items-center gap-2 font-heading text-xs font-semibold text-text">
             <PriorityIcon priority={project.priority} decorative className="size-4" />
             {t(`priority.${project.priority}`)}
           </span>

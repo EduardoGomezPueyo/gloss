@@ -44,30 +44,30 @@ export function SectionDetailPage() {
 
   return (
     <>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4.5">
         <ProjectHeader summary={detail.data} />
         <nav
           aria-label={t('sectionDetail.breadcrumb')}
-          className="flex flex-wrap items-center justify-between gap-4 text-base"
+          className="flex flex-wrap items-center justify-between gap-4 text-[13px] leading-4"
         >
-          <ol className="flex min-w-0 items-center gap-3">
+          <ol className="flex min-w-0 items-center gap-2.5">
             <li>
               <Link
                 to={`/projects/${project.id}`}
-                className="flex items-center gap-3 rounded-sm text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
+                className="flex items-center gap-2.5 rounded-sm text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
               >
                 <ArrowLeftIcon />
                 {t('sectionDetail.allSections')}
               </Link>
             </li>
             <li aria-hidden className="text-text-secondary">
-              <ChevronRightIcon className="size-3.5" />
+              <ChevronRightIcon className="size-3" />
             </li>
             <li aria-current="page" className="truncate font-semibold text-text">
               {summary.section.name}
             </li>
           </ol>
-          <span className="text-sm text-text-secondary">{project.code}</span>
+          <span className="text-text-secondary">{project.code}</span>
         </nav>
       </div>
 
@@ -86,7 +86,7 @@ export function SectionDetailPage() {
           members={members}
           onAddContent={() => setAddingContent(true)}
         />
-        <LanguagesProgressCard languages={summary.languages} />
+        <LanguagesProgressCard languages={summary.languages} variant="section" />
       </DetailGrid>
 
       <SectionDialog

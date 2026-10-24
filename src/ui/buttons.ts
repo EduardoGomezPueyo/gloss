@@ -10,7 +10,7 @@ const base =
 export const neutralButton = `${base} bg-fill-subtle px-3 py-2 text-sm text-text-secondary hover:text-text`;
 
 /** "+ Add", "Move N items". */
-export const accentButton = `${base} bg-accent px-3 py-2 text-base font-semibold text-accent-foreground hover:opacity-90`;
+export const accentButton = `${base} bg-accent px-3 py-2 text-sm font-semibold text-accent-foreground hover:opacity-90`;
 
 /** Main action of a modal ("Create project"). */
 export const primaryButton = `${base} bg-button-primary px-5 py-2.5 text-base text-button-primary-foreground hover:opacity-90`;

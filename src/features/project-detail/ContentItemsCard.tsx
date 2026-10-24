@@ -3,7 +3,6 @@ import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { useOcrQueue } from '@/app/ocr/useOcrQueue';
-import SearchIcon from '@/assets/icons/search.svg?react';
 import { useRetryOcr } from '@/data/hooks';
 import { filterItems } from '@/domain/contentFilters';
 import { toPercent, type ItemSummary, type SectionSummary } from '@/domain/progress';
@@ -53,11 +52,11 @@ export function ContentItemsCard({
     setSelected((ids) => (checked ? [...ids, id] : ids.filter((s) => s !== id)));
 
   return (
-    <Card labelledBy={titleId}>
+    <Card labelledBy={titleId} className="gap-2.5">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-baseline gap-2">
           <CardTitle id={titleId}>{t('sectionDetail.contentItems')}</CardTitle>
-          <span className="text-sm text-text-secondary">{items.length}</span>
+          <span className="text-[13px] text-text-secondary">{items.length}</span>
         </div>
         <button type="button" onClick={onAddContent} className={accentButton}>
           <PlusIcon />
@@ -65,10 +64,10 @@ export function ContentItemsCard({
         </button>
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2.5">
         <div className="flex flex-wrap items-center gap-3">
-          <label className="flex min-w-48 flex-1 items-center gap-3 rounded-lg border border-border-input px-3 py-2 text-text-secondary focus-within:border-text-tertiary">
-            <SearchIcon aria-hidden className="size-4 shrink-0" />
+          {/* Figma: no search icon here, and the box sits on the page background. */}
+          <label className="flex min-w-48 flex-1 items-center rounded-lg border border-border-strong bg-surface px-2 py-1.5 text-text-secondary focus-within:border-text-tertiary">
             <input
               type="search"
               value={query}
@@ -86,7 +85,7 @@ export function ContentItemsCard({
               { value: ALL, label: t('sectionDetail.allStatuses') },
               ...STATUSES.map((s) => ({ value: s, label: t(`status.${s}`) })),
             ]}
-            className="h-[38px] w-auto min-w-44 shrink-0 rounded-full border border-border-input px-4 text-sm whitespace-nowrap text-text-secondary outline-none focus-visible:border-text-tertiary"
+            className="h-8 w-auto shrink-0 rounded-full border border-border-strong px-4 text-sm whitespace-nowrap text-text-tertiary outline-none focus-visible:border-text-tertiary"
           />
         </div>
 
@@ -114,7 +113,7 @@ export function ContentItemsCard({
       ) : visible.length === 0 ? (
         <p className="text-sm text-text-tertiary">{t('sectionDetail.noMatches')}</p>
       ) : (
-        <ul className="flex flex-col gap-4">
+        <ul className="flex flex-col gap-4 pt-1">
           {visible.map((itemSummary) => (
             <ContentItemRow
               key={itemSummary.item.id}
@@ -128,7 +127,7 @@ export function ContentItemsCard({
         </ul>
       )}
 
-      <footer className="mt-auto flex flex-wrap justify-between gap-3 pt-4 text-sm text-text-secondary">
+      <footer className="mt-auto flex flex-wrap justify-between gap-3 pt-2.5 text-xs text-text-secondary">
         <span>
           {visible.length === items.length
             ? t('sectionDetail.showingAll', { count: items.length })
@@ -160,36 +159,36 @@ function ContentItemRow({
 
   return (
     <li
-      className={`group relative flex items-center gap-4 rounded-xl border px-4 py-3 transition-colors ${
+      className={`group relative flex items-center gap-3 rounded-lg border px-2.5 py-[9px] transition-colors ${
         checked
           ? 'border-accent/40 bg-accent/5'
-          : 'border-transparent hover:border-border-strong has-[a:focus-visible]:border-border-strong'
+          : 'border-border-strong hover:border-text-tertiary has-[a:focus-visible]:border-text-tertiary'
       }`}
     >
       <Checkbox.Root
         checked={checked}
         onCheckedChange={(value) => onCheckedChange(value === true)}
         aria-label={t('sectionDetail.selectItem', { name: item.name })}
-        className="relative z-10 inline-flex size-5 shrink-0 items-center justify-center rounded-[4px] border border-text-tertiary outline-none focus-visible:ring-2 focus-visible:ring-border-strong data-[state=checked]:border-accent data-[state=checked]:bg-accent"
+        className="relative z-10 inline-flex size-[18px] shrink-0 items-center justify-center rounded-[4px] border border-text-tertiary outline-none focus-visible:ring-2 focus-visible:ring-border-strong data-[state=checked]:border-accent data-[state=checked]:bg-accent"
       >
         <Checkbox.Indicator>
           <CheckIcon className="size-3.5 text-accent-foreground" />
         </Checkbox.Indicator>
       </Checkbox.Root>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex items-center gap-2.5">
-          <span className="truncate text-base font-semibold text-text">{item.name}</span>
+          <span className="truncate text-sm leading-4 font-semibold text-text">{item.name}</span>
           <StatusBadge status={status} />
-          <span className="ml-auto text-sm text-text-secondary">{toPercent(progress)}%</span>
+          <span className="ml-auto text-xs text-text-secondary">{toPercent(progress)}%</span>
         </div>
         <ProgressBar
           value={progress}
           status={status}
           label={t('projectDetail.itemProgress', { name: item.name })}
-          className="h-1"
+          className="h-1.5"
         />
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm text-text-secondary">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-text-secondary">
           <span>
             {[
               item.type,
@@ -199,7 +198,7 @@ function ContentItemRow({
               .filter(Boolean)
               .join(' · ')}
           </span>
-          <span className="flex items-center gap-1.5">
+          <span className="flex items-center gap-1.5 text-[11px]">
             {updater && <Avatar member={updater} />}
             {t('sectionDetail.updated', {
               time: formatRelativeTime(lastUpdate.at, new Date(), i18n.resolvedLanguage ?? 'en'),
@@ -213,7 +212,7 @@ function ContentItemRow({
         to={`/projects/${projectId}/items/${item.id}`}
         aria-label={t('sectionDetail.openEditor', { name: item.name })}
         // Stretched over the whole card: a click anywhere opens the item; the checkbox sits above it.
-        className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-text-secondary outline-none group-hover:text-text after:absolute after:inset-0 after:rounded-xl focus-visible:ring-2 focus-visible:ring-border-strong"
+        className="inline-flex size-4 shrink-0 items-center justify-center rounded-sm text-text-secondary outline-none group-hover:text-text after:absolute after:inset-0 after:rounded-lg focus-visible:ring-2 focus-visible:ring-border-strong"
       >
         <ChevronRightIcon />
       </Link>
