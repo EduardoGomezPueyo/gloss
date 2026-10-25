@@ -123,3 +123,16 @@ describe('workspace settings and backups', () => {
     expect(parsed.ok && parsed.snapshot.settings).toEqual({ workersSeeOnlyTheirProjects: true });
   });
 });
+
+describe('snapshots from before assignments', () => {
+  it('reads a missing assignments list as none, but refuses a broken one', () => {
+    const older: Partial<WorkspaceData> = emptyData();
+    delete older.assignments;
+    const parsed = parseWorkspaceSnapshot(snapshot({ data: older }));
+    expect(parsed.ok && parsed.snapshot.data.assignments).toEqual([]);
+    expect(parseWorkspaceSnapshot(snapshot({ data: { ...older, assignments: 'x' } }))).toEqual({
+      ok: false,
+      error: 'shape',
+    });
+  });
+});

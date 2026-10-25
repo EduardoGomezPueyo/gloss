@@ -692,5 +692,32 @@
   "inbox": {
     "location": "Location",
     "openInEditor": "Open in editor"
+  },
+  "assigned": {
+    "title": "Assigned to me",
+    "tabs": "Assigned work",
+    "count_one": "{{count}} item",
+    "count_other": "{{count}} items",
+    "reviewCount_one": "{{count}} to review",
+    "reviewCount_other": "{{count}} to review",
+    "assignedTab": "Assigned · {{count}}",
+    "reviewTab": "To review · {{count}}",
+    "empty": "Nothing is assigned to you. Managers assign content items, one language at a time, from the section detail.",
+    "reviewEmpty": "Nothing is waiting for your review.",
+    "nothingSelected": "Select an item to see it with its image.",
+    "assignedAgo": "assigned {{time}}",
+    "imageN": "image {{n}}",
+    "yourTranslation": "Your translation · {{language}}",
+    "progressOf": "{{name}} in {{language}}",
+    "translatedBy": "Translated by {{name}} · {{time}}"
+  },
+  "assignees": {
+    "unassigned": "Unassigned",
+    "none": "Nobody is assigned",
+    "label": "Assignees of {{name}}",
+    "change": "Assignees of {{name}}: {{summary}}",
+    "title": "Who translates {{name}}",
+    "for": "Assignee for {{language}}",
+    "error": "The assignment could not be saved."
   }
 }

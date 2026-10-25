@@ -125,7 +125,8 @@ export function CommentsPage() {
         </>
       }
       list={
-        inbox.isPending ? (
+        // Until the current user is known, "involving me" cannot be applied.
+        inbox.isPending || !currentUser ? (
           <p className="px-3 text-sm text-text-tertiary">{t('editor.loading')}</p>
         ) : entries.length === 0 ? (
           <p className="px-3 text-sm text-text-tertiary">

@@ -31,6 +31,13 @@ export const routes: RouteObject[] = [
         ),
       },
       {
+        path: 'assigned',
+        lazy: page(
+          () => import('@/features/assigned/AssignedPage'),
+          (m) => m.AssignedPage,
+        ),
+      },
+      {
         path: 'comments',
         lazy: page(
           () => import('@/features/comments/CommentsPage'),

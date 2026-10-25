@@ -8,6 +8,10 @@ export const queryKeys = {
   project: (id: Id) => ['projects', id] as const,
   /** Under "projects", so every project write also refreshes the editor. */
   itemImages: (itemId: Id) => ['projects', 'items', itemId] as const,
+  /** Also under "projects": assigning, translating and reviewing refresh them (D44). */
+  assignments: (projectId: Id) => ['projects', 'assignments', projectId] as const,
+  assignmentInbox: ['projects', 'assignmentInbox'] as const,
+  reviewQueue: ['projects', 'reviewQueue'] as const,
   comments: (imageId: Id) => ['comments', imageId] as const,
   /** Under "comments", so every comment write also refreshes the Comments page. */
   commentInbox: ['comments', 'inbox'] as const,

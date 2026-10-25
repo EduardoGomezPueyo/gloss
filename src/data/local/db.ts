@@ -1,6 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie';
 import { DEFAULT_CATEGORIES } from '@/domain/glossary';
 import type {
+  Assignment,
   Comment,
   CommentThread,
   ContentItem,
@@ -53,6 +54,7 @@ export class TranslatorDb extends Dexie {
   glossaryEntries!: EntityTable<GlossaryEntry, 'id'>;
   glossaryVersions!: EntityTable<GlossaryVersion, 'id'>;
   meta!: EntityTable<MetaRecord, 'key'>;
+  assignments!: EntityTable<Assignment, 'id'>;
 
   constructor(name = 'translator') {
     super(name);
@@ -120,6 +122,8 @@ export class TranslatorDb extends Dexie {
           ),
         );
       });
+    // Phase 10: who translates each content item into each language (DECISIONS D44).
+    this.version(5).stores({ assignments: 'id, projectId, contentItemId, assigneeId' });
   }
 
   /** Tables that hold workspace data (everything except meta). */
@@ -137,6 +141,7 @@ export class TranslatorDb extends Dexie {
       this.glossaryCategories,
       this.glossaryEntries,
       this.glossaryVersions,
+      this.assignments,
     ];
   }
 }

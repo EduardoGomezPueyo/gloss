@@ -182,6 +182,83 @@ describe('local repositories: renaming and deleting projects', () => {
   });
 });
 
+describe('local repositories: assignments and the review queue', () => {
+  async function alpha() {
+    const { db, repos } = setup();
+    await loadFixture(repos);
+    const project = (await db.projects.toArray()).find((p) => p.name === 'Sample Project Alpha')!;
+    const items = (await db.contentItems.where({ projectId: project.id }).toArray()).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+    return { db, repos, project, items };
+  }
+
+  it('assigns, reassigns and unassigns an item in a language', async () => {
+    const { repos, project, items } = await alpha();
+    const [manager] = project.managerIds;
+    const [, daniel] = project.memberIds;
+    const item = items[3]!;
+
+    await repos.assignments.assign(item.id, 'fr', daniel!, manager!);
+    let mine = (await repos.assignments.listForProject(project.id)).filter(
+      (a) => a.contentItemId === item.id,
+    );
+    expect(mine).toMatchObject([{ language: 'fr', assigneeId: daniel }]);
+
+    await repos.assignments.assign(item.id, 'fr', manager!, manager!);
+    mine = (await repos.assignments.listForProject(project.id)).filter(
+      (a) => a.contentItemId === item.id,
+    );
+    expect(mine).toMatchObject([{ language: 'fr', assigneeId: manager }]);
+
+    await repos.assignments.assign(item.id, 'fr', null, manager!);
+    expect(
+      (await repos.assignments.listForProject(project.id)).some((a) => a.contentItemId === item.id),
+    ).toBe(false);
+  });
+
+  it('only lets managers assign, to the project people, in its languages', async () => {
+    const { db, repos, project, items } = await alpha();
+    const [manager] = project.managerIds;
+    const [chloe] = project.memberIds;
+    const outsider = (await db.members.toArray()).find(
+      (m) => !project.memberIds.includes(m.id) && !project.managerIds.includes(m.id),
+    )!;
+    await expect(repos.assignments.assign(items[0]!.id, 'es', chloe!, chloe!)).rejects.toThrow();
+    await expect(
+      repos.assignments.assign(items[0]!.id, 'es', outsider.id, manager!),
+    ).rejects.toThrow();
+    await expect(repos.assignments.assign(items[0]!.id, 'pt', chloe!, manager!)).rejects.toThrow();
+  });
+
+  it('lists assignments with their images and translations in that language', async () => {
+    const { repos, project } = await alpha();
+    const entries = (await repos.assignments.listInbox()).filter(
+      (e) => e.project.id === project.id,
+    );
+    expect(entries).toHaveLength(2);
+    const [entry] = entries;
+    expect(entry!.images.length).toBeGreaterThan(0);
+    expect(entry!.translations.every((t) => t.language === entry!.assignment.language)).toBe(true);
+    expect(entry!.section.projectId).toBe(project.id);
+
+    await repos.projects.remove([project.id], null);
+    expect((await repos.assignments.listInbox()).some((e) => e.project.id === project.id)).toBe(
+      false,
+    );
+  });
+
+  it('lists the translations under review with their image and item', async () => {
+    const { db, repos } = setup();
+    await loadFixture(repos);
+    const waiting = await db.translations.filter((t) => t.status === 'under-review').toArray();
+    const queue = await repos.translations.listReviewQueue();
+    expect(queue).toHaveLength(waiting.length);
+    expect(queue.every((e) => e.translation.status === 'under-review')).toBe(true);
+    expect(queue.every((e) => e.image.id === e.translation.imageId)).toBe(true);
+  });
+});
+
 describe('local repositories: sections, items and languages', () => {
   async function alpha() {
     const { db, repos } = setup();

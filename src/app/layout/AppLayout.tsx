@@ -26,7 +26,7 @@ export function AppLayout() {
           <SidebarNavItem icon={ProjectsIcon} label={t('nav.projects')} to="/projects" />
           {/* No design yet (open decision 6): shown disabled. */}
           <SidebarNavItem icon={NotificationsIcon} label={t('nav.notifications')} />
-          <SidebarNavItem icon={AssignedIcon} label={t('nav.assignedToMe')} />
+          <SidebarNavItem icon={AssignedIcon} label={t('nav.assignedToMe')} to="/assigned" />
           <SidebarNavItem icon={CommentsIcon} label={t('nav.comments')} to="/comments" />
           <SidebarNavItem icon={SettingsIcon} label={t('nav.settings')} to="/settings" />
         </div>

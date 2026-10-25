@@ -692,5 +692,32 @@
   "inbox": {
     "location": "Ubicación",
     "openInEditor": "Abrir en el editor"
+  },
+  "assigned": {
+    "title": "Asignado a mí",
+    "tabs": "Trabajo asignado",
+    "count_one": "{{count}} elemento",
+    "count_other": "{{count}} elementos",
+    "reviewCount_one": "{{count}} por revisar",
+    "reviewCount_other": "{{count}} por revisar",
+    "assignedTab": "Asignado · {{count}}",
+    "reviewTab": "Por revisar · {{count}}",
+    "empty": "No tienes nada asignado. Los managers asignan elementos de contenido, un idioma cada vez, desde el detalle de la sección.",
+    "reviewEmpty": "No hay nada pendiente de tu revisión.",
+    "nothingSelected": "Selecciona un elemento para verlo junto a su imagen.",
+    "assignedAgo": "asignado {{time}}",
+    "imageN": "imagen {{n}}",
+    "yourTranslation": "Tu traducción · {{language}}",
+    "progressOf": "{{name}} en {{language}}",
+    "translatedBy": "Traducido por {{name}} · {{time}}"
+  },
+  "assignees": {
+    "unassigned": "Sin asignar",
+    "none": "No hay nadie asignado",
+    "label": "Asignados de {{name}}",
+    "change": "Asignados de {{name}}: {{summary}}",
+    "title": "Quién traduce {{name}}",
+    "for": "Asignado para {{language}}",
+    "error": "No se pudo guardar la asignación."
   }
 }

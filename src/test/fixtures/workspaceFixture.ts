@@ -218,6 +218,7 @@ export function createFixtureData(options: FixtureOptions = {}): WorkspaceData {
     glossaryCategories: [],
     glossaryEntries: [],
     glossaryVersions: [],
+    assignments: [],
   };
 
   for (const plan of PROJECTS) {
@@ -307,11 +308,41 @@ export function createFixtureData(options: FixtureOptions = {}): WorkspaceData {
   }
 
   seedComments(data, entity, pastTimestamp);
+  seedAssignments(data, entity, pastTimestamp);
   const glossary = seedGlossary(data.projects, entity, pastTimestamp);
   data.glossaryCategories = glossary.categories;
   data.glossaryEntries = glossary.entries;
   data.glossaryVersions = glossary.versions;
   return data;
+}
+
+/**
+ * The first item of every project, in its first language, goes to its first
+ * worker; the second item of Alpha, in Spanish, too (DECISIONS D44).
+ */
+function seedAssignments(
+  data: WorkspaceData,
+  entity: (at: string, by?: Id | null) => Entity,
+  pastTimestamp: (maxDays: number) => string,
+) {
+  for (const project of data.projects) {
+    const [firstWorker] = project.memberIds;
+    const [language] = project.targetLanguages;
+    if (!firstWorker || !language) continue;
+    const items = data.items
+      .filter((i) => i.projectId === project.id)
+      .sort((a, b) => a.name.localeCompare(b.name));
+    const assigned = project === data.projects[0] ? items.slice(0, 2) : items.slice(0, 1);
+    for (const item of assigned) {
+      data.assignments.push({
+        ...entity(pastTimestamp(10), project.managerIds[0]),
+        projectId: project.id,
+        contentItemId: item.id,
+        language,
+        assigneeId: firstWorker,
+      });
+    }
+  }
 }
 
 /** Two threads on the first image of the first project, so the editor shows both tabs. */

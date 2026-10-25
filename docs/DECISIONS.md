@@ -230,7 +230,7 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Comments:** threads across projects, ordered by latest activity, with Open / Resolved, language and project filters. **Managers** start on *Involving me* and can switch to *All*; **workers** only see the threads involving them, with no option. A thread involves you if you wrote in it or are @mentioned in it. The right side shows the whole thread with replies, the reply box, Resolve and Reopen.
 
 ### D44. Assigned to me (2026-10-25) — *spec approved by the author (D37)*
-- **Assignments:** managers assign a **content item, for one language,** to a person, from the section detail. A new record per item and language.
+- **Assignments:** managers assign a **content item, for one language,** to a person, from the section detail. A new record per item and language (`assignments` table, IndexedDB v5); only managers assign, only to the project's people, only in its target languages. Reassigning counts as a new assignment. Snapshots without the list (the published demo) read it as empty.
 - **The page:** the items assigned to you (name, language, status, x/N), by project priority and then latest assignment; the right side shows the item's first image, the source text, your translation and its status, and *Open in editor*. **Managers** also get a **To review** tab with the translations under review in the projects they manage. The demo gets assignments.
 
 ### D45. Notifications (2026-10-25) — *spec approved by the author (D37)*

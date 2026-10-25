@@ -412,3 +412,39 @@ export function useUpdateWorkspaceSettings() {
     onSuccess: (settings) => queryClient.setQueryData(queryKeys.workspaceSettings, settings),
   });
 }
+
+/** Who translates each item of a project into each language (DECISIONS D44). */
+export function useProjectAssignments(projectId: Id) {
+  const { assignments } = useRepositories();
+  return useQuery({
+    queryKey: queryKeys.assignments(projectId),
+    queryFn: () => assignments.listForProject(projectId),
+  });
+}
+
+export function useAssign() {
+  const { assignments } = useRepositories();
+  const onSuccess = useInvalidateProjects();
+  return useMutation({
+    mutationFn: (vars: { itemId: Id; language: LanguageCode; assigneeId: Id | null; by: Id }) =>
+      assignments.assign(vars.itemId, vars.language, vars.assigneeId, vars.by),
+    onSuccess,
+  });
+}
+
+export function useAssignmentInbox() {
+  const { assignments } = useRepositories();
+  return useQuery({
+    queryKey: queryKeys.assignmentInbox,
+    queryFn: () => assignments.listInbox(),
+  });
+}
+
+/** Translations under review, for the managers' "To review" tab (D44). */
+export function useReviewQueue() {
+  const { translations } = useRepositories();
+  return useQuery({
+    queryKey: queryKeys.reviewQueue,
+    queryFn: () => translations.listReviewQueue(),
+  });
+}

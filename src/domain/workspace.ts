@@ -1,4 +1,5 @@
 import type {
+  Assignment,
   Comment,
   CommentThread,
   ContentItem,
@@ -52,6 +53,8 @@ export interface WorkspaceData {
   glossaryCategories: GlossaryCategory[];
   glossaryEntries: GlossaryEntry[];
   glossaryVersions: GlossaryVersion[];
+  /** Absent in snapshots made before assignments existed (the demo): read as none. */
+  assignments: Assignment[];
 }
 
 export const WORKSPACE_DATA_KEYS = [
@@ -66,7 +69,11 @@ export const WORKSPACE_DATA_KEYS = [
   'glossaryCategories',
   'glossaryEntries',
   'glossaryVersions',
+  'assignments',
 ] as const satisfies readonly (keyof WorkspaceData)[];
+
+/** Lists added after the snapshot format was published: a snapshot may leave them out. */
+const OPTIONAL_DATA_KEYS: readonly (keyof WorkspaceData)[] = ['assignments'];
 
 export const SNAPSHOT_FORMAT = 'translator-tool-workspace';
 export const SNAPSHOT_VERSION = 1;
@@ -117,7 +124,13 @@ export function parseWorkspaceSnapshot(json: unknown): SnapshotParseResult {
   if (typeof exportedAt !== 'string' || Number.isNaN(Date.parse(exportedAt))) {
     return { ok: false, error: 'shape' };
   }
-  if (!isRecord(data) || !WORKSPACE_DATA_KEYS.every((key) => Array.isArray(data[key]))) {
+  if (
+    !isRecord(data) ||
+    !WORKSPACE_DATA_KEYS.every(
+      (key) =>
+        Array.isArray(data[key]) || (OPTIONAL_DATA_KEYS.includes(key) && data[key] === undefined),
+    )
+  ) {
     return { ok: false, error: 'shape' };
   }
   const validFile = (file: unknown) =>
@@ -130,6 +143,10 @@ export function parseWorkspaceSnapshot(json: unknown): SnapshotParseResult {
     ok: true,
     snapshot: {
       ...(json as unknown as WorkspaceSnapshot),
+      data: {
+        ...(data as unknown as WorkspaceData),
+        ...Object.fromEntries(OPTIONAL_DATA_KEYS.map((key) => [key, data[key] ?? []])),
+      },
       files: (files ?? []) as SnapshotFile[],
       settings: parseWorkspaceSettings(json.settings),
     },

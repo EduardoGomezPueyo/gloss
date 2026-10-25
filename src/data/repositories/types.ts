@@ -18,6 +18,7 @@ import type { ProjectDetailsPatch } from '@/domain/projectDetails';
 import type { SectionInput } from '@/domain/sections';
 import type { WorkspaceData, WorkspaceFile, WorkspaceSettings } from '@/domain/workspace';
 import type {
+  Assignment,
   Comment,
   CommentThread,
   ContentItem,
@@ -159,6 +160,41 @@ export interface TranslationRepository {
   review(imageId: Id, language: LanguageCode, decision: ReviewDecision, by: Id): Promise<void>;
   /** "Submit for review": moves the section's marked translations to Under Review. Returns how many. */
   submitSectionForReview(sectionId: Id, by: Id | null): Promise<number>;
+  /** Every Under Review translation with its context, for "To review" (DECISIONS D44). */
+  listReviewQueue(): Promise<ReviewQueueEntry[]>;
+}
+
+/** Where a content item lives, for the inbox pages (D43, D44). */
+export interface ItemContext {
+  project: Project;
+  section: Section;
+  item: ContentItem;
+}
+
+/** A translation waiting for a manager. */
+export interface ReviewQueueEntry extends ItemContext {
+  translation: Translation;
+  image: SceneImage;
+}
+
+/** An assignment with its item's images and translations in that language. */
+export interface AssignmentInboxEntry extends ItemContext {
+  assignment: Assignment;
+  /** In order. */
+  images: SceneImage[];
+  translations: Translation[];
+}
+
+/** Who translates each content item into each language (D44). */
+export interface AssignmentRepository {
+  listForProject(projectId: Id): Promise<Assignment[]>;
+  /**
+   * Sets the assignee of an item in a language, or clears it with null. Only
+   * managers assign, and only to the project's people.
+   */
+  assign(itemId: Id, language: LanguageCode, assigneeId: Id | null, by: Id): Promise<void>;
+  /** Every assignment of the projects that were not deleted, with its context. */
+  listInbox(): Promise<AssignmentInboxEntry[]>;
 }
 
 export interface ThreadWithComments {
@@ -220,5 +256,6 @@ export interface Repositories {
   translations: TranslationRepository;
   comments: CommentRepository;
   glossary: GlossaryRepository;
+  assignments: AssignmentRepository;
   workspace: WorkspaceRepository;
 }

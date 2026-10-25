@@ -94,7 +94,7 @@ The **glossary is per project**: it is reached from the _Glossary_ card on the p
 
 > Some screenshots (project list with filters and the glossary) show the **old navigation** (Projects, Glossary). What is described here is current; on the glossary screens the active item must be _Projects_.
 
-**No design:** Notifications, Assigned to me, Comments, General settings and Workspace projects. They are built in phase 10 from short specs the author approves (DECISIONS D37); until then an entry stays disabled. General settings (5.7), Workspace projects (5.8) and Comments (5.9) are built; `/settings` opens General settings.
+**No design:** Notifications, Assigned to me, Comments, General settings and Workspace projects. They are built in phase 10 from short specs the author approves (DECISIONS D37); until then an entry stays disabled. General settings (5.7), Workspace projects (5.8), Comments (5.9) and Assigned to me (5.10) are built; `/settings` opens General settings.
 
 Requirements:
 
@@ -254,6 +254,12 @@ Redesigned by the author (DECISIONS D40): two columns, one language at a time.
 - **Entries:** comment threads of the projects the user can see, by latest activity (a reply or the resolution). Each shows the author of the first comment, the thread's language, an excerpt, the time, the project and item, and the reply count.
 - **Filters:** _Involving me / All_ (managers only; they start on _Involving me_), _Open / Resolved_, language (with _General_) and project. **Workers** only see the threads involving them. A thread involves you if you wrote in it or are @mentioned in it.
 - **Right side:** the whole thread with its replies, _Reply to thread_, _Resolve_ and _Reopen_ (view only in projects the user is not part of, D41).
+
+### 5.10 Assigned to me (no design, DECISIONS D44)
+
+- **Assignments:** a content item is assigned **per language** to one person of the project. On the section detail, each content item row shows its assignees (avatars, or _Unassigned_); managers click it to pick a person for each target language. Everyone else sees them read-only.
+- **The page** (inbox layout, 5.9): the items assigned to the current user, most urgent project first and then the most recent assignment. Each entry shows the item, the language, x/N translated, the first line of source text and where it lives. The right side shows the item's first image, the source text, and _Your translation_ with its status, progress and each image's translation.
+- **To review** (managers only, a second tab): the translations under review in the projects they manage, with the source text, the translation, who translated it, and _Request changes_ / _Approve_.
 
 ## 6. Business rules and vocabulary
 

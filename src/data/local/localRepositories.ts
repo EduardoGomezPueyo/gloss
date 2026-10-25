@@ -41,6 +41,7 @@ import {
   submitForReview,
 } from '@/domain/translationWorkflow';
 import type {
+  Assignment,
   Comment,
   CommentThread,
   ContentItem,
@@ -70,7 +71,11 @@ import type {
   PendingOcr,
   ReviewDecision,
   SectionRepository,
+  AssignmentInboxEntry,
+  AssignmentRepository,
   CommentInboxEntry,
+  ItemContext,
+  ReviewQueueEntry,
   ThreadWithComments,
   TranslationRepository,
   WorkspaceRepository,
@@ -527,6 +532,26 @@ class LocalTranslationRepository implements TranslationRepository {
     });
   }
 
+  async listReviewQueue(): Promise<ReviewQueueEntry[]> {
+    const db = this.db;
+    return db.transaction(
+      'r',
+      [db.translations, db.images, db.contentItems, db.sections, db.projects],
+      async () => {
+        const [waiting, images, contexts] = await Promise.all([
+          db.translations.filter((t) => t.status === 'under-review').toArray(),
+          db.images.toArray(),
+          loadItemContexts(db),
+        ]);
+        return waiting.flatMap((translation) => {
+          const image = images.find((i) => i.id === translation.imageId);
+          const context = image && contexts.get(image.contentItemId);
+          return image && context ? [{ ...context, translation, image }] : [];
+        });
+      },
+    );
+  }
+
   async submitSectionForReview(sectionId: Id, by: Id | null): Promise<number> {
     const db = this.db;
     return db.transaction('rw', [db.contentItems, db.images, db.translations], async () => {
@@ -805,6 +830,117 @@ class LocalGlossaryRepository implements GlossaryRepository {
   }
 }
 
+/**
+ * Where each content item lives, for the inbox pages (DECISIONS D43, D44).
+ * Items of deleted projects are left out.
+ */
+async function loadItemContexts(db: TranslatorDb): Promise<Map<Id, ItemContext>> {
+  const [items, sections, projects] = await Promise.all([
+    db.contentItems.toArray(),
+    db.sections.toArray(),
+    db.projects.toArray(),
+  ]);
+  const contexts = new Map<Id, ItemContext>();
+  for (const item of items) {
+    const section = sections.find((s) => s.id === item.sectionId);
+    const project = projects.find((p) => p.id === item.projectId);
+    if (section && project && !isProjectDeleted(project)) {
+      contexts.set(item.id, { project, section, item });
+    }
+  }
+  return contexts;
+}
+
+class LocalAssignmentRepository implements AssignmentRepository {
+  constructor(private readonly db: TranslatorDb) {}
+
+  listForProject(projectId: Id): Promise<Assignment[]> {
+    return this.db.assignments.where({ projectId }).toArray();
+  }
+
+  async assign(itemId: Id, language: LanguageCode, assigneeId: Id | null, by: Id) {
+    const db = this.db;
+    await db.transaction(
+      'rw',
+      [db.members, db.projects, db.contentItems, db.assignments],
+      async () => {
+        const manager = await db.members.get(by);
+        if (manager?.category !== 'manager') throw new Error('Only managers can assign');
+        const item = await mustGet(db.contentItems.get(itemId), 'Content item', itemId);
+        const project = await mustGet(db.projects.get(item.projectId), 'Project', item.projectId);
+        if (!project.targetLanguages.includes(language)) {
+          throw new Error(`${language} is not a target language of project ${project.id}`);
+        }
+        if (
+          assigneeId !== null &&
+          !project.managerIds.includes(assigneeId) &&
+          !project.memberIds.includes(assigneeId)
+        ) {
+          throw new Error(`Member ${assigneeId} is not part of project ${project.id}`);
+        }
+        const existing = (await db.assignments.where({ contentItemId: itemId }).toArray()).find(
+          (a) => a.language === language,
+        );
+        if (assigneeId === null) {
+          if (existing) await db.assignments.delete(existing.id);
+        } else if (existing) {
+          if (existing.assigneeId !== assigneeId) {
+            // A new assignment for someone else: it counts as new in their list.
+            await db.assignments.put({
+              ...existing,
+              ...newEntity(by),
+              id: existing.id,
+              assigneeId,
+            });
+          }
+        } else {
+          await db.assignments.add({
+            ...newEntity(by),
+            projectId: project.id,
+            contentItemId: itemId,
+            language,
+            assigneeId,
+          });
+        }
+      },
+    );
+  }
+
+  async listInbox(): Promise<AssignmentInboxEntry[]> {
+    const db = this.db;
+    return db.transaction(
+      'r',
+      [db.assignments, db.contentItems, db.sections, db.projects, db.images, db.translations],
+      async () => {
+        const [assignments, contexts, images, translations] = await Promise.all([
+          db.assignments.toArray(),
+          loadItemContexts(db),
+          db.images.toArray(),
+          db.translations.toArray(),
+        ]);
+        return assignments.flatMap((assignment) => {
+          const context = contexts.get(assignment.contentItemId);
+          if (!context) return [];
+          const itemImages = images
+            .filter((i) => i.contentItemId === assignment.contentItemId)
+            .sort((a, b) => a.order - b.order);
+          const ids = new Set(itemImages.map((i) => i.id));
+          return [
+            {
+              ...context,
+              assignment,
+              images: itemImages,
+              translations: translations.filter(
+                (t) => ids.has(t.imageId) && t.language === assignment.language,
+              ),
+            },
+          ];
+        });
+      },
+    );
+  }
+}
+
 class LocalWorkspaceRepository implements WorkspaceRepository {
   constructor(private readonly db: TranslatorDb) {}
 
@@ -849,6 +985,7 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
         db.glossaryCategories.bulkAdd(data.glossaryCategories),
         db.glossaryEntries.bulkAdd(data.glossaryEntries),
         db.glossaryVersions.bulkAdd(data.glossaryVersions),
+        db.assignments.bulkAdd(data.assignments ?? []),
         db.files.bulkAdd(stored),
         db.meta.put({ key: META_INITIALIZED_AT, value: new Date().toISOString() }),
         settings && db.meta.put({ key: META_SETTINGS, value: JSON.stringify(settings) }),
@@ -879,6 +1016,7 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
         glossaryCategories,
         glossaryEntries,
         glossaryVersions,
+        assignments,
         stored,
       ] = await Promise.all([
         db.members.toArray(),
@@ -892,6 +1030,7 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
         db.glossaryCategories.toArray(),
         db.glossaryEntries.toArray(),
         db.glossaryVersions.toArray(),
+        db.assignments.toArray(),
         db.files.toArray(),
       ]);
       const data: WorkspaceData = {
@@ -906,6 +1045,7 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
         glossaryCategories,
         glossaryEntries,
         glossaryVersions,
+        assignments,
       };
       const files: WorkspaceFile[] = stored.map((file) => ({
         id: file.id,
@@ -947,6 +1087,7 @@ export function createLocalRepositories(db: TranslatorDb = new TranslatorDb()): 
     translations: new LocalTranslationRepository(db),
     comments: new LocalCommentRepository(db),
     glossary: new LocalGlossaryRepository(db),
+    assignments: new LocalAssignmentRepository(db),
     workspace: new LocalWorkspaceRepository(db),
   };
 }

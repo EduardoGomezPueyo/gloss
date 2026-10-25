@@ -205,3 +205,14 @@ export interface GlossaryVersion extends Entity, GlossaryContent {
   /** 1 for the first save, then 2, 3… (orders versions saved within the same millisecond). */
   number: number;
 }
+
+/**
+ * "Assigned to me" (DECISIONS D44): who translates a content item into one
+ * language. At most one per item and language.
+ */
+export interface Assignment extends Entity {
+  projectId: Id;
+  contentItemId: Id;
+  language: LanguageCode;
+  assigneeId: Id;
+}

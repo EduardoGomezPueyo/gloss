@@ -51,7 +51,7 @@ describe('Comments page', () => {
 
   it('lets managers see every thread, open or resolved', async () => {
     const { user, list } = await openComments();
-    await user.click(screen.getByRole('radio', { name: 'All' }));
+    await user.click(await screen.findByRole('radio', { name: 'All' }));
     await user.click(screen.getByRole('radio', { name: 'Resolved' }));
     expect(await within(list).findByText(RESOLVED)).toBeInTheDocument();
     expect(await screen.findByText(/Resolved by /)).toBeInTheDocument();

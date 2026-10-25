@@ -80,7 +80,7 @@ export function SectionDetailPage() {
         />
         <GlossaryCard projectId={project.id} />
         <ContentItemsCard
-          projectId={project.id}
+          project={project}
           summary={summary}
           sections={sections.map((s) => s.section)}
           members={members}

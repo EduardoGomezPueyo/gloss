@@ -3,11 +3,19 @@ import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { useOcrQueue } from '@/app/ocr/useOcrQueue';
-import { useRetryOcr } from '@/data/hooks';
+import { useProjectAssignments, useRetryOcr } from '@/data/hooks';
 import { filterItems } from '@/domain/contentFilters';
 import { toPercent, type ItemSummary, type SectionSummary } from '@/domain/progress';
 import { formatRelativeTime } from '@/domain/relativeTime';
-import { STATUSES, type Id, type Member, type Section, type Status } from '@/domain/types';
+import {
+  STATUSES,
+  type Assignment,
+  type Id,
+  type Member,
+  type Project,
+  type Section,
+  type Status,
+} from '@/domain/types';
 import { Avatar } from '@/ui/Avatar';
 import { accentButton, textButton } from '@/ui/buttons';
 import { Card, CardTitle } from '@/ui/Card';
@@ -15,6 +23,7 @@ import { SelectInput } from '@/ui/form';
 import { CheckIcon, ChevronRightIcon, PlusIcon } from '@/ui/icons';
 import { ProgressBar } from '@/ui/ProgressBar';
 import { StatusBadge } from '@/ui/StatusBadge';
+import { ItemAssignees } from './ItemAssignees';
 import { MoveToSectionPopover } from './MoveToSectionPopover';
 import { useFormatNumber } from './format';
 import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
@@ -26,13 +35,13 @@ const ALL = 'all';
  * multi-select and "Move to section".
  */
 export function ContentItemsCard({
-  projectId,
+  project,
   summary,
   sections,
   members,
   onAddContent,
 }: {
-  projectId: Id;
+  project: Project;
   summary: SectionSummary;
   /** Every section of the project, for the move destinations. */
   sections: Section[];
@@ -45,6 +54,8 @@ export function ContentItemsCard({
   const [status, setStatus] = useState<Status | null>(null);
   const [selected, setSelected] = useState<Id[]>([]);
   const { canWork } = useProjectAccess();
+  const projectId = project.id;
+  const { data: assignments = [] } = useProjectAssignments(projectId);
 
   const { items } = summary;
   const visible = filterItems(items, query, status);
@@ -123,7 +134,8 @@ export function ContentItemsCard({
           {visible.map((itemSummary) => (
             <ContentItemRow
               key={itemSummary.item.id}
-              projectId={projectId}
+              project={project}
+              assignments={assignments}
               summary={itemSummary}
               members={members}
               checked={selected.includes(itemSummary.item.id)}
@@ -146,13 +158,15 @@ export function ContentItemsCard({
 }
 
 function ContentItemRow({
-  projectId,
+  project,
+  assignments,
   summary,
   members,
   checked,
   onCheckedChange,
 }: {
-  projectId: Id;
+  project: Project;
+  assignments: Assignment[];
   summary: ItemSummary;
   members: Member[];
   checked: boolean;
@@ -204,18 +218,26 @@ function ContentItemRow({
               .filter(Boolean)
               .join(' · ')}
           </span>
-          <span className="flex items-center gap-1.5 text-[11px]">
-            {updater && <Avatar member={updater} />}
-            {t('sectionDetail.updated', {
-              time: formatRelativeTime(lastUpdate.at, new Date(), i18n.resolvedLanguage ?? 'en'),
-            })}
+          <span className="flex items-center gap-3">
+            <ItemAssignees
+              project={project}
+              item={item}
+              assignments={assignments}
+              members={members}
+            />
+            <span className="flex items-center gap-1.5 text-[11px]">
+              {updater && <Avatar member={updater} />}
+              {t('sectionDetail.updated', {
+                time: formatRelativeTime(lastUpdate.at, new Date(), i18n.resolvedLanguage ?? 'en'),
+              })}
+            </span>
           </span>
         </div>
         <OcrStatusLine itemId={item.id} ocr={summary.ocr} />
       </div>
 
       <Link
-        to={`/projects/${projectId}/items/${item.id}`}
+        to={`/projects/${project.id}/items/${item.id}`}
         aria-label={t('sectionDetail.openEditor', { name: item.name })}
         // Stretched over the whole card: a click anywhere opens the item; the checkbox sits above it.
         className="inline-flex size-4 shrink-0 items-center justify-center rounded-sm text-text-secondary outline-none group-hover:text-text after:absolute after:inset-0 after:rounded-lg focus-visible:ring-2 focus-visible:ring-border-strong"

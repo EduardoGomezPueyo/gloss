@@ -48,7 +48,7 @@ Vertical phases; the app stays runnable after each one.
   - [x] D. Screen-by-screen fidelity review against Figma, with the author (2026-10-24): project list, project and section detail, Add content, glossary (5 frames) and Settings > Members. Also added on request: editing project details from the Overview (D38) and a two-column "Add new project" modal (D39). **Exception:** the Translator view was redesigned by the author instead and rebuilt from their mockup on 2026-10-25 (D40).
 - [ ] **10. Pages without a design** (D37), each designed in code from a short spec the author approves, and added to the demo data:
   - [x] Comments (D43, with the shared inbox layout), 2026-10-25
-  - [ ] Assigned to me
+  - [x] Assigned to me (D44, with assignments per item and language and the managers' To review tab), 2026-10-25
   - [ ] Notifications (activity log)
   - [x] Settings > General (with the project visibility setting, D41) and Settings > Workspace projects (D42), 2026-10-25
   - [ ] Final demo pass and redeploy
