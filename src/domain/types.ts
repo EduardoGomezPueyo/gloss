@@ -216,3 +216,35 @@ export interface Assignment extends Entity {
   language: LanguageCode;
   assigneeId: Id;
 }
+
+export const NOTIFICATION_KINDS = [
+  'mention',
+  'reply',
+  'resolved',
+  'approved',
+  'changesRequested',
+  'assigned',
+  'submitted',
+  'addedToProject',
+] as const;
+export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
+
+/**
+ * Something that happened, for one person (DECISIONS D45). One record per
+ * recipient, so each person has their own read state. `createdBy` is who did it.
+ */
+export interface Notification extends Entity {
+  recipientId: Id;
+  kind: NotificationKind;
+  projectId: Id;
+  sectionId: Id | null;
+  contentItemId: Id | null;
+  imageId: Id | null;
+  threadId: Id | null;
+  /** The comment that mentioned or replied. */
+  commentId: Id | null;
+  language: LanguageCode | null;
+  /** "submitted": how many translations were sent to review. */
+  count: number | null;
+  readAt: Timestamp | null;
+}

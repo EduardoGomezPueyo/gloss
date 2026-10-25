@@ -5,8 +5,7 @@
     "notifications": "Notificaciones",
     "assignedToMe": "Asignado a mí",
     "comments": "Comentarios",
-    "settings": "Ajustes",
-    "notAvailable": "Aún no disponible"
+    "settings": "Ajustes"
   },
   "settingsNav": {
     "label": "Navegación de ajustes",
@@ -719,5 +718,34 @@
     "title": "Quién traduce {{name}}",
     "for": "Asignado para {{language}}",
     "error": "No se pudo guardar la asignación."
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "filter": "Mostrar",
+    "all": "Todas",
+    "unread": "No leídas · {{count}}",
+    "mentions": "Menciones",
+    "markAllRead": "Marcar todas como leídas",
+    "unreadCount_one": "{{count}} sin leer",
+    "unreadCount_other": "{{count}} sin leer",
+    "empty": "Aún no hay nada. Aquí verás menciones, respuestas, revisiones y asignaciones.",
+    "emptyFiltered": "No hay nada con este filtro.",
+    "nothingSelected": "Selecciona una notificación para verla junto a su imagen.",
+    "project": "Proyecto",
+    "noImage": "Esta notificación no trata de una imagen.",
+    "goAssigned": "Abrir Asignado a mí",
+    "goReview": "Revisarlas en Asignado a mí",
+    "goProject": "Abrir el proyecto",
+    "kinds": {
+      "mention": "{{name}} te ha mencionado",
+      "reply": "{{name}} ha respondido en un hilo",
+      "resolved": "{{name}} ha resuelto un hilo",
+      "approved": "{{name}} ha aprobado tu traducción al {{language}}",
+      "changesRequested": "{{name}} ha pedido cambios en tu traducción al {{language}}",
+      "assigned": "{{name}} te ha asignado un elemento en {{language}}",
+      "submitted_one": "{{name}} ha enviado {{count}} traducción de {{section}} a revisión",
+      "submitted_other": "{{name}} ha enviado {{count}} traducciones de {{section}} a revisión",
+      "addedToProject": "{{name}} te ha añadido a {{project}}"
+    }
   }
 }

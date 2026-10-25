@@ -236,7 +236,8 @@ Log of technical and design decisions and the reasons behind them. Product decis
 ### D45. Notifications (2026-10-25) — *spec approved by the author (D37)*
 - **Activity log:** the repository records events as things happen, with a read state per person, and the navigation shows the unread count. Events: you are @mentioned; someone replies in a thread you are in; a thread you are in is resolved; your translation is approved or sent back; a content item is assigned to you; a section is submitted for review (to that project's managers); you are added to a project. Your own actions never notify you.
 - **The page:** the inbox layout with All / Unread / Mentions and *Mark all as read*; opening an entry marks it read. The right side shows the image and the event (the comment in its thread, or the translation with its status change).
-- **Order:** built after Comments and Assigned to me, since it reports on both.
+- **Storage:** one `notifications` record per recipient and event (IndexedDB v6, optional in snapshots), with `readAt`. The rules of who hears what are pure functions in `src/domain/notifications.ts`; the local repository writes the records in the same transaction as the action, as a backend would on the server. Mentions are matched as "@Full Name" among the project's people. A "reply" goes to everyone who wrote earlier in the thread, unless that person is mentioned (then only "mention"); "resolved" goes to everyone who wrote in it. Reassigning the same person, or a review that changes nothing, sends nothing.
+- **Built (2026-10-25)** after Comments and Assigned to me. The navigation entries no longer have a disabled state (D11 is fully superseded).
 
 ## Pending
 

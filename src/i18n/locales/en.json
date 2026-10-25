@@ -5,8 +5,7 @@
     "notifications": "Notifications",
     "assignedToMe": "Assigned to me",
     "comments": "Comments",
-    "settings": "Settings",
-    "notAvailable": "Not available yet"
+    "settings": "Settings"
   },
   "settingsNav": {
     "label": "Settings navigation",
@@ -719,5 +718,34 @@
     "title": "Who translates {{name}}",
     "for": "Assignee for {{language}}",
     "error": "The assignment could not be saved."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "filter": "Show",
+    "all": "All",
+    "unread": "Unread · {{count}}",
+    "mentions": "Mentions",
+    "markAllRead": "Mark all as read",
+    "unreadCount_one": "{{count}} unread",
+    "unreadCount_other": "{{count}} unread",
+    "empty": "Nothing yet. You will hear about mentions, replies, reviews and assignments here.",
+    "emptyFiltered": "Nothing here with this filter.",
+    "nothingSelected": "Select a notification to see it with its image.",
+    "project": "Project",
+    "noImage": "This notification is not about an image.",
+    "goAssigned": "Open Assigned to me",
+    "goReview": "Review them in Assigned to me",
+    "goProject": "Open the project",
+    "kinds": {
+      "mention": "{{name}} mentioned you",
+      "reply": "{{name}} replied in a thread",
+      "resolved": "{{name}} resolved a thread",
+      "approved": "{{name}} approved your {{language}} translation",
+      "changesRequested": "{{name}} requested changes to your {{language}} translation",
+      "assigned": "{{name}} assigned you an item in {{language}}",
+      "submitted_one": "{{name}} sent {{count}} translation in {{section}} to review",
+      "submitted_other": "{{name}} sent {{count}} translations in {{section}} to review",
+      "addedToProject": "{{name}} added you to {{project}}"
+    }
   }
 }

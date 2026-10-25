@@ -20,6 +20,12 @@ import {
   type InviteRow,
 } from '@/domain/members';
 import { planMove } from '@/domain/moveItems';
+import {
+  addedPeople,
+  commentNotifications,
+  notify,
+  type NotificationDraft,
+} from '@/domain/notifications';
 import { isProjectDeleted, validateProjectIdentity } from '@/domain/workspaceProjects';
 import {
   createWorkspaceOwner,
@@ -75,6 +81,8 @@ import type {
   AssignmentRepository,
   CommentInboxEntry,
   ItemContext,
+  NotificationInboxEntry,
+  NotificationRepository,
   ReviewQueueEntry,
   ThreadWithComments,
   TranslationRepository,
@@ -91,6 +99,37 @@ function newEntity(by: Id | null): Entity {
 
 function touched(by: Id | null): Pick<Entity, 'updatedAt' | 'updatedBy'> {
   return { updatedAt: new Date().toISOString(), updatedBy: by };
+}
+
+/** Stores notifications drafted by src/domain/notifications.ts (DECISIONS D45). */
+async function addNotifications(
+  db: TranslatorDb,
+  drafts: NotificationDraft[],
+  by: Id | null,
+): Promise<void> {
+  if (drafts.length === 0) return;
+  await db.notifications.bulkAdd(
+    drafts.map((draft) => ({
+      ...newEntity(by),
+      sectionId: null,
+      contentItemId: null,
+      imageId: null,
+      threadId: null,
+      commentId: null,
+      language: null,
+      count: null,
+      readAt: null,
+      ...draft,
+    })),
+  );
+}
+
+/** The people of a project, who can be @mentioned. */
+async function projectPeople(db: TranslatorDb, projectId: Id): Promise<Member[]> {
+  const project = await db.projects.get(projectId);
+  if (!project) return [];
+  const ids = [...project.managerIds, ...project.memberIds];
+  return (await db.members.bulkGet(ids)).filter((m): m is Member => Boolean(m));
 }
 
 async function mustGet<T>(record: Promise<T | undefined>, what: string, id: Id): Promise<T> {
@@ -200,30 +239,39 @@ class LocalProjectRepository implements ProjectRepository {
 
   async create(input: NewProjectInput, by: Id | null): Promise<Project> {
     const db = this.db;
-    return db.transaction('rw', [db.projects, db.glossaryCategories], async () => {
-      const now = new Date();
-      const existingCodes = (await db.projects.toArray()).map((p) => p.code);
-      const project: Project = {
-        id: crypto.randomUUID(),
-        createdAt: now.toISOString(),
-        updatedAt: now.toISOString(),
-        createdBy: by,
-        updatedBy: by,
-        ...input,
-        code: generateProjectCode(input.name, now.getFullYear(), existingCodes),
-        releaseDate: null,
-      };
-      await db.projects.add(project);
-      await db.glossaryCategories.bulkAdd(
-        DEFAULT_CATEGORIES.map((name, order) => ({
-          ...newEntity(by),
-          projectId: project.id,
-          name,
-          order,
-        })),
-      );
-      return project;
-    });
+    return db.transaction(
+      'rw',
+      [db.projects, db.glossaryCategories, db.notifications],
+      async () => {
+        const now = new Date();
+        const existingCodes = (await db.projects.toArray()).map((p) => p.code);
+        const project: Project = {
+          id: crypto.randomUUID(),
+          createdAt: now.toISOString(),
+          updatedAt: now.toISOString(),
+          createdBy: by,
+          updatedBy: by,
+          ...input,
+          code: generateProjectCode(input.name, now.getFullYear(), existingCodes),
+          releaseDate: null,
+        };
+        await db.projects.add(project);
+        await db.glossaryCategories.bulkAdd(
+          DEFAULT_CATEGORIES.map((name, order) => ({
+            ...newEntity(by),
+            projectId: project.id,
+            name,
+            order,
+          })),
+        );
+        await addNotifications(
+          db,
+          notify(addedPeople(null, project), by, 'addedToProject', { projectId: project.id }),
+          by,
+        );
+        return project;
+      },
+    );
   }
 
   async addLanguage(projectId: Id, language: LanguageCode, by: Id | null): Promise<Project> {
@@ -246,12 +294,17 @@ class LocalProjectRepository implements ProjectRepository {
 
   async updateDetails(projectId: Id, patch: ProjectDetailsPatch, by: Id | null): Promise<Project> {
     const db = this.db;
-    return db.transaction('rw', db.projects, async () => {
+    return db.transaction('rw', [db.projects, db.notifications], async () => {
       const project = await mustGet(db.projects.get(projectId), 'Project', projectId);
       const error = checkProjectDetails(project, patch);
       if (error) throw new Error(`Invalid project details (${error}) for project ${projectId}`);
       const updated: Project = { ...project, ...patch, ...touched(by) };
       await db.projects.put(updated);
+      await addNotifications(
+        db,
+        notify(addedPeople(project, updated), by, 'addedToProject', { projectId }),
+        by,
+      );
       return updated;
     });
   }
@@ -522,14 +575,34 @@ class LocalTranslationRepository implements TranslationRepository {
   }
 
   async review(imageId: Id, language: LanguageCode, decision: ReviewDecision, by: Id) {
-    const reviewer = await this.db.members.get(by);
-    if (reviewer?.category !== 'manager') throw new Error('Only managers can review');
-    await this.change(imageId, language, (current) => {
-      if (!current) return undefined;
-      return decision === 'approve'
-        ? approve(current, by, new Date())
-        : requestChanges(current, by, new Date());
-    });
+    const db = this.db;
+    await db.transaction(
+      'rw',
+      [db.members, db.images, db.translations, db.notifications],
+      async () => {
+        const reviewer = await db.members.get(by);
+        if (reviewer?.category !== 'manager') throw new Error('Only managers can review');
+        const image = await mustGet(db.images.get(imageId), 'Image', imageId);
+        const current = await db.translations.where({ imageId, language }).first();
+        if (!current) return;
+        const next =
+          decision === 'approve'
+            ? approve(current, by, new Date())
+            : requestChanges(current, by, new Date());
+        if (next === current) return;
+        await db.translations.put(next);
+        await addNotifications(
+          db,
+          notify(
+            [current.authorId ?? current.updatedBy],
+            by,
+            decision === 'approve' ? 'approved' : 'changesRequested',
+            { projectId: image.projectId, contentItemId: image.contentItemId, imageId, language },
+          ),
+          by,
+        );
+      },
+    );
   }
 
   async listReviewQueue(): Promise<ReviewQueueEntry[]> {
@@ -554,16 +627,37 @@ class LocalTranslationRepository implements TranslationRepository {
 
   async submitSectionForReview(sectionId: Id, by: Id | null): Promise<number> {
     const db = this.db;
-    return db.transaction('rw', [db.contentItems, db.images, db.translations], async () => {
-      const itemIds = (await db.contentItems.where({ sectionId }).toArray()).map((i) => i.id);
-      const imageIds = (await db.images.where('contentItemId').anyOf(itemIds).toArray()).map(
-        (i) => i.id,
-      );
-      const translations = await db.translations.where('imageId').anyOf(imageIds).toArray();
-      const submitted = submitForReview(translations, by, new Date());
-      await db.translations.bulkPut(submitted);
-      return submitted.length;
-    });
+    return db.transaction(
+      'rw',
+      [db.sections, db.projects, db.contentItems, db.images, db.translations, db.notifications],
+      async () => {
+        const section = await mustGet(db.sections.get(sectionId), 'Section', sectionId);
+        const project = await mustGet(
+          db.projects.get(section.projectId),
+          'Project',
+          section.projectId,
+        );
+        const itemIds = (await db.contentItems.where({ sectionId }).toArray()).map((i) => i.id);
+        const imageIds = (await db.images.where('contentItemId').anyOf(itemIds).toArray()).map(
+          (i) => i.id,
+        );
+        const translations = await db.translations.where('imageId').anyOf(imageIds).toArray();
+        const submitted = submitForReview(translations, by, new Date());
+        await db.translations.bulkPut(submitted);
+        if (submitted.length > 0) {
+          await addNotifications(
+            db,
+            notify(project.managerIds, by, 'submitted', {
+              projectId: project.id,
+              sectionId,
+              count: submitted.length,
+            }),
+            by,
+          );
+        }
+        return submitted.length;
+      },
+    );
   }
 
   /** Reads the translation of (image, language), applies `update` and stores the result. */
@@ -650,51 +744,119 @@ class LocalCommentRepository implements CommentRepository {
 
   async startThread(imageId: Id, language: LanguageCode | null, body: string, by: Id | null) {
     const db = this.db;
-    await db.transaction('rw', [db.images, db.commentThreads, db.comments], async () => {
-      const image = await mustGet(db.images.get(imageId), 'Image', imageId);
-      const thread: CommentThread = {
-        ...newEntity(by),
-        projectId: image.projectId,
-        imageId,
-        language,
-        resolvedAt: null,
-        resolvedBy: null,
-      };
-      const comment: Comment = {
-        ...newEntity(by),
-        projectId: image.projectId,
-        threadId: thread.id,
-        authorId: by,
-        body: body.trim(),
-      };
-      await db.commentThreads.add(thread);
-      await db.comments.add(comment);
-    });
+    await db.transaction(
+      'rw',
+      [db.images, db.commentThreads, db.comments, db.projects, db.members, db.notifications],
+      async () => {
+        const image = await mustGet(db.images.get(imageId), 'Image', imageId);
+        const thread: CommentThread = {
+          ...newEntity(by),
+          projectId: image.projectId,
+          imageId,
+          language,
+          resolvedAt: null,
+          resolvedBy: null,
+        };
+        const comment: Comment = {
+          ...newEntity(by),
+          projectId: image.projectId,
+          threadId: thread.id,
+          authorId: by,
+          body: body.trim(),
+        };
+        await db.commentThreads.add(thread);
+        await db.comments.add(comment);
+        await addNotifications(
+          db,
+          commentNotifications({
+            body: comment.body,
+            by,
+            people: await projectPeople(db, image.projectId),
+            earlierAuthorIds: [],
+            about: {
+              projectId: image.projectId,
+              contentItemId: image.contentItemId,
+              imageId,
+              threadId: thread.id,
+              commentId: comment.id,
+              language,
+            },
+          }),
+          by,
+        );
+      },
+    );
   }
 
   async reply(threadId: Id, body: string, by: Id | null) {
     const db = this.db;
-    await db.transaction('rw', [db.commentThreads, db.comments], async () => {
-      const thread = await mustGet(db.commentThreads.get(threadId), 'Thread', threadId);
-      await db.comments.add({
-        ...newEntity(by),
-        projectId: thread.projectId,
-        threadId,
-        authorId: by,
-        body: body.trim(),
-      });
-      await db.commentThreads.update(threadId, touched(by));
-    });
+    await db.transaction(
+      'rw',
+      [db.commentThreads, db.comments, db.images, db.projects, db.members, db.notifications],
+      async () => {
+        const thread = await mustGet(db.commentThreads.get(threadId), 'Thread', threadId);
+        const earlier = await db.comments.where({ threadId }).toArray();
+        const image = await db.images.get(thread.imageId);
+        const comment: Comment = {
+          ...newEntity(by),
+          projectId: thread.projectId,
+          threadId,
+          authorId: by,
+          body: body.trim(),
+        };
+        await db.comments.add(comment);
+        await db.commentThreads.update(threadId, touched(by));
+        await addNotifications(
+          db,
+          commentNotifications({
+            body: comment.body,
+            by,
+            people: await projectPeople(db, thread.projectId),
+            earlierAuthorIds: earlier.map((c) => c.authorId),
+            about: {
+              projectId: thread.projectId,
+              contentItemId: image?.contentItemId ?? null,
+              imageId: thread.imageId,
+              threadId,
+              commentId: comment.id,
+              language: thread.language,
+            },
+          }),
+          by,
+        );
+      },
+    );
   }
 
   async resolve(threadId: Id, by: Id | null) {
-    const now = new Date().toISOString();
-    await this.db.commentThreads.update(threadId, {
-      resolvedAt: now,
-      resolvedBy: by,
-      updatedAt: now,
-      updatedBy: by,
-    });
+    const db = this.db;
+    await db.transaction(
+      'rw',
+      [db.commentThreads, db.comments, db.images, db.notifications],
+      async () => {
+        const thread = await mustGet(db.commentThreads.get(threadId), 'Thread', threadId);
+        const now = new Date().toISOString();
+        await db.commentThreads.update(threadId, {
+          resolvedAt: now,
+          resolvedBy: by,
+          updatedAt: now,
+          updatedBy: by,
+        });
+        const writers = (await db.comments.where({ threadId }).toArray()).map((c) => c.authorId);
+        const image = await db.images.get(thread.imageId);
+        await addNotifications(
+          db,
+          notify(writers, by, 'resolved', {
+            projectId: thread.projectId,
+            contentItemId: image?.contentItemId ?? null,
+            imageId: thread.imageId,
+            threadId,
+            language: thread.language,
+          }),
+          by,
+        );
+      },
+    );
   }
 
   async reopen(threadId: Id, by: Id | null) {
@@ -862,7 +1024,7 @@ class LocalAssignmentRepository implements AssignmentRepository {
     const db = this.db;
     await db.transaction(
       'rw',
-      [db.members, db.projects, db.contentItems, db.assignments],
+      [db.members, db.projects, db.contentItems, db.assignments, db.notifications],
       async () => {
         const manager = await db.members.get(by);
         if (manager?.category !== 'manager') throw new Error('Only managers can assign');
@@ -883,16 +1045,17 @@ class LocalAssignmentRepository implements AssignmentRepository {
         );
         if (assigneeId === null) {
           if (existing) await db.assignments.delete(existing.id);
-        } else if (existing) {
-          if (existing.assigneeId !== assigneeId) {
-            // A new assignment for someone else: it counts as new in their list.
-            await db.assignments.put({
-              ...existing,
-              ...newEntity(by),
-              id: existing.id,
-              assigneeId,
-            });
-          }
+          return;
+        }
+        if (existing?.assigneeId === assigneeId) return;
+        if (existing) {
+          // A new assignment for someone else: it counts as new in their list.
+          await db.assignments.put({
+            ...existing,
+            ...newEntity(by),
+            id: existing.id,
+            assigneeId,
+          });
         } else {
           await db.assignments.add({
             ...newEntity(by),
@@ -902,6 +1065,16 @@ class LocalAssignmentRepository implements AssignmentRepository {
             assigneeId,
           });
         }
+        await addNotifications(
+          db,
+          notify([assigneeId], by, 'assigned', {
+            projectId: project.id,
+            sectionId: item.sectionId,
+            contentItemId: itemId,
+            language,
+          }),
+          by,
+        );
       },
     );
   }
@@ -938,6 +1111,80 @@ class LocalAssignmentRepository implements AssignmentRepository {
         });
       },
     );
+  }
+}
+
+class LocalNotificationRepository implements NotificationRepository {
+  constructor(private readonly db: TranslatorDb) {}
+
+  async listFor(recipientId: Id): Promise<NotificationInboxEntry[]> {
+    const db = this.db;
+    return db.transaction(
+      'r',
+      [
+        db.notifications,
+        db.projects,
+        db.sections,
+        db.contentItems,
+        db.images,
+        db.commentThreads,
+        db.comments,
+        db.translations,
+      ],
+      async () => {
+        const notifications = await db.notifications.where({ recipientId }).toArray();
+        const entries = await Promise.all(
+          notifications.map(async (notification): Promise<NotificationInboxEntry | null> => {
+            const project = await db.projects.get(notification.projectId);
+            if (!project || isProjectDeleted(project)) return null;
+            const item = notification.contentItemId
+              ? ((await db.contentItems.get(notification.contentItemId)) ?? null)
+              : null;
+            const sectionId = item?.sectionId ?? notification.sectionId;
+            const section = sectionId ? ((await db.sections.get(sectionId)) ?? null) : null;
+            const image = notification.imageId
+              ? ((await db.images.get(notification.imageId)) ?? null)
+              : null;
+            const threadRecord = notification.threadId
+              ? await db.commentThreads.get(notification.threadId)
+              : undefined;
+            const thread = threadRecord
+              ? {
+                  thread: threadRecord,
+                  comments: (await db.comments.where({ threadId: threadRecord.id }).toArray()).sort(
+                    (a, b) => a.createdAt.localeCompare(b.createdAt),
+                  ),
+                }
+              : null;
+            const translation =
+              image && notification.language && !notification.threadId
+                ? ((await db.translations
+                    .where({ imageId: image.id, language: notification.language })
+                    .first()) ?? null)
+                : null;
+            return { notification, project, section, item, image, thread, translation };
+          }),
+        );
+        return entries.filter((e): e is NotificationInboxEntry => e !== null);
+      },
+    );
+  }
+
+  async markRead(ids: Id[]): Promise<void> {
+    const now = new Date().toISOString();
+    await this.db.notifications
+      .where('id')
+      .anyOf(ids)
+      .modify((n) => {
+        n.readAt ??= now;
+      });
+  }
+
+  async markAllRead(recipientId: Id): Promise<void> {
+    const now = new Date().toISOString();
+    await this.db.notifications.where({ recipientId }).modify((n) => {
+      n.readAt ??= now;
+    });
   }
 }
 
@@ -986,6 +1233,7 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
         db.glossaryEntries.bulkAdd(data.glossaryEntries),
         db.glossaryVersions.bulkAdd(data.glossaryVersions),
         db.assignments.bulkAdd(data.assignments ?? []),
+        db.notifications.bulkAdd(data.notifications ?? []),
         db.files.bulkAdd(stored),
         db.meta.put({ key: META_INITIALIZED_AT, value: new Date().toISOString() }),
         settings && db.meta.put({ key: META_SETTINGS, value: JSON.stringify(settings) }),
@@ -1017,6 +1265,7 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
         glossaryEntries,
         glossaryVersions,
         assignments,
+        notifications,
         stored,
       ] = await Promise.all([
         db.members.toArray(),
@@ -1031,6 +1280,7 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
         db.glossaryEntries.toArray(),
         db.glossaryVersions.toArray(),
         db.assignments.toArray(),
+        db.notifications.toArray(),
         db.files.toArray(),
       ]);
       const data: WorkspaceData = {
@@ -1046,6 +1296,7 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
         glossaryEntries,
         glossaryVersions,
         assignments,
+        notifications,
       };
       const files: WorkspaceFile[] = stored.map((file) => ({
         id: file.id,
@@ -1088,6 +1339,7 @@ export function createLocalRepositories(db: TranslatorDb = new TranslatorDb()): 
     comments: new LocalCommentRepository(db),
     glossary: new LocalGlossaryRepository(db),
     assignments: new LocalAssignmentRepository(db),
+    notifications: new LocalNotificationRepository(db),
     workspace: new LocalWorkspaceRepository(db),
   };
 }

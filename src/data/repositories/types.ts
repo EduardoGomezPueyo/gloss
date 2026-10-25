@@ -20,6 +20,7 @@ import type { WorkspaceData, WorkspaceFile, WorkspaceSettings } from '@/domain/w
 import type {
   Assignment,
   Comment,
+  Notification,
   CommentThread,
   ContentItem,
   GlossaryCategory,
@@ -185,6 +186,26 @@ export interface AssignmentInboxEntry extends ItemContext {
   translations: Translation[];
 }
 
+/** A notification with what it is about, for the Notifications page (D45). */
+export interface NotificationInboxEntry {
+  notification: Notification;
+  project: Project;
+  section: Section | null;
+  item: ContentItem | null;
+  image: SceneImage | null;
+  /** For comment events: the thread as it is now. */
+  thread: ThreadWithComments | null;
+  /** For review events: the translation as it is now. */
+  translation: Translation | null;
+}
+
+export interface NotificationRepository {
+  /** A person's notifications, of the projects that were not deleted. */
+  listFor(recipientId: Id): Promise<NotificationInboxEntry[]>;
+  markRead(ids: Id[]): Promise<void>;
+  markAllRead(recipientId: Id): Promise<void>;
+}
+
 /** Who translates each content item into each language (D44). */
 export interface AssignmentRepository {
   listForProject(projectId: Id): Promise<Assignment[]>;
@@ -257,5 +278,6 @@ export interface Repositories {
   comments: CommentRepository;
   glossary: GlossaryRepository;
   assignments: AssignmentRepository;
+  notifications: NotificationRepository;
   workspace: WorkspaceRepository;
 }

@@ -5,6 +5,8 @@ import CommentsIcon from '@/assets/icons/nav-comments.svg?react';
 import NotificationsIcon from '@/assets/icons/nav-notifications.svg?react';
 import ProjectsIcon from '@/assets/icons/nav-projects.svg?react';
 import SettingsIcon from '@/assets/icons/nav-settings.svg?react';
+import { useNotifications } from '@/data/hooks';
+import { useCurrentUser } from '../currentUser/useCurrentUser';
 import { ContentPanel } from './ContentPanel';
 import { DemoControls } from './DemoControls';
 import { LanguageToggle } from './LanguageToggle';
@@ -15,6 +17,9 @@ import { UserMenu } from './UserMenu';
 /** Translation space: general navigation on the left, content panel on the right. */
 export function AppLayout() {
   const { t } = useTranslation();
+  const { currentUser } = useCurrentUser();
+  const notifications = useNotifications(currentUser?.id);
+  const unread = (notifications.data ?? []).filter((e) => !e.notification.readAt).length;
 
   return (
     <div className="flex h-full gap-4 p-4">
@@ -24,8 +29,13 @@ export function AppLayout() {
       >
         <div className="flex flex-1 flex-col gap-1">
           <SidebarNavItem icon={ProjectsIcon} label={t('nav.projects')} to="/projects" />
-          {/* No design yet (open decision 6): shown disabled. */}
-          <SidebarNavItem icon={NotificationsIcon} label={t('nav.notifications')} />
+          <SidebarNavItem
+            icon={NotificationsIcon}
+            label={t('nav.notifications')}
+            to="/notifications"
+            badge={unread}
+            badgeLabel={t('notifications.unreadCount', { count: unread })}
+          />
           <SidebarNavItem icon={AssignedIcon} label={t('nav.assignedToMe')} to="/assigned" />
           <SidebarNavItem icon={CommentsIcon} label={t('nav.comments')} to="/comments" />
           <SidebarNavItem icon={SettingsIcon} label={t('nav.settings')} to="/settings" />

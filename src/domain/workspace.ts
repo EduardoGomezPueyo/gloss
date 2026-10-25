@@ -7,6 +7,7 @@ import type {
   GlossaryEntry,
   GlossaryVersion,
   Id,
+  Notification,
   Member,
   Project,
   SceneImage,
@@ -55,6 +56,8 @@ export interface WorkspaceData {
   glossaryVersions: GlossaryVersion[];
   /** Absent in snapshots made before assignments existed (the demo): read as none. */
   assignments: Assignment[];
+  /** Absent in snapshots made before notifications existed: read as none. */
+  notifications: Notification[];
 }
 
 export const WORKSPACE_DATA_KEYS = [
@@ -70,10 +73,11 @@ export const WORKSPACE_DATA_KEYS = [
   'glossaryEntries',
   'glossaryVersions',
   'assignments',
+  'notifications',
 ] as const satisfies readonly (keyof WorkspaceData)[];
 
 /** Lists added after the snapshot format was published: a snapshot may leave them out. */
-const OPTIONAL_DATA_KEYS: readonly (keyof WorkspaceData)[] = ['assignments'];
+const OPTIONAL_DATA_KEYS: readonly (keyof WorkspaceData)[] = ['assignments', 'notifications'];
 
 export const SNAPSHOT_FORMAT = 'translator-tool-workspace';
 export const SNAPSHOT_VERSION = 1;

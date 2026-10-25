@@ -259,6 +259,81 @@ describe('local repositories: assignments and the review queue', () => {
   });
 });
 
+describe('local repositories: notifications', () => {
+  async function alpha() {
+    const { db, repos } = setup();
+    await loadFixture(repos);
+    const project = (await db.projects.toArray()).find((p) => p.name === 'Sample Project Alpha')!;
+    const members = await db.members.toArray();
+    const id = (name: string) => members.find((m) => m.name === name)!.id;
+    const thread = (await db.commentThreads.where({ projectId: project.id }).toArray()).find(
+      (t) => !t.resolvedAt,
+    )!;
+    return { db, repos, project, id, thread };
+  }
+  const kinds = async (repos: Repositories, recipient: string) =>
+    (await repos.notifications.listFor(recipient)).map((e) => e.notification.kind).sort();
+
+  it('notifies mentions and replies, never the author', async () => {
+    const { repos, id, thread } = await alpha();
+    // The open thread: Chloé wrote it, Ana replied.
+    await repos.comments.reply(thread.id, 'Agreed, @Ben Carter can you check?', id('Daniel Kim'));
+    expect(await kinds(repos, id('Ben Carter'))).toEqual(['mention']);
+    expect(await kinds(repos, id('Chloé Martin'))).toEqual(['reply']);
+    expect(await kinds(repos, id('Ana Torres'))).toEqual(['reply']);
+    expect(await kinds(repos, id('Daniel Kim'))).toEqual([]);
+
+    const [entry] = await repos.notifications.listFor(id('Ben Carter'));
+    expect(entry!.thread!.comments.at(-1)!.body).toContain('@Ben Carter');
+    expect(entry!.image).not.toBeNull();
+  });
+
+  it('notifies the writers of a resolved thread', async () => {
+    const { repos, id, thread } = await alpha();
+    await repos.comments.resolve(thread.id, id('Ana Torres'));
+    expect(await kinds(repos, id('Chloé Martin'))).toEqual(['resolved']);
+    expect(await kinds(repos, id('Ana Torres'))).toEqual([]);
+  });
+
+  it('notifies assignments, reviews, submissions and new project people', async () => {
+    const { db, repos, project, id } = await alpha();
+    const ana = id('Ana Torres');
+    const item = (await db.contentItems.where({ projectId: project.id }).toArray())[3]!;
+    await repos.assignments.assign(item.id, 'fr', id('Eva Novak'), ana);
+    expect(await kinds(repos, id('Eva Novak'))).toEqual(['assigned']);
+    // Assigning the same person again says nothing new.
+    await repos.assignments.assign(item.id, 'fr', id('Eva Novak'), ana);
+    expect(await kinds(repos, id('Eva Novak'))).toEqual(['assigned']);
+
+    const waiting = (await db.translations.where({ projectId: project.id }).toArray()).find(
+      (t) => t.status === 'under-review' && t.authorId && t.authorId !== ana,
+    )!;
+    await repos.translations.review(waiting.imageId, waiting.language, 'requestChanges', ana);
+    expect(await kinds(repos, waiting.authorId!)).toContain('changesRequested');
+
+    await repos.projects.updateDetails(
+      project.id,
+      { memberIds: [...project.memberIds, id('Farah Haddad')] },
+      ana,
+    );
+    expect(await kinds(repos, id('Farah Haddad'))).toEqual(['addedToProject']);
+  });
+
+  it('marks notifications read, one by one or all at once', async () => {
+    const { repos, id, thread } = await alpha();
+    await repos.comments.reply(thread.id, 'One', id('Daniel Kim'));
+    await repos.comments.reply(thread.id, 'Two', id('Daniel Kim'));
+    const chloe = id('Chloé Martin');
+    const [first] = await repos.notifications.listFor(chloe);
+    await repos.notifications.markRead([first!.notification.id]);
+    let unread = (await repos.notifications.listFor(chloe)).filter((e) => !e.notification.readAt);
+    expect(unread).toHaveLength(1);
+    await repos.notifications.markAllRead(chloe);
+    unread = (await repos.notifications.listFor(chloe)).filter((e) => !e.notification.readAt);
+    expect(unread).toHaveLength(0);
+  });
+});
+
 describe('local repositories: sections, items and languages', () => {
   async function alpha() {
     const { db, repos } = setup();

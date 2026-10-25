@@ -244,8 +244,12 @@ export function useCommentAction() {
           return comments.reopen(action.threadId, action.by);
       }
     },
-    // Every comment query: that image's, and the Comments page's.
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments'] }),
+    // Every comment query (that image's, the Comments page's) and the notifications.
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['comments'] }),
+        queryClient.invalidateQueries({ queryKey: ['projects', 'notifications'] }),
+      ]),
   });
 }
 
@@ -446,5 +450,25 @@ export function useReviewQueue() {
   return useQuery({
     queryKey: queryKeys.reviewQueue,
     queryFn: () => translations.listReviewQueue(),
+  });
+}
+
+/** The current person's notifications (DECISIONS D45). */
+export function useNotifications(recipientId: Id | undefined) {
+  const { notifications } = useRepositories();
+  return useQuery({
+    queryKey: queryKeys.notifications(recipientId ?? ''),
+    queryFn: () => notifications.listFor(recipientId!),
+    enabled: recipientId !== undefined,
+  });
+}
+
+export function useMarkNotificationsRead() {
+  const { notifications } = useRepositories();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { ids: Id[] } | { allFor: Id }) =>
+      'ids' in vars ? notifications.markRead(vars.ids) : notifications.markAllRead(vars.allFor),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects', 'notifications'] }),
   });
 }

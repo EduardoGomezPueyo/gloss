@@ -219,6 +219,7 @@ export function createFixtureData(options: FixtureOptions = {}): WorkspaceData {
     glossaryEntries: [],
     glossaryVersions: [],
     assignments: [],
+    notifications: [],
   };
 
   for (const plan of PROJECTS) {

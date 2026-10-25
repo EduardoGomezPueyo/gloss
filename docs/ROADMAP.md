@@ -49,7 +49,7 @@ Vertical phases; the app stays runnable after each one.
 - [ ] **10. Pages without a design** (D37), each designed in code from a short spec the author approves, and added to the demo data:
   - [x] Comments (D43, with the shared inbox layout), 2026-10-25
   - [x] Assigned to me (D44, with assignments per item and language and the managers' To review tab), 2026-10-25
-  - [ ] Notifications (activity log)
+  - [x] Notifications (D45, an activity log with a read state per person and an unread count in the navigation), 2026-10-25
   - [x] Settings > General (with the project visibility setting, D41) and Settings > Workspace projects (D42), 2026-10-25
   - [ ] Final demo pass and redeploy
 

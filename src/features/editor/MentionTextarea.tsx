@@ -12,7 +12,7 @@ function mentionQuery(text: string, caret: number): string | null {
 
 /**
  * Comment textarea with "@" suggestions (SPEC 5.4). Picking a person inserts
- * "@Full Name"; mentions are only highlighted, nobody is notified (out of scope).
+ * "@Full Name"; the mentioned person gets a notification (DECISIONS D45).
  */
 export function MentionTextarea({
   value,

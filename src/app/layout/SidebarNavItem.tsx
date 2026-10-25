@@ -1,34 +1,27 @@
 import type { ComponentType, SVGProps } from 'react';
 import { NavLink } from 'react-router';
-import { useTranslation } from 'react-i18next';
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 
 interface SidebarNavItemProps {
   icon: Icon;
   label: string;
-  /** Route to navigate to. Omit it for entries whose page has no design yet. */
-  to?: string;
+  to: string;
+  /** A count shown at the end, e.g. unread notifications; hidden when 0. */
+  badge?: number;
+  /** Accessible text for the badge, e.g. "3 unread". */
+  badgeLabel?: string;
 }
 
 const baseClass = 'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm leading-none';
 
-export function SidebarNavItem({ icon: IconComponent, label, to }: SidebarNavItemProps) {
-  const { t } = useTranslation();
-
-  if (!to) {
-    return (
-      <span
-        aria-disabled="true"
-        title={t('nav.notAvailable')}
-        className={`${baseClass} cursor-not-allowed text-nav-unselected`}
-      >
-        <IconComponent aria-hidden className="size-4 shrink-0" />
-        {label}
-      </span>
-    );
-  }
-
+export function SidebarNavItem({
+  icon: IconComponent,
+  label,
+  to,
+  badge = 0,
+  badgeLabel,
+}: SidebarNavItemProps) {
   return (
     <NavLink
       to={to}
@@ -42,6 +35,12 @@ export function SidebarNavItem({ icon: IconComponent, label, to }: SidebarNavIte
     >
       <IconComponent aria-hidden className="size-4 shrink-0" />
       {label}
+      {badge > 0 && (
+        <span className="ml-auto rounded-full bg-accent px-1.5 py-0.5 text-[10px] leading-none font-semibold text-accent-foreground">
+          <span aria-hidden>{badge > 99 ? '99+' : badge}</span>
+          <span className="sr-only">{badgeLabel ?? badge}</span>
+        </span>
+      )}
     </NavLink>
   );
 }

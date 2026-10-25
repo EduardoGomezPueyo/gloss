@@ -12,6 +12,8 @@ export const queryKeys = {
   assignments: (projectId: Id) => ['projects', 'assignments', projectId] as const,
   assignmentInbox: ['projects', 'assignmentInbox'] as const,
   reviewQueue: ['projects', 'reviewQueue'] as const,
+  /** Under "projects" too, so any project write refreshes them (D45). */
+  notifications: (recipientId: Id) => ['projects', 'notifications', recipientId] as const,
   comments: (imageId: Id) => ['comments', imageId] as const,
   /** Under "comments", so every comment write also refreshes the Comments page. */
   commentInbox: ['comments', 'inbox'] as const,

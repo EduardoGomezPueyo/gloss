@@ -9,6 +9,7 @@ import type {
   GlossaryEntry,
   GlossaryVersion,
   Member,
+  Notification,
   Project,
   SceneImage,
   Section,
@@ -55,6 +56,7 @@ export class TranslatorDb extends Dexie {
   glossaryVersions!: EntityTable<GlossaryVersion, 'id'>;
   meta!: EntityTable<MetaRecord, 'key'>;
   assignments!: EntityTable<Assignment, 'id'>;
+  notifications!: EntityTable<Notification, 'id'>;
 
   constructor(name = 'translator') {
     super(name);
@@ -124,6 +126,8 @@ export class TranslatorDb extends Dexie {
       });
     // Phase 10: who translates each content item into each language (DECISIONS D44).
     this.version(5).stores({ assignments: 'id, projectId, contentItemId, assigneeId' });
+    // Phase 10: one record per person and event, with its read state (D45).
+    this.version(6).stores({ notifications: 'id, recipientId, projectId' });
   }
 
   /** Tables that hold workspace data (everything except meta). */
@@ -142,6 +146,7 @@ export class TranslatorDb extends Dexie {
       this.glossaryEntries,
       this.glossaryVersions,
       this.assignments,
+      this.notifications,
     ];
   }
 }

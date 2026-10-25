@@ -94,7 +94,7 @@ The **glossary is per project**: it is reached from the _Glossary_ card on the p
 
 > Some screenshots (project list with filters and the glossary) show the **old navigation** (Projects, Glossary). What is described here is current; on the glossary screens the active item must be _Projects_.
 
-**No design:** Notifications, Assigned to me, Comments, General settings and Workspace projects. They are built in phase 10 from short specs the author approves (DECISIONS D37); until then an entry stays disabled. General settings (5.7), Workspace projects (5.8), Comments (5.9) and Assigned to me (5.10) are built; `/settings` opens General settings.
+**No design:** Notifications, Assigned to me, Comments, General settings and Workspace projects. They were built in phase 10 from short specs the author approved (DECISIONS D37): General settings (5.7), Workspace projects (5.8), Comments (5.9), Assigned to me (5.10) and Notifications (5.11). `/settings` opens General settings.
 
 Requirements:
 
@@ -261,6 +261,14 @@ Redesigned by the author (DECISIONS D40): two columns, one language at a time.
 - **The page** (inbox layout, 5.9): the items assigned to the current user, most urgent project first and then the most recent assignment. Each entry shows the item, the language, x/N translated, the first line of source text and where it lives. The right side shows the item's first image, the source text, and _Your translation_ with its status, progress and each image's translation.
 - **To review** (managers only, a second tab): the translations under review in the projects they manage, with the source text, the translation, who translated it, and _Request changes_ / _Approve_.
 
+### 5.11 Notifications (no design, DECISIONS D45)
+
+- **Events,** one per person concerned, never for your own actions: you are @mentioned; someone replies in a thread you wrote in; a thread you wrote in is resolved; your translation is approved or sent back; a content item is assigned to you in a language; a section is submitted for review (to that project's managers, with how many translations); you are added to a project (created with you, or added later).
+- **Navigation:** _Notifications_ shows the number of unread ones.
+- **The page** (inbox layout, 5.9): a sentence per event ("Ana Torres mentioned you"), the comment or translation as an excerpt, the project and item, the time and an unread dot. Filters _All / Unread / Mentions_ and _Mark all as read_. Opening one marks it read.
+- **Right side:** comment events show the image and the thread as it is now (reply, resolve); review events show the image, the source text and the translation with its status; events without an image show where they happened with a link (_Assigned to me_, its _To review_ tab, or the project).
+- These are in-app notifications for the simulated users: no email or push (section 8).
+
 ## 6. Business rules and vocabulary
 
 - **Statuses (canonical):** `Not started`, `In progress`, `Under Review`, `Completed`. Order when sorting by status: In progress > Under Review > Not started > Completed.
@@ -322,7 +330,7 @@ Redesigned by the author (DECISIONS D40): two columns, one language at a time.
 
 ## 8. Out of scope in v1
 
-Real authentication, real email invitations, notifications, synchronization between users, AI translation, Kanban and Timeline views, PO/XLIFF import, pages without a design (see section 4), and **preview of the translated text over the game image**: the tool cannot rewrite the text inside the scene without rendering it with the game's own font and text box, so it is not considered even for the future.
+Real authentication, real email invitations, email or push notifications (in-app ones are built, 5.11), synchronization between users, AI translation, Kanban and Timeline views, PO/XLIFF import, pages without a design (see section 4), and **preview of the translated text over the game image**: the tool cannot rewrite the text inside the scene without rendering it with the game's own font and text box, so it is not considered even for the future.
 
 ## 9. Design references
 

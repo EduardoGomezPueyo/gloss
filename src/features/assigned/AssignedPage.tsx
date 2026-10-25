@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 import { useCurrentUser } from '@/app/currentUser/useCurrentUser';
 import {
   useAssignmentInbox,
@@ -42,7 +43,11 @@ export function AssignedPage() {
   const assignmentInbox = useAssignmentInbox();
   const reviewQueue = useReviewQueue();
   const { data: members = [] } = useMembers();
-  const [tab, setTab] = useState<Tab>('assigned');
+  const [params] = useSearchParams();
+  // Notifications link to "?tab=review" (D45).
+  const [tab, setTab] = useState<Tab>(() =>
+    params.get('tab') === 'review' ? 'review' : 'assigned',
+  );
   const isReviewer = canReview(currentUser);
   const activeTab: Tab = isReviewer ? tab : 'assigned';
 
