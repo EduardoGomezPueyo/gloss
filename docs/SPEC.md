@@ -72,7 +72,7 @@ Hierarchy: **Workspace > Project > Section > Content item > Image**. Each image 
 - **Project**: name (required), identifier (e.g. `FFVII-GEN-2025`), release date (in the design, a quarter: "Q3 2025"), **source language** (per project; e.g. a game in Japanese translated into other languages), target languages (not including the source), platforms (Playstation, Xbox, PC, Switch; each with its own color), **one or more managers**, members, priority, status, total words, its own glossary.
 - **Section**: name, description, order, progress (%), status. Shows the project's managers and priority **[Proposal: they are inherited]**.
 - **Content item**: name, **type** (in the design, "Mission dialogue" and "Character dialogue"), status, progress, word count, language count, last update (who and when), ordered images, note for translators.
-- **Image**: file, short title ("Station rendezvous"), order within the content item, and its **source text block**: text (from OCR, editable), _speaker_, type (e.g. "Dialogue"), context note (e.g. "After the reactor escape"), character count, and the **edited** mark if the text has been changed from the OCR result.
+- **Image**: file, short title ("Station rendezvous"), order within the content item, and its **source text block**: text (from OCR, editable), _speaker_, type (e.g. "Dialogue"), context (e.g. "After the reactor escape"; stored on the content item, D40), character count, and the **edited** mark if the text has been changed from the OCR result.
 - **Translation**: per image and language; text, status, author, last edit date, reviewer (peer review), AI flag pending human review (v2). The speaker is inherited from the source and is read-only.
 - **TranslatorNote**: style instruction attached to the content item or to the image.
 - **CommentThread**: belongs to an image; language, category (e.g. "Terminology"), status (`open` | `resolved`), who resolved it, replies, `@` mentions.
@@ -179,7 +179,7 @@ Two-column layout. There are two versions of the screenshot: in one, the _Sectio
 
 ### 5.4 Translation editor ("Translation workspace")
 
-Three-column layout.
+Redesigned by the author (DECISIONS D40): two columns, one language at a time.
 
 **Header**
 
@@ -187,26 +187,17 @@ Three-column layout.
 - Autosave indicator ("All changes saved") and primary **Submit for review** button, which acts on the **section** (resolved decision 17). Although the button is in the content item editor, it affects the section that contains it.
 - Breadcrumb: `← All sections > Act 1 - World introduction > Bomber mission`, and the project identifier on the right.
 
-**Left column — context**
+**"Source image" card** (title on the left, "01 / 02 in this item" with previous and next arrows on the right; the arrows step through the images of the content item)
 
-- **Source image**: "01 / 02" counter, the scene image, file name, zoom (100%) and full screen.
-- **Source text**: source language ("English · Read only"), speaker, source text and metadata (type, context note, character count). **The text can be edited by clicking on it** (a small action, not yet designed) and, if changed, the **edited** label appears. **[Proposal]** the same action covers text, speaker, type and context.
-- **Images in this section** (should say "item"): thumbnails with number, title and a _Current_ / _Next_ mark, and _Previous image_ / _Next image_ buttons.
+- **Left column:** the scene image, file name, zoom (100%) and full screen. Below it, the **Comments** card: this image's open threads, one line each (author, language, excerpt, time), with _Resolve_ and, if it has replies, an "N replies" link that opens the side bar on that thread; or "No comments on this image". **+ Comment** opens a composer inside the card (text with `@` to mention, language, _Cancel_ / _Comment_). **View all** opens a side bar (~400px) over the right side, closed with Esc or ×: _Open · N_ and _Resolved · N_ tabs, language filter, threads with replies, _Resolve_ / _Reopen_, and a composer with `@` to mention and a language selector. Scope: the current image.
+- **Right column:**
+  - **Source text**: "English · Click to edit", speaker, text and the line "type · context · N characters". Clicking the text edits text, speaker, type and context together and, if the text changed, the **edited** label appears. The **context** belongs to the content item (it is the same for all its images).
+  - **Editor for one language**: a "Spanish ▾" picker ("Pick a language to translate") whose menu lists every target language with its status and x/N translated; the translation's status badge; the text area; "Edited by you · Just now" with the character and line counter against the source; and the action of the review flow (**Mark translated**, or _Approve_ / _Request changes_ for managers once under review). The counters are the only help for knowing whether the text fits; there is no preview over the scene (see section 8).
+  - **Glossary**: "N matches", search and _Full glossary_ in the header; the matching Markdown entries (title, short description and tags). A match is an entry whose title appears in the source text or in the translation.
 
-**Center column — translation**
+**Dropped in the redesign:** the per-language cards, the comparison between languages, the image strip, the locked _Speaker_ field and the separate note for translators (it became the context).
 
-- **Translations**: grid of cards per language with a status icon and an "x/N translated" counter. The selected card is highlighted. Help text: "Select a language to edit its translation."
-- **Editor for the selected language**: language selector, status badge, _Speaker_ (inherited, locked), text area, character and line counter, "N glossary match" notice, "Edited by you · Just now" and primary **Mark translated** button.
-- **Comparison between languages**: below the editor, cards for other languages appear with a language selector, status, text, author and date, and the _Edit French_ action. It is a visual comparison, not collaborative editing.
-- **Note for translators** at the bottom.
-- The character and line counters (against those of the source) are the only help for knowing whether the text fits; there is no preview over the scene (see section 8).
-
-**Right column — knowledge and conversation**
-
-- **Glossary**: _Full glossary_ link, search box (in the design, filled in with "Sector 8"), result counter and matching entries. **The design's panel shows "term → translation", usage guidance and an _Approved_ status, which no longer exist**: it must be adapted to show the Markdown entry (title, short description and tags). **[Proposal]** a match ("N glossary match") is an entry whose title appears in the source text or in the translation.
-- **Comments** (scope: the current image): _Open · N_ and _Resolved · N_ tabs, language filter; threads with a language and category label, author, time, replies, _Reply to thread_, _Resolve_; on resolved ones, "Resolved by …", _View thread_ and _Reopen_; composer with `@` to mention, language selector and _Comment_ button.
-
-**Translation statuses**: Not started → In progress → (Mark translated) → Under Review → Completed. **[Proposal]** _Submit for review_ moves the section's translations marked as translated to _Under Review_, and a manager moves them to _Completed_. The design shows the statuses but not the transitions (open decision 1).
+**Translation statuses**: Not started → In progress → (Mark translated) → Under Review → Completed. _Submit for review_ moves the section's translations marked as translated to _Under Review_, and a manager moves them to _Completed_ (D30).
 
 ### 5.5 Glossary (per project, Markdown entries only)
 

@@ -75,6 +75,10 @@ export interface ContentItem extends Entity {
   /** e.g. "Mission dialogue" (closed list or free text is still open). */
   type: string;
   order: number;
+  /**
+   * Context for every image of the item ("After the reactor escape"), shown in the
+   * source-text line of the editor (DECISIONS D40). Stored under its old name.
+   */
   translatorNote: string | null;
 }
 
@@ -98,7 +102,6 @@ export interface SourceText {
   speaker: string | null;
   /** e.g. "Dialogue". */
   type: string | null;
-  contextNote: string | null;
   /** Text as returned by OCR; null if it was typed by hand. */
   ocrText: string | null;
   ocrBlocks: OcrBlock[];

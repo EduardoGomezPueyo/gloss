@@ -57,7 +57,7 @@ export function applyOcrOutcome(image: SceneImage, outcome: OcrOutcome): SceneIm
 }
 
 /** Fields of the source text block that can be corrected by hand (SPEC open 2, DECISIONS D30). */
-export type SourceTextPatch = Pick<SourceText, 'text' | 'speaker' | 'type' | 'contextNote'>;
+export type SourceTextPatch = Pick<SourceText, 'text' | 'speaker' | 'type'>;
 
 /** Applies a manual correction; empty optional fields become null. OCR's own text is kept. */
 export function applySourceEdit(image: SceneImage, patch: SourceTextPatch): SceneImage {
@@ -69,7 +69,6 @@ export function applySourceEdit(image: SceneImage, patch: SourceTextPatch): Scen
       text: patch.text,
       speaker: optional(patch.speaker),
       type: optional(patch.type),
-      contextNote: optional(patch.contextNote),
     },
   };
 }

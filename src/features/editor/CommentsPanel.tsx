@@ -1,34 +1,43 @@
-import { Tabs } from 'radix-ui';
+import { Dialog, Tabs } from 'radix-ui';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentUser } from '@/app/currentUser/useCurrentUser';
 import { useCommentAction, useComments } from '@/data/hooks';
 import type { ThreadWithComments } from '@/data/repositories/types';
 import { languageName } from '@/domain/languages';
-import { formatRelativeTime } from '@/domain/relativeTime';
 import type { Comment, Id, LanguageCode, Member } from '@/domain/types';
 import { Avatar } from '@/ui/Avatar';
 import { neutralButton, textButton } from '@/ui/buttons';
-import { Card, CardTitle } from '@/ui/Card';
+import { CloseIcon } from '@/ui/CloseIcon';
 import { SelectInput } from '@/ui/form';
 import { CheckIcon } from '@/ui/icons';
+import { CommentComposer } from './CommentComposer';
 import { CommentBody, MentionTextarea } from './MentionTextarea';
+import { useCommentLabels } from './useCommentLabels';
 
 const ALL = 'all';
 const GENERAL = 'general';
 
 /**
- * Comments about the current image (SPEC 5.4): Open and Resolved tabs, a language
- * filter, threads with replies, Resolve / Reopen, and a composer with @mentions.
- * No categories for now (DECISIONS D30).
+ * Side bar with the comments about the current image (DECISIONS D30, D40): Open
+ * and Resolved tabs, a language filter, threads with replies, Resolve / Reopen,
+ * and a composer with @mentions. It slides over the right side and closes with
+ * Esc or ×. No categories for now.
  */
-export function CommentsCard({
+export function CommentsPanel({
+  open: isOpen,
+  onOpenChange,
+  focusThreadId,
   imageId,
   languages,
   defaultLanguage,
   members,
   allMembers,
 }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  /** Opened from a thread's "N replies": that thread is shown and highlighted. */
+  focusThreadId: Id | null;
   imageId: Id;
   languages: LanguageCode[];
   defaultLanguage: LanguageCode | null;
@@ -53,85 +62,108 @@ export function CommentsCard({
   ];
 
   return (
-    <Card>
-      <div className="flex items-center justify-between gap-4">
-        <CardTitle>{t('editor.comments')}</CardTitle>
-        <span className="text-sm text-text-secondary">{t('editor.thisImage')}</span>
-      </div>
+    <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-30 bg-overlay" />
+        <Dialog.Content
+          aria-describedby={undefined}
+          onOpenAutoFocus={(event) => {
+            if (!focusThreadId) return;
+            event.preventDefault();
+            // A language filter left from before could hide the thread.
+            setFilter(ALL);
+            requestAnimationFrame(() => {
+              const thread = document.querySelector<HTMLElement>(
+                `[data-thread-id="${focusThreadId}"]`,
+              );
+              thread?.scrollIntoView({ block: 'nearest' });
+              thread?.focus({ preventScroll: true });
+            });
+          }}
+          className="fixed inset-y-0 right-0 z-30 flex w-[400px] max-w-full flex-col border-l border-border-strong bg-surface shadow-2xl outline-none"
+        >
+          <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4">
+            <Dialog.Title className="font-heading text-lg font-bold text-text">
+              {t('editor.commentsPanel')}
+            </Dialog.Title>
+            <Dialog.Close
+              aria-label={t('editor.close')}
+              className="inline-flex size-8 items-center justify-center rounded-lg text-text-secondary outline-none hover:bg-fill-subtle hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
+            >
+              <CloseIcon />
+            </Dialog.Close>
+          </div>
 
-      <Tabs.Root defaultValue="open" className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Tabs.List className="flex gap-4">
-            {(['open', 'resolved'] as const).map((tab) => (
-              <Tabs.Trigger
-                key={tab}
-                value={tab}
-                className="border-b-2 border-transparent pb-1 text-sm text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong data-[state=active]:border-accent data-[state=active]:font-semibold data-[state=active]:text-accent-text"
-              >
-                {tab === 'open'
-                  ? t('editor.openTab', { count: open.length })
-                  : t('editor.resolvedTab', { count: resolved.length })}
-              </Tabs.Trigger>
-            ))}
-          </Tabs.List>
-          <SelectInput
-            value={filter}
-            onChange={setFilter}
-            label={t('editor.commentFilter')}
-            options={[{ value: ALL, label: t('editor.allLanguages') }, ...languageOptions]}
-            className="h-8 w-auto gap-1.5 rounded-lg px-2 text-sm text-text-secondary outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
-          />
-        </div>
+          <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 py-4">
+            <Tabs.Root defaultValue="open" className="flex flex-col gap-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <Tabs.List className="flex gap-4">
+                  {(['open', 'resolved'] as const).map((tab) => (
+                    <Tabs.Trigger
+                      key={tab}
+                      value={tab}
+                      className="border-b-2 border-transparent pb-1 text-sm text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong data-[state=active]:border-accent data-[state=active]:font-semibold data-[state=active]:text-accent-text"
+                    >
+                      {tab === 'open'
+                        ? t('editor.openTab', { count: open.length })
+                        : t('editor.resolvedTab', { count: resolved.length })}
+                    </Tabs.Trigger>
+                  ))}
+                </Tabs.List>
+                <SelectInput
+                  value={filter}
+                  onChange={setFilter}
+                  label={t('editor.commentFilter')}
+                  options={[{ value: ALL, label: t('editor.allLanguages') }, ...languageOptions]}
+                  className="h-8 w-auto gap-1.5 rounded-lg px-2 text-sm text-text-secondary outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
+                />
+              </div>
 
-        <Tabs.Content value="open" className="flex flex-col gap-5 outline-none">
-          {open.length === 0 ? (
-            <p className="text-sm text-text-tertiary">{t('editor.noOpen')}</p>
-          ) : (
-            open.map((entry) => (
-              <OpenThread
-                key={entry.thread.id}
-                entry={entry}
-                imageId={imageId}
-                members={members}
-                allMembers={allMembers}
-              />
-            ))
-          )}
-        </Tabs.Content>
-        <Tabs.Content value="resolved" className="flex flex-col gap-5 outline-none">
-          {resolved.length === 0 ? (
-            <p className="text-sm text-text-tertiary">{t('editor.noResolved')}</p>
-          ) : (
-            resolved.map((entry) => (
-              <ResolvedThread
-                key={entry.thread.id}
-                entry={entry}
-                imageId={imageId}
-                allMembers={allMembers}
-              />
-            ))
-          )}
-        </Tabs.Content>
-      </Tabs.Root>
+              <Tabs.Content value="open" className="flex flex-col gap-5 outline-none">
+                {open.length === 0 ? (
+                  <p className="text-sm text-text-tertiary">{t('editor.noOpen')}</p>
+                ) : (
+                  open.map((entry) => (
+                    <OpenThread
+                      key={entry.thread.id}
+                      entry={entry}
+                      highlighted={entry.thread.id === focusThreadId}
+                      imageId={imageId}
+                      members={members}
+                      allMembers={allMembers}
+                    />
+                  ))
+                )}
+              </Tabs.Content>
+              <Tabs.Content value="resolved" className="flex flex-col gap-5 outline-none">
+                {resolved.length === 0 ? (
+                  <p className="text-sm text-text-tertiary">{t('editor.noResolved')}</p>
+                ) : (
+                  resolved.map((entry) => (
+                    <ResolvedThread
+                      key={entry.thread.id}
+                      entry={entry}
+                      imageId={imageId}
+                      allMembers={allMembers}
+                    />
+                  ))
+                )}
+              </Tabs.Content>
+            </Tabs.Root>
+          </div>
 
-      <Composer
-        imageId={imageId}
-        languageOptions={languageOptions}
-        defaultLanguage={defaultLanguage ?? GENERAL}
-        members={members}
-      />
-    </Card>
+          <div className="border-t border-border px-5 py-4">
+            <CommentComposer
+              imageId={imageId}
+              languages={languages}
+              defaultLanguage={defaultLanguage}
+              members={members}
+            />
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
-}
-
-function useLabels() {
-  const { t, i18n } = useTranslation();
-  const locale = i18n.resolvedLanguage ?? 'en';
-  return {
-    language: (code: LanguageCode | null) =>
-      code ? languageName(code, locale) : t('editor.general'),
-    time: (at: string) => formatRelativeTime(at, new Date(), locale),
-  };
 }
 
 function CommentView({
@@ -145,7 +177,7 @@ function CommentView({
 }) {
   const { t } = useTranslation();
   const { currentUser } = useCurrentUser();
-  const labels = useLabels();
+  const labels = useCommentLabels();
   const author = allMembers.find((m) => m.id === comment.authorId);
   const name =
     comment.authorId && comment.authorId === currentUser?.id
@@ -170,18 +202,20 @@ function CommentView({
 
 function OpenThread({
   entry,
+  highlighted,
   imageId,
   members,
   allMembers,
 }: {
   entry: ThreadWithComments;
+  highlighted: boolean;
   imageId: Id;
   members: Member[];
   allMembers: Member[];
 }) {
   const { t } = useTranslation();
   const { currentUser } = useCurrentUser();
-  const labels = useLabels();
+  const labels = useCommentLabels();
   const action = useCommentAction();
   const [reply, setReply] = useState<string | null>(null);
   const by = currentUser?.id ?? null;
@@ -197,7 +231,13 @@ function OpenThread({
   };
 
   return (
-    <article className="flex flex-col gap-3 border-b border-border pb-5 last:border-0">
+    <article
+      data-thread-id={entry.thread.id}
+      tabIndex={-1}
+      className={`flex flex-col gap-3 border-b border-border pb-5 outline-none last:border-0 ${
+        highlighted ? '-mx-3 rounded-xl border-0 bg-fill-subtle p-3' : ''
+      }`}
+    >
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm text-accent-text">{labels.language(entry.thread.language)}</span>
         <button
@@ -262,7 +302,7 @@ function ResolvedThread({
 }) {
   const { t } = useTranslation();
   const { currentUser } = useCurrentUser();
-  const labels = useLabels();
+  const labels = useCommentLabels();
   const action = useCommentAction();
   const [expanded, setExpanded] = useState(false);
   const resolver = allMembers.find((m) => m.id === entry.thread.resolvedBy);
@@ -304,62 +344,5 @@ function ResolvedThread({
         </button>
       </div>
     </article>
-  );
-}
-
-function Composer({
-  imageId,
-  languageOptions,
-  defaultLanguage,
-  members,
-}: {
-  imageId: Id;
-  languageOptions: { value: string; label: string }[];
-  defaultLanguage: string;
-  members: Member[];
-}) {
-  const { t } = useTranslation();
-  const { currentUser } = useCurrentUser();
-  const action = useCommentAction();
-  const [body, setBody] = useState('');
-  const [language, setLanguage] = useState(defaultLanguage);
-
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    if (!body.trim()) return;
-    action.mutate(
-      {
-        kind: 'start',
-        imageId,
-        language: language === GENERAL ? null : language,
-        body,
-        by: currentUser?.id ?? null,
-      },
-      { onSuccess: () => setBody('') },
-    );
-  };
-
-  return (
-    <form onSubmit={submit} className="flex flex-col gap-3 border-t border-border pt-5">
-      <MentionTextarea
-        value={body}
-        onChange={setBody}
-        members={members}
-        placeholder={t('editor.composerPlaceholder')}
-        label={t('editor.composerPlaceholder')}
-      />
-      <div className="flex items-center justify-between gap-3">
-        <SelectInput
-          value={language}
-          onChange={setLanguage}
-          label={t('editor.commentLanguage')}
-          options={languageOptions}
-          className="h-8 w-auto gap-1.5 rounded-lg px-2 text-sm text-text-secondary outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
-        />
-        <button type="submit" disabled={!body.trim() || action.isPending} className={neutralButton}>
-          {t('editor.comment')}
-        </button>
-      </div>
-    </form>
   );
 }

@@ -339,7 +339,6 @@ class LocalContentItemRepository implements ContentItemRepository {
           text: '',
           speaker: null,
           type: null,
-          contextNote: null,
           ocrText: null,
           ocrBlocks: [],
         },

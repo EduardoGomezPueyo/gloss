@@ -70,7 +70,7 @@ export function buildExport(
           position,
           speaker: image.source.speaker,
           type: image.source.type,
-          context: image.source.contextNote,
+          context: item.translatorNote,
           source: image.source.text,
           translations,
         });

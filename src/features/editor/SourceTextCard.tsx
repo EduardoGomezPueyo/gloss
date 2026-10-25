@@ -1,26 +1,28 @@
 import { useId, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentUser } from '@/app/currentUser/useCurrentUser';
-import { useUpdateSource } from '@/data/hooks';
+import { useUpdateNote, useUpdateSource } from '@/data/hooks';
 import { isSourceEdited, type SourceTextPatch } from '@/domain/images';
 import { languageName } from '@/domain/languages';
 import { textStats } from '@/domain/textStats';
-import type { LanguageCode, SceneImage } from '@/domain/types';
+import type { ContentItem, LanguageCode, SceneImage } from '@/domain/types';
 import { primaryButton, secondaryButton, textButton } from '@/ui/buttons';
-import { Card, CardTitle } from '@/ui/Card';
 import { inputClass } from '@/ui/form';
-import { PencilIcon } from '@/ui/icons';
+import { innerCard } from './styles';
 
 /**
- * "Source text" card. Clicking the text (or the pencil) corrects it by hand,
- * together with speaker, type and context note (SPEC open 2, DECISIONS D30). When
- * the text differs from what OCR read, an "edited" label offers to restore it.
+ * "Source text" card. Clicking the text (or "Click to edit") corrects it by hand,
+ * together with speaker, type and the item's context (SPEC open 2, DECISIONS D30,
+ * D40). When the text differs from what OCR read, an "edited" label offers to
+ * restore it.
  */
 export function SourceTextCard({
   image,
+  item,
   sourceLanguage,
 }: {
   image: SceneImage;
+  item: ContentItem;
   sourceLanguage: LanguageCode;
 }) {
   const { t, i18n } = useTranslation();
@@ -32,7 +34,7 @@ export function SourceTextCard({
   const stats = textStats(source.text);
   const meta = [
     source.type,
-    source.contextNote,
+    item.translatorNote,
     t('editor.characters', { count: stats.characters }),
   ].filter(Boolean);
 
@@ -44,10 +46,12 @@ export function SourceTextCard({
     });
 
   return (
-    <Card>
+    <section aria-labelledby={`${image.id}-source`} className={innerCard}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <CardTitle>{t('editor.sourceText')}</CardTitle>
+          <h3 id={`${image.id}-source`} className="text-base font-semibold text-text">
+            {t('editor.sourceText')}
+          </h3>
           {edited && (
             <span className="rounded-md bg-fill-subtle px-1.5 py-0.5 text-[11px] font-semibold text-text-secondary">
               {t('editor.edited')}
@@ -57,21 +61,23 @@ export function SourceTextCard({
         <div className="flex items-center gap-2 text-sm text-text-secondary">
           {languageName(sourceLanguage, i18n.resolvedLanguage ?? 'en')}
           {!editing && (
-            <button
-              type="button"
-              onClick={() => setEditing(true)}
-              aria-label={t('editor.editSource')}
-              title={t('editor.editSource')}
-              className="inline-flex size-7 items-center justify-center rounded-md outline-none hover:bg-fill-subtle hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
-            >
-              <PencilIcon />
-            </button>
+            <>
+              <span aria-hidden>·</span>
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                aria-label={t('editor.editSource')}
+                className="rounded-sm outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
+              >
+                {t('editor.clickToEdit')}
+              </button>
+            </>
           )}
         </div>
       </div>
 
       {editing ? (
-        <SourceForm image={image} onDone={() => setEditing(false)} />
+        <SourceForm image={image} item={item} onDone={() => setEditing(false)} />
       ) : image.ocrStatus === 'pending' ? (
         <p className="text-sm text-text-tertiary">{t('editor.readingText')}</p>
       ) : (
@@ -102,21 +108,30 @@ export function SourceTextCard({
           {t('editor.restoreOcr')}
         </button>
       )}
-    </Card>
+    </section>
   );
 }
 
-function SourceForm({ image, onDone }: { image: SceneImage; onDone: () => void }) {
+function SourceForm({
+  image,
+  item,
+  onDone,
+}: {
+  image: SceneImage;
+  item: ContentItem;
+  onDone: () => void;
+}) {
   const { t } = useTranslation();
   const update = useUpdateSource();
+  const updateNote = useUpdateNote();
   const { currentUser } = useCurrentUser();
   const id = useId();
   const [draft, setDraft] = useState<SourceTextPatch>({
     text: image.source.text,
     speaker: image.source.speaker,
     type: image.source.type,
-    contextNote: image.source.contextNote,
   });
+  const [context, setContext] = useState(item.translatorNote ?? '');
   const field = (key: keyof SourceTextPatch) => ({
     id: `${id}-${key}`,
     value: draft[key] ?? '',
@@ -124,17 +139,24 @@ function SourceForm({ image, onDone }: { image: SceneImage; onDone: () => void }
       setDraft((d) => ({ ...d, [key]: e.target.value })),
   });
 
-  const submit = (event: FormEvent) => {
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
-    update.mutate(
-      { imageId: image.id, patch: draft, by: currentUser?.id ?? null },
-      { onSuccess: onDone },
-    );
+    const by = currentUser?.id ?? null;
+    try {
+      await update.mutateAsync({ imageId: image.id, patch: draft, by });
+      // The context belongs to the item: saved only when it changed.
+      if (context.trim() !== (item.translatorNote ?? '')) {
+        await updateNote.mutateAsync({ itemId: item.id, note: context, by });
+      }
+      onDone();
+    } catch {
+      // The error message below is shown from the mutation state.
+    }
   };
 
   const label = 'text-sm text-text-secondary';
   return (
-    <form onSubmit={submit} className="flex flex-col gap-3">
+    <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-3">
       <label htmlFor={`${id}-text`} className={label}>
         {t('editor.text')}
       </label>
@@ -158,11 +180,17 @@ function SourceForm({ image, onDone }: { image: SceneImage; onDone: () => void }
           <input {...field('type')} autoComplete="off" className={inputClass} />
         </div>
       </div>
-      <label htmlFor={`${id}-contextNote`} className={label}>
-        {t('editor.contextNote')}
+      <label htmlFor={`${id}-context`} className={label}>
+        {t('editor.context')}
       </label>
-      <input {...field('contextNote')} autoComplete="off" className={inputClass} />
-      {update.isError && (
+      <input
+        id={`${id}-context`}
+        value={context}
+        onChange={(e) => setContext(e.target.value)}
+        autoComplete="off"
+        className={inputClass}
+      />
+      {(update.isError || updateNote.isError) && (
         <p role="alert" className="text-sm text-danger">
           {t('editor.saveError')}
         </p>
@@ -171,7 +199,11 @@ function SourceForm({ image, onDone }: { image: SceneImage; onDone: () => void }
         <button type="button" onClick={onDone} className={secondaryButton}>
           {t('editor.cancel')}
         </button>
-        <button type="submit" disabled={update.isPending} className={primaryButton}>
+        <button
+          type="submit"
+          disabled={update.isPending || updateNote.isPending}
+          className={primaryButton}
+        >
           {t('editor.save')}
         </button>
       </div>

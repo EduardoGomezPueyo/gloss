@@ -67,7 +67,6 @@ export function anImage(item: ContentItem, overrides: Partial<SceneImage> = {}):
       text: 'one two three',
       speaker: null,
       type: null,
-      contextNote: null,
       ocrText: null,
       ocrBlocks: [],
     },

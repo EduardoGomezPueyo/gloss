@@ -276,7 +276,6 @@ export function createFixtureData(options: FixtureOptions = {}): WorkspaceData {
               text,
               speaker: random.pick(SPEAKERS),
               type: random.pick(LINE_TYPES),
-              contextNote: null,
               ocrText: text,
               ocrBlocks: [],
             },

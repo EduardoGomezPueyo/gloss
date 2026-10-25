@@ -1,25 +1,25 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useSearchParams } from 'react-router';
 import { useItemImages, useMembers, useProjectDetail } from '@/data/hooks';
-import type { LanguageCode } from '@/domain/types';
+import type { Id, LanguageCode } from '@/domain/types';
+import { CardTitle } from '@/ui/Card';
 import { PageMessage } from '../project-detail/shared';
-import { CommentsCard } from './CommentsCard';
-import { ComparisonCard } from './ComparisonCard';
+import { CommentsPanel } from './CommentsPanel';
+import { CommentsSummary } from './CommentsSummary';
 import { EditorGlossaryCard } from './EditorGlossaryCard';
 import { EditorHeader } from './EditorHeader';
-import { ImageStrip } from './ImageStrip';
-import { LanguageCards } from './LanguageCards';
-import { SourceImageCard } from './SourceImageCard';
+import { LanguagePicker } from './LanguagePicker';
+import { ImagePager, SourceImage } from './SourceImage';
 import { SourceTextCard } from './SourceTextCard';
 import { TranslationEditor } from './TranslationEditor';
-import { TranslatorNote } from './TranslatorNote';
 import type { SaveState } from './useAutosave';
 
 /**
- * "Translation workspace" (Figma 370:11261, SPEC 5.4): context on the left,
- * translation in the middle, glossary and comments on the right. The current
- * image and language live in the URL (?image=2&lang=es) so they can be linked.
+ * "Translation workspace" (SPEC 5.4, redesigned in DECISIONS D40): the image and
+ * its comments on the left; the source text, the editor for one language and the
+ * glossary on the right. The current image and language live in the URL
+ * (?image=2&lang=es) so they can be linked.
  */
 export function EditorPage() {
   const { t } = useTranslation();
@@ -29,6 +29,9 @@ export function EditorPage() {
   const itemImages = useItemImages(itemId);
   const { data: members = [] } = useMembers();
   const [saveState, setSaveState] = useState<SaveState>('idle');
+  // The comments side bar: closed (null), or open, on one thread or none.
+  const [commentsPanel, setCommentsPanel] = useState<{ threadId: Id | null } | null>(null);
+  const headingId = useId();
 
   if (detail.isPending || itemImages.isPending) {
     return <p className="text-sm text-text-tertiary">{t('editor.loading')}</p>;
@@ -62,6 +65,10 @@ export function EditorPage() {
       { replace: true },
     );
 
+  const projectPeople = members.filter(
+    (m) => project.managerIds.includes(m.id) || project.memberIds.includes(m.id),
+  );
+
   const translationOf = (lang: LanguageCode) =>
     image ? translations.find((t) => t.imageId === image.id && t.language === lang) : undefined;
 
@@ -74,71 +81,88 @@ export function EditorPage() {
         saveState={saveState}
       />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.72fr)] [&>*]:min-w-0">
-        <div className="flex flex-col gap-6">
-          <SourceImageCard image={image} position={position} total={images.length} />
-          {image && (
-            // Keyed by image so an open edit form never carries over to another image.
-            <SourceTextCard key={image.id} image={image} sourceLanguage={project.sourceLanguage} />
-          )}
-          <ImageStrip
-            images={images}
-            itemName={itemSummary.item.name}
+      <section
+        aria-labelledby={headingId}
+        className="flex grow flex-col gap-4 rounded-2xl bg-card p-5"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <CardTitle id={headingId}>{t('editor.sourceImage')}</CardTitle>
+          <ImagePager
             position={position}
+            total={images.length}
             onSelect={(next) => navigate({ image: next })}
           />
         </div>
 
-        <div className="flex flex-col gap-6">
-          <LanguageCards
-            languages={languages}
-            images={images}
-            translations={translations}
-            selected={language}
-            onSelect={(lang) => navigate({ lang })}
-          />
-          {image && language && (
-            <TranslationEditor
-              // A new editor per image and language: drafts never leak between them.
-              key={`${image.id}-${language}`}
-              image={image}
-              language={language}
-              languages={languages}
-              translation={translationOf(language)}
-              members={members}
-              onLanguageChange={(lang) => navigate({ lang })}
-              onSaveStateChange={setSaveState}
-            />
-          )}
-          {image && language && languages.length > 1 && (
-            <ComparisonCard
-              languages={languages.filter((l) => l !== language)}
-              translationOf={translationOf}
-              members={members}
-              onEdit={(lang) => navigate({ lang })}
-            />
-          )}
-          <TranslatorNote item={itemSummary.item} />
-        </div>
+        <div className="grid gap-4 xl:grid-cols-2 [&>*]:min-w-0">
+          <div className="flex flex-col gap-4">
+            <SourceImage image={image} />
+            {image && (
+              <CommentsSummary
+                // Keyed by image so a half-written comment never moves to another image.
+                key={image.id}
+                imageId={image.id}
+                languages={languages}
+                defaultLanguage={language ?? null}
+                members={projectPeople}
+                allMembers={members}
+                onViewAll={(threadId) => setCommentsPanel({ threadId: threadId ?? null })}
+              />
+            )}
+          </div>
 
-        <div className="flex flex-col gap-6">
-          <EditorGlossaryCard
-            projectId={project.id}
-            texts={[image?.source.text ?? '', (language && translationOf(language)?.text) || '']}
-          />
-          {image && (
-            <CommentsCard
-              imageId={image.id}
-              languages={languages}
-              defaultLanguage={language ?? null}
-              members={members.filter(
-                (m) => project.managerIds.includes(m.id) || project.memberIds.includes(m.id),
-              )}
-              allMembers={members}
+          <div className="flex flex-col gap-4">
+            {image && (
+              // Keyed by image so an open edit form never carries over to another image.
+              <SourceTextCard
+                key={image.id}
+                image={image}
+                item={itemSummary.item}
+                sourceLanguage={project.sourceLanguage}
+              />
+            )}
+            {image && language ? (
+              <TranslationEditor
+                // A new editor per image and language: drafts never leak between them.
+                key={`${image.id}-${language}`}
+                image={image}
+                language={language}
+                languagePicker={
+                  <LanguagePicker
+                    languages={languages}
+                    images={images}
+                    translations={translations}
+                    selected={language}
+                    onSelect={(lang) => navigate({ lang })}
+                  />
+                }
+                translation={translationOf(language)}
+                members={members}
+                onSaveStateChange={setSaveState}
+              />
+            ) : (
+              !language && <p className="text-sm text-text-tertiary">{t('editor.noLanguages')}</p>
+            )}
+            <EditorGlossaryCard
+              projectId={project.id}
+              texts={[image?.source.text ?? '', (language && translationOf(language)?.text) || '']}
             />
-          )}
+          </div>
         </div>
-      </div>
+      </section>
+
+      {image && (
+        <CommentsPanel
+          open={commentsPanel !== null}
+          onOpenChange={(open) => setCommentsPanel(open ? { threadId: null } : null)}
+          focusThreadId={commentsPanel?.threadId ?? null}
+          imageId={image.id}
+          languages={languages}
+          defaultLanguage={language ?? null}
+          members={projectPeople}
+          allMembers={members}
+        />
+      )}
     </>
   );
 }

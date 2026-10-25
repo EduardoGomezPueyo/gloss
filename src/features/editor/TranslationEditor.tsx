@@ -1,39 +1,38 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentUser } from '@/app/currentUser/useCurrentUser';
-import { useGlossary, useReview, useSaveTranslation, useSetReady } from '@/data/hooks';
-import { glossaryMatches } from '@/domain/glossary';
+import { useReview, useSaveTranslation, useSetReady } from '@/data/hooks';
 import { languageName } from '@/domain/languages';
 import { formatRelativeTime } from '@/domain/relativeTime';
 import { textStats } from '@/domain/textStats';
 import { canMarkTranslated, canReview } from '@/domain/translationWorkflow';
 import type { LanguageCode, Member, SceneImage, Translation } from '@/domain/types';
-import { accentButton, neutralButton, secondaryButton } from '@/ui/buttons';
-import { SelectInput } from '@/ui/form';
+import { accentButton, neutralButton } from '@/ui/buttons';
 import { CheckIcon } from '@/ui/icons';
-import { StatusIcon } from '@/ui/StatusIcon';
+import { StatusBadge } from '@/ui/StatusBadge';
+import { innerCard } from './styles';
 import { useAutosave, type SaveState } from './useAutosave';
 
 /**
- * Editor for one image in one language (SPEC 5.4). Text autosaves; the action
- * follows the review flow (DECISIONS D30): Mark translated while in progress,
- * Approve / Request changes for managers once under review.
+ * Editor for one image in one language (SPEC 5.4, DECISIONS D40). Text autosaves;
+ * the action follows the review flow (D30): Mark translated while in progress,
+ * Approve / Request changes for managers once under review. The character and
+ * line counter, against the source, is the only help to make the text fit.
  */
 export function TranslationEditor({
   image,
   language,
-  languages,
+  languagePicker,
   translation,
   members,
-  onLanguageChange,
   onSaveStateChange,
 }: {
   image: SceneImage;
   language: LanguageCode;
-  languages: LanguageCode[];
+  /** The "Spanish ▾" menu that switches the language. */
+  languagePicker: ReactNode;
   translation: Translation | undefined;
   members: Member[];
-  onLanguageChange: (language: LanguageCode) => void;
   onSaveStateChange: (state: SaveState) => void;
 }) {
   const { t, i18n } = useTranslation();
@@ -52,11 +51,6 @@ export function TranslationEditor({
   );
   useEffect(() => onSaveStateChange(autosave.state), [autosave.state, onSaveStateChange]);
 
-  const glossary = useGlossary(image.projectId);
-  const matchCount = glossaryMatches(glossary.data?.entries ?? [], [
-    image.source.text,
-    draft,
-  ]).length;
   const status = translation?.status ?? 'not-started';
   const ready = translation?.ready ?? false;
   const stats = textStats(draft);
@@ -78,34 +72,15 @@ export function TranslationEditor({
   return (
     <section
       aria-label={t('editor.translationOf', { language: name })}
-      className="flex flex-col gap-5 rounded-2xl border border-accent/50 bg-card p-6"
+      className={`${innerCard} border-accent/50`}
     >
-      <div className="flex items-center justify-between gap-4">
-        <SelectInput
-          value={language}
-          onChange={onLanguageChange}
-          label={t('editor.translationLanguage')}
-          options={languages.map((code) => ({ value: code, label: languageName(code, locale) }))}
-          className="h-9 w-auto gap-2 rounded-lg px-2 font-heading text-lg font-bold text-text outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
-        />
-        <span
-          className={`flex items-center gap-2 text-sm ${status === 'not-started' ? 'text-text-secondary' : 'text-text'}`}
-        >
-          <StatusIcon status={status} decorative />
-          {t(`status.${status}`)}
-          {ready && <span className="text-text-secondary">· {t('editor.markedTranslated')}</span>}
-        </span>
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+          {languagePicker}
+          <span className="text-sm text-text-secondary">{t('editor.pickLanguage')}</span>
+        </div>
+        <StatusBadge status={status} size="md" />
       </div>
-
-      {image.source.speaker && (
-        <p className="flex items-center gap-2 text-sm text-text-secondary">
-          {t('editor.speaker')}
-          <span className="font-semibold text-text">{image.source.speaker}</span>
-          <span title={t('editor.speakerLocked')} aria-label={t('editor.speakerLocked')}>
-            <LockIcon />
-          </span>
-        </p>
-      )}
 
       <div className="flex flex-col gap-2">
         <label htmlFor={`${id}-text`} className="sr-only">
@@ -118,39 +93,34 @@ export function TranslationEditor({
           onBlur={() => void autosave.flush()}
           rows={5}
           lang={language}
-          className="min-h-36 w-full resize-y rounded-lg border border-border-input bg-popup px-4 py-3 text-base text-text outline-none focus-visible:border-text-tertiary"
+          className="min-h-36 w-full resize-y rounded-lg border border-border-input bg-transparent px-4 py-3 text-base text-text outline-none focus-visible:border-text-tertiary"
         />
-        <div className="flex flex-wrap justify-between gap-2 text-sm text-text-secondary">
-          <span>{statsText(stats)}</span>
-          <span>{t('editor.sourceStats', { stats: statsText(sourceStats) })}</span>
-        </div>
-        <div className="flex justify-end">
-          {matchCount > 0 && (
-            <span className="text-sm font-semibold text-accent-text">
-              {t('editor.glossaryMatch', { count: matchCount })}
-            </span>
-          )}
-        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-        <span className="text-sm text-text-secondary">
-          {translation
-            ? t(translation.updatedBy === by ? 'editor.editedByYou' : 'editor.editedBy', {
-                name: nameOf(translation.updatedBy),
-                time: formatRelativeTime(translation.updatedAt, new Date(), locale),
-              })
-            : t('editor.notTranslated')}
-        </span>
+        <div className="flex flex-col gap-1 text-sm text-text-secondary">
+          <span>
+            {translation
+              ? t(translation.updatedBy === by ? 'editor.editedByYou' : 'editor.editedBy', {
+                  name: nameOf(translation.updatedBy),
+                  time: formatRelativeTime(translation.updatedAt, new Date(), locale),
+                })
+              : t('editor.notTranslated')}
+          </span>
+          <span className="text-xs text-text-tertiary">
+            <span>{statsText(stats)}</span> ·{' '}
+            {t('editor.sourceStats', { stats: statsText(sourceStats) })}
+          </span>
+        </div>
 
         {status === 'under-review' ? (
           canReview(currentUser) ? (
-            <div className="flex gap-3">
+            <div className="ml-auto flex gap-3">
               <button
                 type="button"
                 onClick={() => decide('requestChanges')}
                 disabled={review.isPending}
-                className={secondaryButton}
+                className={neutralButton}
               >
                 {t('editor.requestChanges')}
               </button>
@@ -199,14 +169,5 @@ export function TranslationEditor({
         )}
       </div>
     </section>
-  );
-}
-
-function LockIcon() {
-  return (
-    <svg aria-hidden viewBox="0 0 16 16" fill="none" className="size-4">
-      <rect x="3.5" y="7" width="9" height="6.5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" strokeWidth="1.4" />
-    </svg>
   );
 }

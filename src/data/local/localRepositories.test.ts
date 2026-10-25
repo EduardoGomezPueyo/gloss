@@ -294,7 +294,7 @@ describe('local repositories: editor writes', () => {
     const { repos, item, image } = await fixture();
     await repos.images.updateSource(
       image.id,
-      { text: 'Fixed line', speaker: ' Mira ', type: '', contextNote: null },
+      { text: 'Fixed line', speaker: ' Mira ', type: '' },
       'm1',
     );
     const [updated] = (await repos.images.listForItem(item.id)).images;

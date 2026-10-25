@@ -18,7 +18,6 @@ function fixture() {
         text,
         speaker: order === 0 ? 'Mira' : null,
         type: 'Dialogue',
-        contextNote: null,
       },
     });
   const g2 = image(gate, 1, 'Bring the lantern, "now".');
