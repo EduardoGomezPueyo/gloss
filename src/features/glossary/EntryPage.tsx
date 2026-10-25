@@ -8,10 +8,12 @@ import { PageMessage } from '../project-detail/shared';
 import { glossaryPaths } from './format';
 import { Gallery } from './Gallery';
 import { MarkdownView } from './MarkdownView';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 /** Glossary entry (Figma 370:6424, SPEC 5.5): gallery, tags and the rendered Markdown. */
 export function EntryPage() {
   const { t } = useTranslation();
+  const { canWork } = useProjectAccess();
   const { projectId = '', entryId = '' } = useParams();
   const entry = useGlossaryEntry(entryId);
   const glossary = useGlossary(projectId);
@@ -56,12 +58,14 @@ export function EntryPage() {
           </Link>
           <h1 className="font-heading text-2xl leading-7 font-bold text-text">{title}</h1>
         </div>
-        <Link
-          to={glossaryPaths.edit(projectId, entryId)}
-          className={`${largeTextButton} px-4 py-3`}
-        >
-          {t('glossary.entry.edit')}
-        </Link>
+        {canWork && (
+          <Link
+            to={glossaryPaths.edit(projectId, entryId)}
+            className={`${largeTextButton} px-4 py-3`}
+          >
+            {t('glossary.entry.edit')}
+          </Link>
+        )}
       </header>
 
       {(imageFileIds.length > 0 || tags.length > 0) && (

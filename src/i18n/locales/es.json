@@ -52,7 +52,8 @@
     "progressTitle": "Progreso",
     "progressOf": "Progreso en {{language}}",
     "noTargetLanguages": "Aún no hay idiomas de destino.",
-    "noAccess": "No formas parte de este proyecto. Pide a un manager que te añada."
+    "noAccess": "No formas parte de este proyecto. Pide a un manager que te añada.",
+    "viewOnly": "No participas en este proyecto, así que es solo de lectura. Pide a un manager que te añada para trabajar en él."
   },
   "settings": {
     "title": "Ajustes"
@@ -570,5 +571,105 @@
     "activeHint": "Estás en el espacio de la demo. Tus propios datos se guardan aparte.",
     "realImages": "Probar con imágenes reales",
     "loadError": "No se pudo cargar la demo. Inténtalo más tarde."
+  },
+  "general": {
+    "title": "Ajustes generales",
+    "appearance": "Apariencia",
+    "appearanceNote": "Se guarda solo en este navegador.",
+    "theme": "Tema",
+    "themes": {
+      "system": "Sistema",
+      "light": "Claro",
+      "dark": "Oscuro"
+    },
+    "language": "Idioma de la interfaz",
+    "visibility": "Visibilidad de los proyectos",
+    "workersSeeOnlyTheirs": "Los colaboradores solo ven los proyectos en los que participan",
+    "workersSeeOnlyTheirsHelp": "Si se desactiva, los colaboradores también ven el resto de proyectos, en modo solo lectura. Los managers siempre ven todos los proyectos.",
+    "managersOnly": "Solo los managers pueden cambiar estos ajustes.",
+    "data": "Datos",
+    "dataNote": "Todo se guarda en este navegador. Descarga una copia de seguridad para conservarla o llevar el espacio de trabajo a otro navegador.",
+    "backup": "Copia de seguridad",
+    "backupHelp": "Todo el espacio de trabajo en un archivo, con las imágenes.",
+    "downloadBackup": "Descargar copia",
+    "preparing": "Preparando…",
+    "backupError": "No se pudo hacer la copia de seguridad.",
+    "restore": "Restaurar una copia",
+    "restoreHelp": "Sustituye todo lo de este espacio de trabajo por la copia.",
+    "restoreButton": "Restaurar…",
+    "restoreFile": "Archivo de copia",
+    "restoring": "Restaurando…",
+    "restoreConfirm": "¿Sustituir todo lo de este espacio de trabajo por «{{name}}»? No se puede deshacer.",
+    "notABackup": "Este archivo no es una copia de seguridad del espacio de trabajo.",
+    "restoreError": "No se pudo restaurar la copia.",
+    "deleteAll": "Borrar todos los datos",
+    "deleteAllHelp": "Elimina todos los proyectos, miembros y archivos, y empieza un espacio de trabajo vacío.",
+    "deleteAllButton": "Borrar todos los datos",
+    "deleteTitle": "¿Borrar todos los datos?",
+    "deleteDescription": "Se borrarán todos los proyectos, secciones, traducciones, comentarios, entradas del glosario, miembros e imágenes de este navegador. Descarga antes una copia si puedes necesitarlos. No se puede deshacer.",
+    "deleteWord": "borrar",
+    "deleteType": "Escribe «{{word}}» para confirmar",
+    "deleteError": "No se pudieron borrar los datos.",
+    "demoData": "Espacio de demo",
+    "demoDataHelp": "Restaurar y borrar actúan sobre tu propio espacio de trabajo. La demo se guarda aparte.",
+    "about": "Acerca de",
+    "appName": "Translator Tool",
+    "appDescription": "Una herramienta de traducción de videojuegos: escenas, glosario y revisión en un mismo sitio.",
+    "version": "Versión {{version}}",
+    "license": "Código abierto",
+    "licenseHelp": "Publicado con la licencia AGPL-3.0.",
+    "sourceCode": "Código fuente"
+  },
+  "workspaceProjects": {
+    "title": "Proyectos del espacio de trabajo",
+    "count_one": "{{count}} proyecto",
+    "count_other": "{{count}} proyectos",
+    "searchPlaceholder": "Buscar por nombre o ID del proyecto",
+    "searchLabel": "Buscar proyectos",
+    "readOnly": "Solo los managers pueden renombrar o eliminar proyectos.",
+    "selected_one": "{{count}} proyecto seleccionado",
+    "selected_other": "{{count}} proyectos seleccionados",
+    "selectAll": "Seleccionar todos los proyectos",
+    "select": "Seleccionar {{name}}",
+    "columns": {
+      "project": "Proyecto",
+      "code": "ID del proyecto",
+      "languages": "Idiomas",
+      "managers": "Managers",
+      "progress": "Progreso",
+      "created": "Creado",
+      "actions": "Acciones"
+    },
+    "languages_one": "{{source}} → {{count}} idioma",
+    "languages_other": "{{source}} → {{count}} idiomas",
+    "progressOf": "Progreso de {{name}}",
+    "empty": "Aún no hay proyectos.",
+    "noMatches": "Ningún proyecto coincide con la búsqueda.",
+    "rename": "Renombrar",
+    "renameProject": "Renombrar {{name}}",
+    "renameTitle": "Renombrar proyecto",
+    "name": "Nombre",
+    "code": "ID del proyecto",
+    "codeHelp": "Mayúsculas, números y guiones, p. ej. EMB-2026.",
+    "errors": {
+      "name": {
+        "required": "Escribe un nombre.",
+        "tooLong": "Usa 80 caracteres como máximo."
+      },
+      "code": {
+        "required": "Escribe un ID de proyecto.",
+        "tooLong": "Usa 24 caracteres como máximo.",
+        "format": "Usa solo letras, números y guiones sueltos.",
+        "taken": "Otro proyecto ya usa este ID."
+      }
+    },
+    "saveError": "No se pudieron guardar los cambios. Puede que el ID ya esté en uso.",
+    "delete": "Eliminar",
+    "deleteProject": "Eliminar {{name}}",
+    "deleteSelected": "Eliminar",
+    "deleteConfirm_one": "¿Eliminar {{names}}? Desaparece de todas las listas y enlaces.",
+    "deleteConfirm_other": "¿Eliminar {{count}} proyectos ({{names}})? Desaparecen de todas las listas y enlaces.",
+    "deleteError": "No se pudieron eliminar los proyectos.",
+    "deleteNote": "Los proyectos eliminados conservan sus datos en este navegador y en las copias de seguridad, pero nadie puede abrirlos."
   }
 }

@@ -9,6 +9,7 @@ import { DisclosureTriangle } from '@/ui/icons';
 import { ProgressBar } from '@/ui/ProgressBar';
 import { StatusBadge } from '@/ui/StatusBadge';
 import { StatusIcon } from '@/ui/StatusIcon';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 /** Completion text: "75% completion", or the status name when nothing has started. */
 export function CompletionLabel({ summary }: { summary: SectionSummary }) {
@@ -38,14 +39,17 @@ export function SectionProgressCard({
 }) {
   const { t } = useTranslation();
   const titleId = useId();
+  const { canWork } = useProjectAccess();
 
   return (
     <Card labelledBy={titleId}>
       <div className="flex items-center justify-between gap-4">
         <CardTitle id={titleId}>{t('projectDetail.sectionProgress')}</CardTitle>
-        <button type="button" onClick={onAddSection} className={neutralButton}>
-          {t('projectDetail.addSection')}
-        </button>
+        {canWork && (
+          <button type="button" onClick={onAddSection} className={neutralButton}>
+            {t('projectDetail.addSection')}
+          </button>
+        )}
       </div>
 
       {sections.length === 0 ? (

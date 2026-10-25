@@ -8,6 +8,7 @@ import { PencilIcon } from '@/ui/icons';
 import { PriorityIcon } from '@/ui/PriorityIcon';
 import { CompletionLabel } from './SectionProgressCard';
 import { useFormatNumber } from './format';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 /**
  * Section card of the section detail (SPEC 5.3). Managers and priority are the
@@ -28,6 +29,7 @@ export function SectionCard({
   const formatNumber = useFormatNumber();
   const titleId = useId();
   const { section, items, wordCount } = summary;
+  const { canWork } = useProjectAccess();
   const managers = project.managerIds.flatMap((id) => members.find((m) => m.id === id) ?? []);
 
   return (
@@ -37,15 +39,17 @@ export function SectionCard({
           <h2 id={titleId} className="font-heading text-2xl leading-7 font-bold text-text">
             {section.name}
           </h2>
-          <button
-            type="button"
-            onClick={onEdit}
-            aria-label={t('sectionDetail.editSection')}
-            title={t('sectionDetail.editSection')}
-            className="inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-text-secondary outline-none hover:bg-fill-subtle hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
-          >
-            <PencilIcon />
-          </button>
+          {canWork && (
+            <button
+              type="button"
+              onClick={onEdit}
+              aria-label={t('sectionDetail.editSection')}
+              title={t('sectionDetail.editSection')}
+              className="inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-text-secondary outline-none hover:bg-fill-subtle hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong"
+            >
+              <PencilIcon />
+            </button>
+          )}
         </div>
         <CompletionLabel summary={summary} />
       </div>

@@ -16,7 +16,7 @@ import type { NewProjectInput } from '@/domain/newProject';
 import type { ProjectData, ProjectDetail, ProjectSummary } from '@/domain/progress';
 import type { ProjectDetailsPatch } from '@/domain/projectDetails';
 import type { SectionInput } from '@/domain/sections';
-import type { WorkspaceData, WorkspaceFile } from '@/domain/workspace';
+import type { WorkspaceData, WorkspaceFile, WorkspaceSettings } from '@/domain/workspace';
 import type {
   Comment,
   CommentThread,
@@ -63,6 +63,10 @@ export interface ProjectRepository {
   addLanguage(projectId: Id, language: LanguageCode, by: Id | null): Promise<Project>;
   /** Changes details from the Overview; rejects a patch that breaks checkProjectDetails. */
   updateDetails(projectId: Id, patch: ProjectDetailsPatch, by: Id | null): Promise<Project>;
+  /** Changes the name and ID (validated with validateProjectIdentity). */
+  rename(projectId: Id, input: { name: string; code: string }, by: Id | null): Promise<Project>;
+  /** Soft-deletes projects: they disappear from every list and link, their data is kept. */
+  remove(projectIds: Id[], by: Id | null): Promise<void>;
 }
 
 export interface SectionRepository {
@@ -99,8 +103,21 @@ export interface WorkspaceRepository {
    * manager (the workspace owner). Safe to call more than once.
    */
   ensureInitialized(): Promise<void>;
-  /** Deletes all data and stores `data` and `files` in its place (used to load the demo). */
-  replace(data: WorkspaceData, files: WorkspaceFile[]): Promise<void>;
+  /**
+   * Deletes all data and stores `data` and `files` in its place (loading the demo
+   * or restoring a backup). Settings fall back to the defaults when not given.
+   */
+  replace(data: WorkspaceData, files: WorkspaceFile[], settings?: WorkspaceSettings): Promise<void>;
+  /** Deletes all data and starts again as a new, empty workspace (Settings > General, D41). */
+  reset(): Promise<void>;
+  /** Everything in the workspace, for a backup. */
+  exportAll(): Promise<{
+    data: WorkspaceData;
+    files: WorkspaceFile[];
+    settings: WorkspaceSettings;
+  }>;
+  getSettings(): Promise<WorkspaceSettings>;
+  updateSettings(patch: Partial<WorkspaceSettings>): Promise<WorkspaceSettings>;
 }
 
 /** An image waiting for OCR, with the language to read it in (the project's source language). */

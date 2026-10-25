@@ -12,6 +12,8 @@ export interface WorkspaceContextValue {
   loadDemo(): Promise<void>;
   /** Goes back to the user's own workspace. */
   exitDemo(): void;
+  /** Opens the current workspace again, after its data was replaced (restore, reset). */
+  reload(): void;
 }
 
 export const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);

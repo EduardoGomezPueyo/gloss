@@ -50,7 +50,7 @@ Vertical phases; the app stays runnable after each one.
   - [ ] Comments
   - [ ] Assigned to me
   - [ ] Notifications (activity log)
-  - [ ] Settings > General and Settings > Workspace projects
+  - [x] Settings > General (with the project visibility setting, D41) and Settings > Workspace projects (D42), 2026-10-25
   - [ ] Final demo pass and redeploy
 
 ## Verification

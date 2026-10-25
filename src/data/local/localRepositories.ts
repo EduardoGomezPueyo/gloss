@@ -20,7 +20,14 @@ import {
   type InviteRow,
 } from '@/domain/members';
 import { planMove } from '@/domain/moveItems';
-import { createWorkspaceOwner, type WorkspaceData, type WorkspaceFile } from '@/domain/workspace';
+import { isProjectDeleted, validateProjectIdentity } from '@/domain/workspaceProjects';
+import {
+  createWorkspaceOwner,
+  parseWorkspaceSettings,
+  type WorkspaceData,
+  type WorkspaceFile,
+  type WorkspaceSettings,
+} from '@/domain/workspace';
 import type { NewContentItemInput, NewImageFile } from '@/domain/newContentItem';
 import type { NewProjectInput } from '@/domain/newProject';
 import { generateProjectCode } from '@/domain/projectCode';
@@ -67,7 +74,7 @@ import type {
   TranslationRepository,
   WorkspaceRepository,
 } from '../repositories/types';
-import { META_INITIALIZED_AT, TranslatorDb, type StoredFile } from './db';
+import { META_INITIALIZED_AT, META_SETTINGS, TranslatorDb, type StoredFile } from './db';
 
 const nameCollator = new Intl.Collator(undefined, { sensitivity: 'base' });
 
@@ -161,17 +168,19 @@ class LocalProjectRepository implements ProjectRepository {
         ]),
     );
 
-    return projects.map((project) =>
-      toProjectSummary(
-        summarizeProject({
-          project,
-          sections: sections.filter((s) => s.projectId === project.id),
-          items: items.filter((i) => i.projectId === project.id),
-          images: images.filter((i) => i.projectId === project.id),
-          translations: translations.filter((t) => t.projectId === project.id),
-        }),
-      ),
-    );
+    return projects
+      .filter((project) => !isProjectDeleted(project))
+      .map((project) =>
+        toProjectSummary(
+          summarizeProject({
+            project,
+            sections: sections.filter((s) => s.projectId === project.id),
+            items: items.filter((i) => i.projectId === project.id),
+            images: images.filter((i) => i.projectId === project.id),
+            translations: translations.filter((t) => t.projectId === project.id),
+          }),
+        ),
+      );
   }
 
   getData(id: Id): Promise<ProjectData | undefined> {
@@ -241,6 +250,36 @@ class LocalProjectRepository implements ProjectRepository {
     });
   }
 
+  async rename(
+    projectId: Id,
+    input: { name: string; code: string },
+    by: Id | null,
+  ): Promise<Project> {
+    const db = this.db;
+    return db.transaction('rw', db.projects, async () => {
+      const project = await mustGet(db.projects.get(projectId), 'Project', projectId);
+      const otherCodes = (await db.projects.toArray())
+        .filter((p) => p.id !== projectId)
+        .map((p) => p.code);
+      const valid = validateProjectIdentity(input, otherCodes);
+      if (!valid.ok) throw new Error(`Invalid name or ID for project ${projectId}`);
+      const updated: Project = { ...project, name: valid.name, code: valid.code, ...touched(by) };
+      await db.projects.put(updated);
+      return updated;
+    });
+  }
+
+  async remove(projectIds: Id[], by: Id | null): Promise<void> {
+    const db = this.db;
+    await db.transaction('rw', db.projects, async () => {
+      const now = new Date().toISOString();
+      await db.projects
+        .where('id')
+        .anyOf(projectIds)
+        .modify({ deletedAt: now, ...touched(by) });
+    });
+  }
+
   private loadProject(id: Id): Promise<ProjectData | undefined> {
     const db = this.db;
     return db.transaction(
@@ -248,7 +287,7 @@ class LocalProjectRepository implements ProjectRepository {
       [db.projects, db.sections, db.contentItems, db.images, db.translations],
       async () => {
         const project = await db.projects.get(id);
-        if (!project) return undefined;
+        if (!project || isProjectDeleted(project)) return undefined;
         const [sections, items, images, translations] = await Promise.all([
           db.sections.where({ projectId: id }).toArray(),
           db.contentItems.where({ projectId: id }).toArray(),
@@ -734,7 +773,11 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
     });
   }
 
-  async replace(data: WorkspaceData, files: WorkspaceFile[]): Promise<void> {
+  async replace(
+    data: WorkspaceData,
+    files: WorkspaceFile[],
+    settings?: WorkspaceSettings,
+  ): Promise<void> {
     // Read the files before the transaction: awaiting anything but Dexie inside it would end it.
     const stored: StoredFile[] = await Promise.all(
       files.map(async (file) => ({
@@ -763,7 +806,88 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
         db.glossaryVersions.bulkAdd(data.glossaryVersions),
         db.files.bulkAdd(stored),
         db.meta.put({ key: META_INITIALIZED_AT, value: new Date().toISOString() }),
+        settings && db.meta.put({ key: META_SETTINGS, value: JSON.stringify(settings) }),
       ]);
+    });
+  }
+
+  async reset(): Promise<void> {
+    const db = this.db;
+    await db.transaction('rw', [db.meta, ...db.dataTables], async () => {
+      await Promise.all([db.meta.clear(), ...db.dataTables.map((table) => table.clear())]);
+    });
+    await this.ensureInitialized();
+  }
+
+  async exportAll() {
+    const db = this.db;
+    return db.transaction('r', [db.meta, ...db.dataTables], async () => {
+      const [
+        members,
+        projects,
+        sections,
+        items,
+        images,
+        translations,
+        commentThreads,
+        comments,
+        glossaryCategories,
+        glossaryEntries,
+        glossaryVersions,
+        stored,
+      ] = await Promise.all([
+        db.members.toArray(),
+        db.projects.toArray(),
+        db.sections.toArray(),
+        db.contentItems.toArray(),
+        db.images.toArray(),
+        db.translations.toArray(),
+        db.commentThreads.toArray(),
+        db.comments.toArray(),
+        db.glossaryCategories.toArray(),
+        db.glossaryEntries.toArray(),
+        db.glossaryVersions.toArray(),
+        db.files.toArray(),
+      ]);
+      const data: WorkspaceData = {
+        members,
+        projects,
+        sections,
+        items,
+        images,
+        translations,
+        commentThreads,
+        comments,
+        glossaryCategories,
+        glossaryEntries,
+        glossaryVersions,
+      };
+      const files: WorkspaceFile[] = stored.map((file) => ({
+        id: file.id,
+        name: file.name,
+        data: new Blob([file.data], { type: file.type }),
+      }));
+      return { data, files, settings: await this.getSettings() };
+    });
+  }
+
+  async getSettings(): Promise<WorkspaceSettings> {
+    const record = await this.db.meta.get(META_SETTINGS);
+    let stored: unknown;
+    try {
+      stored = record ? JSON.parse(record.value) : undefined;
+    } catch {
+      stored = undefined;
+    }
+    return parseWorkspaceSettings(stored);
+  }
+
+  async updateSettings(patch: Partial<WorkspaceSettings>): Promise<WorkspaceSettings> {
+    const db = this.db;
+    return db.transaction('rw', db.meta, async () => {
+      const settings = { ...(await this.getSettings()), ...patch };
+      await db.meta.put({ key: META_SETTINGS, value: JSON.stringify(settings) });
+      return settings;
     });
   }
 }

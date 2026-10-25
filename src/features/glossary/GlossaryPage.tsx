@@ -11,6 +11,7 @@ import { CreateCategoryDialog } from './CreateCategoryDialog';
 import { EntryCard } from './EntryCard';
 import { glossaryPaths } from './format';
 import { GlossaryListView } from './GlossaryListView';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 type View = 'grid' | 'list';
 
@@ -20,6 +21,7 @@ type View = 'grid' | 'list';
  */
 export function GlossaryPage() {
   const { t } = useTranslation();
+  const { canWork } = useProjectAccess();
   const { projectId = '' } = useParams();
   const [params, setParams] = useSearchParams();
   const detail = useProjectDetail(projectId);
@@ -129,18 +131,20 @@ export function GlossaryPage() {
             <ListIcon />
           </ViewButton>
         </div>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => setCreatingCategory(true)}
-            className={`${largeTextButton} px-3 py-1`}
-          >
-            {t('glossary.createCategory')}
-          </button>
-          <Link to={glossaryPaths.newEntry(projectId)} className={pageButton}>
-            {t('glossary.addEntry')}
-          </Link>
-        </div>
+        {canWork && (
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setCreatingCategory(true)}
+              className={`${largeTextButton} px-3 py-1`}
+            >
+              {t('glossary.createCategory')}
+            </button>
+            <Link to={glossaryPaths.newEntry(projectId)} className={pageButton}>
+              {t('glossary.addEntry')}
+            </Link>
+          </div>
+        )}
       </div>
 
       {entries.length === 0 ? (

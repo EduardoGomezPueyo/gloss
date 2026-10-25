@@ -1,6 +1,7 @@
 import {
   canManageMembers,
   canSeeProject,
+  canWorkOnProject,
   checkCategoryChange,
   checkRemoval,
   memberCounts,
@@ -88,13 +89,22 @@ describe('validateInvites', () => {
   });
 });
 
-describe('canSeeProject', () => {
+describe('canSeeProject and canWorkOnProject', () => {
   const project = { managerIds: ['ana'], memberIds: ['chloe'] };
+  const onlyTheirs = { workersSeeOnlyTheirProjects: true };
+  const everything = { workersSeeOnlyTheirProjects: false };
 
-  it('shows managers everything and workers only their projects', () => {
-    expect(canSeeProject(ben, project)).toBe(true);
-    expect(canSeeProject(chloe, project)).toBe(true);
-    expect(canSeeProject(member('dan'), project)).toBe(false);
-    expect(canSeeProject(null, project)).toBe(true);
+  it('shows managers everything and workers only their projects by default', () => {
+    expect(canSeeProject(ben, project, onlyTheirs)).toBe(true);
+    expect(canSeeProject(chloe, project, onlyTheirs)).toBe(true);
+    expect(canSeeProject(member('dan'), project, onlyTheirs)).toBe(false);
+    expect(canSeeProject(null, project, onlyTheirs)).toBe(true);
+  });
+
+  it('shows workers every project when the workspace allows it, but only theirs to work on', () => {
+    expect(canSeeProject(member('dan'), project, everything)).toBe(true);
+    expect(canWorkOnProject(member('dan'), project)).toBe(false);
+    expect(canWorkOnProject(chloe, project)).toBe(true);
+    expect(canWorkOnProject(ben, project)).toBe(true);
   });
 });

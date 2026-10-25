@@ -58,6 +58,11 @@ export interface Project extends Entity {
   managerIds: Id[];
   memberIds: Id[];
   priority: Priority;
+  /**
+   * Set when the project is deleted from Settings > Workspace projects (a soft
+   * delete, DECISIONS D42). Absent in data from before it existed.
+   */
+  deletedAt?: Timestamp | null;
 }
 
 /** An act of the game ("Act 1 - …"). */

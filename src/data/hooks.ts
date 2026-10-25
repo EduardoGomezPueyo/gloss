@@ -6,6 +6,7 @@ import type { ProjectDetailsPatch } from '@/domain/projectDetails';
 import type { SectionInput } from '@/domain/sections';
 import type { InviteRow } from '@/domain/members';
 import type { GlossaryContent, Id, LanguageCode, MemberCategory } from '@/domain/types';
+import type { WorkspaceSettings } from '@/domain/workspace';
 import { queryKeys } from './queryKeys';
 import type { ReviewDecision } from './repositories/types';
 import { useRepositories } from './RepositoryContext';
@@ -61,6 +62,26 @@ export function useUpdateProjectDetails() {
   return useMutation({
     mutationFn: (vars: { projectId: Id; patch: ProjectDetailsPatch; by: Id | null }) =>
       projects.updateDetails(vars.projectId, vars.patch, vars.by),
+    onSuccess,
+  });
+}
+
+export function useRenameProject() {
+  const { projects } = useRepositories();
+  const onSuccess = useInvalidateProjects();
+  return useMutation({
+    mutationFn: (vars: { projectId: Id; name: string; code: string; by: Id | null }) =>
+      projects.rename(vars.projectId, { name: vars.name, code: vars.code }, vars.by),
+    onSuccess,
+  });
+}
+
+export function useDeleteProjects() {
+  const { projects } = useRepositories();
+  const onSuccess = useInvalidateProjects();
+  return useMutation({
+    mutationFn: (vars: { projectIds: Id[]; by: Id | null }) =>
+      projects.remove(vars.projectIds, vars.by),
     onSuccess,
   });
 }
@@ -365,5 +386,23 @@ export function useProjectData(projectId: Id, enabled = true) {
     queryKey: ['projects', 'data', projectId],
     queryFn: async () => (await projects.getData(projectId)) ?? null,
     enabled,
+  });
+}
+
+/** Workspace settings (Settings > General, DECISIONS D41). */
+export function useWorkspaceSettings() {
+  const { workspace } = useRepositories();
+  return useQuery({
+    queryKey: queryKeys.workspaceSettings,
+    queryFn: () => workspace.getSettings(),
+  });
+}
+
+export function useUpdateWorkspaceSettings() {
+  const { workspace } = useRepositories();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (patch: Partial<WorkspaceSettings>) => workspace.updateSettings(patch),
+    onSuccess: (settings) => queryClient.setQueryData(queryKeys.workspaceSettings, settings),
   });
 }

@@ -9,6 +9,7 @@ import { Tag } from '@/ui/Tag';
 import { PageMessage } from '../project-detail/shared';
 import { glossaryPaths, useVersionDate } from './format';
 import { StoredImage } from './Gallery';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 /**
  * "Compare versions" (Figma 370:6934, DECISIONS D7): the current version with the
@@ -18,6 +19,7 @@ import { StoredImage } from './Gallery';
  */
 export function ComparePage() {
   const { t } = useTranslation();
+  const { canWork } = useProjectAccess();
   const { projectId = '', entryId = '', versionId = '' } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useCurrentUser();
@@ -50,19 +52,25 @@ export function ComparePage() {
         </h1>
         <div className="flex items-center gap-1">
           <Link
-            to={glossaryPaths.edit(projectId, entryId)}
+            to={
+              canWork
+                ? glossaryPaths.edit(projectId, entryId)
+                : glossaryPaths.entry(projectId, entryId)
+            }
             className={`${largeTextButton} px-3 py-1`}
           >
             {t('glossary.compare.goBack')}
           </Link>
-          <button
-            type="button"
-            onClick={onRestore}
-            disabled={restore.isPending}
-            className={pageButton}
-          >
-            {restore.isPending ? t('glossary.compare.restoring') : t('glossary.compare.restore')}
-          </button>
+          {canWork && (
+            <button
+              type="button"
+              onClick={onRestore}
+              disabled={restore.isPending}
+              className={pageButton}
+            >
+              {restore.isPending ? t('glossary.compare.restoring') : t('glossary.compare.restore')}
+            </button>
+          )}
         </div>
       </header>
 

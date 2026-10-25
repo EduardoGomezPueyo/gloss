@@ -94,7 +94,7 @@ The **glossary is per project**: it is reached from the _Glossary_ card on the p
 
 > Some screenshots (project list with filters and the glossary) show the **old navigation** (Projects, Glossary). What is described here is current; on the glossary screens the active item must be _Projects_.
 
-**No design:** Notifications, Assigned to me, Comments, General settings and Workspace projects. **[Proposal]** they are not built in v1; their navigation entries are hidden or disabled (open decision 6).
+**No design:** Notifications, Assigned to me, Comments, General settings and Workspace projects. They are built in phase 10 from short specs the author approves (DECISIONS D37); until then an entry stays disabled. General settings (5.7) and Workspace projects (5.8) are built; `/settings` opens General settings.
 
 Requirements:
 
@@ -234,6 +234,19 @@ Redesigned by the author (DECISIONS D40): two columns, one language at a time.
 - Legend: **Manager** "Manages members, sub-teams and translation reviews."; **Worker** "Translates and edits content assigned to their team."; "Removing a member keeps their existing translations."
 - Workers only see what they take part in; managers see everything (simulated in v1).
 - **Conflict:** the _Sub-team_ column and filter contradict the decision to leave sub-teams out of scope (open decision 4).
+
+### 5.7 Settings — General (no design, DECISIONS D41)
+
+- **Appearance** (this browser only): _Theme_ System / Light / Dark and _Interface language_ English / Español, the same settings as the switches next to the avatar.
+- **Project visibility** (workspace setting, managers only): _"Workers only see the projects they take part in"_, on by default. When off, workers also see the other projects, **view only**: a note says so, and every action that changes the project is hidden (add or edit sections and content, move items, retry OCR, add languages, edit the source text, translate, mark translated, submit for review, comment, create or edit glossary entries and categories, restore versions).
+- **Data** (managers only): _Download backup_ (the whole workspace and its images in one JSON file), _Restore backup_ (replaces the workspace after a confirmation) and _Delete all data_ (after typing "delete"; starts an empty workspace with a new owner). In the demo, restore and delete are replaced by _Exit demo_.
+- **About:** app name, version, license (AGPL-3.0) and a link to the source code.
+
+### 5.8 Settings — Workspace projects (no design, DECISIONS D42)
+
+- A table built like Members: Project (link), Project ID, Languages ("English → 3 languages"), Managers, Progress, Created and Actions; search by name or ID; the projects the current user can see.
+- **Managers:** _Rename_ (name and project ID; the ID is unique, in capitals, letters, digits and hyphens) and _Delete_, per row or for the selected projects, after a confirmation that names them. Deleting is a soft delete: the project disappears from every list and link, its data and ID are kept.
+- **Workers:** the table read-only.
 
 ## 6. Business rules and vocabulary
 

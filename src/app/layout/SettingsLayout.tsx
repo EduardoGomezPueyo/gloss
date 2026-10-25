@@ -32,8 +32,11 @@ export function SettingsLayout() {
 
             <nav aria-label={t('settingsNav.label')} className="flex flex-1 flex-col gap-2.5 p-2">
               <div className="flex flex-1 flex-col gap-1">
-                {/* No design yet (open decision 6): shown disabled. */}
-                <SidebarNavItem icon={GeneralIcon} label={t('settingsNav.general')} />
+                <SidebarNavItem
+                  icon={GeneralIcon}
+                  label={t('settingsNav.general')}
+                  to="/settings/general"
+                />
                 <SidebarNavItem
                   icon={MembersIcon}
                   label={t('settingsNav.members')}
@@ -42,6 +45,7 @@ export function SettingsLayout() {
                 <SidebarNavItem
                   icon={WorkspaceProjectsIcon}
                   label={t('settingsNav.workspaceProjects')}
+                  to="/settings/projects"
                 />
               </div>
               <UserMenu />

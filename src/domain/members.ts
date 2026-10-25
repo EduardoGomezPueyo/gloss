@@ -1,5 +1,6 @@
 import { normalizeForSearch } from './filters';
 import type { Id, Member, MemberCategory, Project } from './types';
+import type { WorkspaceSettings } from './workspace';
 
 /*
  * Settings > Members rules (SPEC 5.6, DECISIONS D32). Members, roles and
@@ -109,13 +110,25 @@ export function validateInvites(
 }
 
 /**
- * Visibility (SPEC 5.6, simulated): managers see every project; workers only
- * the projects where they are a team member.
+ * Whether someone can work on a project (SPEC 5.6, simulated): managers on every
+ * project; workers on the projects where they are a team member.
  */
-export function canSeeProject(
+export function canWorkOnProject(
   user: Pick<Member, 'id' | 'category'> | null | undefined,
   project: Pick<Project, 'managerIds' | 'memberIds'>,
 ): boolean {
   if (!user || user.category === 'manager') return true;
   return project.memberIds.includes(user.id) || project.managerIds.includes(user.id);
+}
+
+/**
+ * Visibility (D32, D41): the people who can work on a project see it. When the
+ * workspace lets workers see every project, the others see it as view only.
+ */
+export function canSeeProject(
+  user: Pick<Member, 'id' | 'category'> | null | undefined,
+  project: Pick<Project, 'managerIds' | 'memberIds'>,
+  settings: Pick<WorkspaceSettings, 'workersSeeOnlyTheirProjects'>,
+): boolean {
+  return !settings.workersSeeOnlyTheirProjects || canWorkOnProject(user, project);
 }

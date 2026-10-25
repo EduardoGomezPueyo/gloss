@@ -10,6 +10,7 @@ import { ArrowLeftIcon, CheckIcon, ChevronRightIcon } from '@/ui/icons';
 import { StatusIcon } from '@/ui/StatusIcon';
 import { Pill } from '../project-detail/shared';
 import type { SaveState } from './useAutosave';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 /** Project name, status, autosave indicator, Submit for review and the breadcrumb (SPEC 5.4). */
 export function EditorHeader({
@@ -25,6 +26,7 @@ export function EditorHeader({
 }) {
   const { t } = useTranslation();
   const { currentUser } = useCurrentUser();
+  const { canWork } = useProjectAccess();
   const submit = useSubmitForReview();
   const [message, setMessage] = useState<string | null>(null);
   const { project, status, progress } = summary;
@@ -53,15 +55,17 @@ export function EditorHeader({
         </div>
         <div className="flex flex-wrap items-center gap-4">
           <SaveIndicator state={saveState} />
-          <button
-            type="button"
-            onClick={onSubmit}
-            disabled={submit.isPending}
-            title={t('editor.submitHint')}
-            className={accentButton}
-          >
-            {t('editor.submitForReview')}
-          </button>
+          {canWork && (
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={submit.isPending}
+              title={t('editor.submitHint')}
+              className={accentButton}
+            >
+              {t('editor.submitForReview')}
+            </button>
+          )}
         </div>
       </header>
       {message && (

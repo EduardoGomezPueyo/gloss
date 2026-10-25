@@ -1,5 +1,5 @@
 import { WORKSPACE_DATA_KEYS } from '@/domain/workspace';
-import { fetchDemoWorkspace } from './fetchDemoWorkspace';
+import { fetchDemoWorkspace, InvalidBackupError, readBackupFile } from './fetchDemoWorkspace';
 
 const SNAPSHOT = {
   format: 'translator-tool-workspace',
@@ -63,5 +63,27 @@ describe('fetchDemoWorkspace', () => {
     await expect(
       fetchDemoWorkspace('https://demo.test/bad.json', { fetch: invalid }),
     ).rejects.toThrow('invalid format');
+  });
+});
+
+describe('readBackupFile', () => {
+  it('reads a backup with embedded files and keeps its dates', async () => {
+    const backup = {
+      ...SNAPSHOT,
+      files: [{ id: 'f1', name: 'scene.svg', type: 'image/svg+xml', url: 'data:,%3Csvg/%3E' }],
+      settings: { workersSeeOnlyTheirProjects: false },
+    };
+    const loaded = await readBackupFile(new Blob([JSON.stringify(backup)]));
+    expect(loaded.data.members[0]!.createdAt).toBe('2026-01-01T00:00:00.000Z');
+    expect(loaded.settings).toEqual({ workersSeeOnlyTheirProjects: false });
+    expect(await loaded.files[0]!.data.text()).toBe('<svg/>');
+    expect(loaded.files[0]!.data.type).toBe('image/svg+xml');
+  });
+
+  it('rejects files that are not backups', async () => {
+    await expect(readBackupFile(new Blob(['not json']))).rejects.toBeInstanceOf(InvalidBackupError);
+    await expect(readBackupFile(new Blob(['{"format":"other"}']))).rejects.toBeInstanceOf(
+      InvalidBackupError,
+    );
   });
 });

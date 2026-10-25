@@ -14,10 +14,31 @@ import type {
 } from './types';
 
 /*
- * A whole workspace as plain data: what the demo loader imports (DECISIONS D34).
- * The demo itself lives outside this repository and is published as a snapshot
- * file in this format.
+ * A whole workspace as plain data: what the demo loader imports (DECISIONS D34)
+ * and what a backup holds (D41). The demo itself lives outside this repository
+ * and is published as a snapshot file in this format.
  */
+
+/** Settings that belong to the workspace, not to one browser (Settings > General, D41). */
+export interface WorkspaceSettings {
+  /** Workers only see the projects they take part in; off, they see the rest as view only. */
+  workersSeeOnlyTheirProjects: boolean;
+}
+
+export const DEFAULT_WORKSPACE_SETTINGS: WorkspaceSettings = {
+  workersSeeOnlyTheirProjects: true,
+};
+
+/** Reads stored or imported settings, falling back to the defaults for anything missing. */
+export function parseWorkspaceSettings(value: unknown): WorkspaceSettings {
+  const record = isRecord(value) ? value : {};
+  return {
+    workersSeeOnlyTheirProjects:
+      typeof record.workersSeeOnlyTheirProjects === 'boolean'
+        ? record.workersSeeOnlyTheirProjects
+        : DEFAULT_WORKSPACE_SETTINGS.workersSeeOnlyTheirProjects,
+  };
+}
 
 export interface WorkspaceData {
   members: Member[];
@@ -56,7 +77,7 @@ export interface SnapshotFile {
   name: string;
   /** MIME type, e.g. "image/svg+xml". */
   type: string;
-  /** Where to download it, relative to the snapshot file. */
+  /** Where to download it, relative to the snapshot file; a backup embeds it as a data: URL. */
   url: string;
 }
 
@@ -67,6 +88,8 @@ export interface WorkspaceSnapshot {
   exportedAt: string;
   data: WorkspaceData;
   files: SnapshotFile[];
+  /** Absent in older snapshots and in the demo: the defaults apply. */
+  settings?: WorkspaceSettings;
 }
 
 /** A file ready to store: what the loader passes to the repository. */
@@ -105,8 +128,34 @@ export function parseWorkspaceSnapshot(json: unknown): SnapshotParseResult {
 
   return {
     ok: true,
-    snapshot: { ...(json as unknown as WorkspaceSnapshot), files: (files ?? []) as SnapshotFile[] },
+    snapshot: {
+      ...(json as unknown as WorkspaceSnapshot),
+      files: (files ?? []) as SnapshotFile[],
+      settings: parseWorkspaceSettings(json.settings),
+    },
   };
+}
+
+/** A backup: the whole workspace in one snapshot file, with its files embedded. */
+export function buildBackupSnapshot(
+  data: WorkspaceData,
+  files: { id: Id; name: string; type: string; dataUrl: string }[],
+  settings: WorkspaceSettings,
+  exportedAt: Date,
+): WorkspaceSnapshot {
+  return {
+    format: SNAPSHOT_FORMAT,
+    version: SNAPSHOT_VERSION,
+    exportedAt: exportedAt.toISOString(),
+    data,
+    files: files.map(({ id, name, type, dataUrl }) => ({ id, name, type, url: dataUrl })),
+    settings,
+  };
+}
+
+/** "translator-workspace-2026-10-25.json" */
+export function backupFileName(exportedAt: Date): string {
+  return `translator-workspace-${exportedAt.toISOString().slice(0, 10)}.json`;
 }
 
 const TIMESTAMP_KEY = /At$/;

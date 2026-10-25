@@ -9,6 +9,9 @@ interface ImportMetaEnv {
   readonly VITE_DEMO_IMAGES_URL?: string;
 }
 
+/** The app version from package.json (vite.config.ts). */
+declare const __APP_VERSION__: string;
+
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }

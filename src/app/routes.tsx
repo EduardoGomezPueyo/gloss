@@ -87,12 +87,26 @@ export const routes: RouteObject[] = [
     path: 'settings',
     element: <SettingsLayout />,
     children: [
-      { index: true, element: <Navigate to="/settings/members" replace /> },
+      { index: true, element: <Navigate to="/settings/general" replace /> },
+      {
+        path: 'general',
+        lazy: page(
+          () => import('@/features/settings/GeneralPage'),
+          (m) => m.GeneralPage,
+        ),
+      },
       {
         path: 'members',
         lazy: page(
           () => import('@/features/settings/MembersPage'),
           (m) => m.MembersPage,
+        ),
+      },
+      {
+        path: 'projects',
+        lazy: page(
+          () => import('@/features/settings/WorkspaceProjectsPage'),
+          (m) => m.WorkspaceProjectsPage,
         ),
       },
     ],

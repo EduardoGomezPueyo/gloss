@@ -11,6 +11,7 @@ import { ProjectHeader } from './ProjectHeader';
 import { SectionDialog } from './SectionDialog';
 import { SectionProgressCard } from './SectionProgressCard';
 import { DetailGrid, PageMessage } from './shared';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 /** State passed to the section detail to open "Add content to section" (phase 4). */
 export interface SectionLocationState {
@@ -20,6 +21,7 @@ export interface SectionLocationState {
 /** "Project details view" (Figma 370:10566, SPEC 5.2). */
 export function ProjectDetailPage() {
   const { t } = useTranslation();
+  const { canWork } = useProjectAccess();
   const { projectId = '' } = useParams();
   const navigate = useNavigate();
   const detail = useProjectDetail(projectId);
@@ -48,7 +50,7 @@ export function ProjectDetailPage() {
         />
         <LanguagesProgressCard
           languages={languages}
-          footer={<AddLanguagePopover project={project} />}
+          footer={canWork && <AddLanguagePopover project={project} />}
         />
       </DetailGrid>
 

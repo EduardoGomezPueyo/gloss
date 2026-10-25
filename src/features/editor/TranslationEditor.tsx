@@ -12,6 +12,7 @@ import { CheckIcon } from '@/ui/icons';
 import { StatusBadge } from '@/ui/StatusBadge';
 import { innerCard } from './styles';
 import { useAutosave, type SaveState } from './useAutosave';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 /**
  * Editor for one image in one language (SPEC 5.4, DECISIONS D40). Text autosaves;
@@ -43,6 +44,7 @@ export function TranslationEditor({
   const save = useSaveTranslation();
   const setReady = useSetReady();
   const review = useReview();
+  const { canWork } = useProjectAccess();
 
   // The draft starts from the stored text; this component remounts per image and language.
   const [draft, setDraft] = useState(translation?.text ?? '');
@@ -93,6 +95,7 @@ export function TranslationEditor({
           onBlur={() => void autosave.flush()}
           rows={5}
           lang={language}
+          readOnly={!canWork}
           className="min-h-36 w-full resize-y rounded-lg border border-border-input bg-transparent px-4 py-3 text-base text-text outline-none focus-visible:border-text-tertiary"
         />
       </div>
@@ -142,6 +145,10 @@ export function TranslationEditor({
             <CheckIcon />
             {t('editor.approvedBy', { name: nameOf(translation?.reviewerId ?? null) })}
           </span>
+        ) : !canWork ? (
+          ready && (
+            <span className="text-sm text-text-secondary">{t('editor.markedTranslated')}</span>
+          )
         ) : ready ? (
           <button
             type="button"

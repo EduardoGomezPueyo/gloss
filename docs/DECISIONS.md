@@ -166,7 +166,7 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **No sub-teams (D10):** the current frame no longer has the Sub-team column; the "All sub-teams" filter is dropped too. **Legend:** Manager "Manages members, projects and translation reviews."; Worker "Translates and edits content in the projects they take part in."; "Removing a member keeps their existing translations." stays.
 - **Invite members to workspace:** a dialog with one row per person (Name, Email, Category — Worker by default) and *Add another*. Emails must be valid, not already in the workspace and not repeated; empty rows are ignored. People are added as *Invited*; no email is sent (the dialog says so).
 - **Selection:** with people selected, a bar shows "N selected", *Clear selection*, **Change category** and **Remove**.
-- **Visibility (SPEC 5.6, simulated):** workers only see the projects they take part in, in the list and through direct links (one guard route for every project page); managers see everything. Switch the current user in the avatar menu to try it.
+- **Visibility (SPEC 5.6, simulated):** workers only see the projects they take part in, in the list and through direct links (one guard route for every project page); managers see everything. Switch the current user in the avatar menu to try it. A workspace setting can let workers see the other projects as view only (D41).
 - **Defaults (proposal):** only active managers can invite, change categories or remove; workers see the table read-only with a note. You cannot remove yourself, and the workspace always keeps at least one active manager (removing or demoting the last ones is refused with a message). Remove asks for confirmation and is a soft delete (D21). Invited members stay *Invited* (no real sign-up); removing one cancels the invitation.
 
 ### D33. Export to code (2026-10-22) — *phase 8, resolves SPEC open decision 5 (confirmed by the author)*
@@ -212,6 +212,18 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Context (2026-10-25):** the per-image *context note* and the per-item *note for translators* are merged into one field, the item's (stored as `translatorNote`). It is the context of the source-text line, edited in the source text form as "Context (all images in this item)" by anyone who can edit the source text; the export's `context` column reads it. The per-image field is removed from the model.
 - **Image arrows (2026-10-25):** "01 / 02 in this item": they step through the images of the content item, as before (the mockup says "section").
 - **Built (2026-10-25)** from the author's mockup, which serves as the general layout; no final Figma frame. The Comments card shows up to three open threads; the side bar is a modal sheet over a dimmed page.
+
+### D41. Settings > General and project visibility (2026-10-25) — *spec approved by the author (D37); the visibility setting proposed by the author*
+- **Appearance:** theme (System / Light / Dark) and interface language, per browser, the same preferences as the switches next to the avatar.
+- **Project visibility:** a workspace setting, *"Workers only see the projects they take part in"*, on by default (D32's rule). Only active managers change it. When off, a worker who is not part of a project sees it in the list and can open every page of it **as view only** (the author chose this over full access or view and comment): `ProjectAccessGate` shows a note and provides `canWork`, and each write action hides or disables itself. Being part of a project is what lets you work on it; managers work on every project.
+- **Storage:** workspace settings are the first data that belongs to the workspace rather than the browser: JSON under the `settings` key of the `meta` table, read and written through `WorkspaceRepository.getSettings / updateSettings`, so a backend can take them over. Missing values fall back to the defaults.
+- **Backup:** the demo snapshot format (D34) with the images embedded as `data:` URLs and the settings added, so one loader reads both; dates are kept as they are. Restoring replaces the workspace after a `window.confirm`; *Delete all data* asks to type "delete" ("borrar" in Spanish) and starts again with a new owner. Both reopen the workspace (new cache). In the demo, restore and delete are replaced by *Exit demo*. Backups and data actions are for active managers only.
+- **About:** version from `package.json` (`__APP_VERSION__`), license and the repository link.
+
+### D42. Settings > Workspace projects (2026-10-25) — *spec approved by the author (D37)*
+- **Table** like Members, with the projects the current user can see (D41), search by name or ID, selection and a bar for deleting several.
+- **Rename** edits the name and the project ID together (the Overview keeps them read-only, D38). The ID is stored in capitals, uses letters, digits and single hyphens, up to 24 characters, and must not be used by any other project, deleted ones included.
+- **Delete** is a soft delete (`deletedAt`, like members' `removedAt`, D21) after a `window.confirm` naming the projects: deleted projects are left out of the list, the detail and the export, and their pages say "not found". Data from before the field existed has no `deletedAt` and counts as not deleted. No archiving.
 
 ## Pending
 

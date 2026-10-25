@@ -1,4 +1,7 @@
 import {
+  backupFileName,
+  buildBackupSnapshot,
+  parseWorkspaceSettings,
   parseWorkspaceSnapshot,
   rebaseTimestamps,
   WORKSPACE_DATA_KEYS,
@@ -80,5 +83,43 @@ describe('rebaseTimestamps', () => {
   it('leaves the data as it is when the export is not in the past', () => {
     const data = emptyData();
     expect(rebaseTimestamps(data, '2026-01-03T00:00:00.000Z', new Date('2026-01-01'))).toBe(data);
+  });
+});
+
+describe('workspace settings and backups', () => {
+  it('fills missing or invalid settings with the defaults', () => {
+    expect(parseWorkspaceSettings(undefined)).toEqual({ workersSeeOnlyTheirProjects: true });
+    expect(parseWorkspaceSettings({ workersSeeOnlyTheirProjects: 'no' })).toEqual({
+      workersSeeOnlyTheirProjects: true,
+    });
+    expect(parseWorkspaceSettings({ workersSeeOnlyTheirProjects: false })).toEqual({
+      workersSeeOnlyTheirProjects: false,
+    });
+  });
+
+  it('builds a backup that reads back as a snapshot, settings included', () => {
+    const at = new Date('2026-10-25T10:00:00.000Z');
+    const backup = buildBackupSnapshot(
+      emptyData(),
+      [
+        {
+          id: 'f1',
+          name: 'a.svg',
+          type: 'image/svg+xml',
+          dataUrl: 'data:image/svg+xml,%3Csvg/%3E',
+        },
+      ],
+      { workersSeeOnlyTheirProjects: false },
+      at,
+    );
+    const parsed = parseWorkspaceSnapshot(JSON.parse(JSON.stringify(backup)));
+    expect(parsed.ok && parsed.snapshot.settings).toEqual({ workersSeeOnlyTheirProjects: false });
+    expect(parsed.ok && parsed.snapshot.files[0]!.url).toBe('data:image/svg+xml,%3Csvg/%3E');
+    expect(backupFileName(at)).toBe('translator-workspace-2026-10-25.json');
+  });
+
+  it('gives snapshots without settings the defaults', () => {
+    const parsed = parseWorkspaceSnapshot(snapshot());
+    expect(parsed.ok && parsed.snapshot.settings).toEqual({ workersSeeOnlyTheirProjects: true });
   });
 });

@@ -106,6 +106,82 @@ describe('local repositories', () => {
   });
 });
 
+describe('local repositories: workspace settings, backup and reset', () => {
+  it('keeps settings, with the defaults until they change', async () => {
+    const { repos } = setup();
+    expect(await repos.workspace.getSettings()).toEqual({ workersSeeOnlyTheirProjects: true });
+    await repos.workspace.updateSettings({ workersSeeOnlyTheirProjects: false });
+    expect(await repos.workspace.getSettings()).toEqual({ workersSeeOnlyTheirProjects: false });
+  });
+
+  it('exports everything and restores it into another workspace', async () => {
+    const { repos } = setup();
+    await repos.workspace.replace(createFixtureData(), [
+      { id: 'file-1', name: 'scene.svg', data: new Blob(['<svg/>'], { type: 'image/svg+xml' }) },
+    ]);
+    await repos.workspace.updateSettings({ workersSeeOnlyTheirProjects: false });
+    const backup = await repos.workspace.exportAll();
+    expect(backup.data.projects).toHaveLength(8);
+    expect(backup.files).toHaveLength(1);
+    expect(backup.settings.workersSeeOnlyTheirProjects).toBe(false);
+
+    const other = setup();
+    await other.repos.workspace.replace(backup.data, backup.files, backup.settings);
+    expect(await other.db.projects.count()).toBe(8);
+    expect(await other.db.files.get('file-1')).toMatchObject({ type: 'image/svg+xml', size: 6 });
+    expect(await other.repos.workspace.getSettings()).toEqual(backup.settings);
+  });
+
+  it('resets to an empty workspace with a new owner and default settings', async () => {
+    const { db, repos } = setup();
+    await loadFixture(repos);
+    await repos.workspace.updateSettings({ workersSeeOnlyTheirProjects: false });
+    await repos.workspace.reset();
+    expect(await db.projects.count()).toBe(0);
+    expect(await db.files.count()).toBe(0);
+    expect(await repos.members.list()).toMatchObject([{ name: 'Alex Morgan' }]);
+    expect(await repos.workspace.getSettings()).toEqual({ workersSeeOnlyTheirProjects: true });
+  });
+});
+
+describe('local repositories: renaming and deleting projects', () => {
+  it('renames a project and refuses an ID another project uses', async () => {
+    const { repos } = setup();
+    await loadFixture(repos);
+    const [alpha, beta] = (await repos.projects.listSummaries())
+      .map((s) => s.project)
+      .sort((a, b) => a.name.localeCompare(b.name));
+    const renamed = await repos.projects.rename(
+      alpha!.id,
+      { name: ' Ember ', code: 'emb-1' },
+      'm1',
+    );
+    expect(renamed).toMatchObject({ name: 'Ember', code: 'EMB-1', updatedBy: 'm1' });
+    await expect(
+      repos.projects.rename(alpha!.id, { name: 'Ember', code: beta!.code }, 'm1'),
+    ).rejects.toThrow();
+  });
+
+  it('hides deleted projects everywhere but keeps their data and ID', async () => {
+    const { db, repos } = setup();
+    await loadFixture(repos);
+    const [first, second] = (await repos.projects.listSummaries()).map((s) => s.project);
+    await repos.projects.remove([first!.id], 'm1');
+
+    expect((await repos.projects.listSummaries()).map((s) => s.project.id)).not.toContain(
+      first!.id,
+    );
+    expect(await repos.projects.getDetail(first!.id)).toBeUndefined();
+    expect(await repos.projects.getData(first!.id)).toBeUndefined();
+    expect(await db.projects.get(first!.id)).toMatchObject({ updatedBy: 'm1' });
+    expect((await db.projects.get(first!.id))!.deletedAt).toBeTruthy();
+    // Its ID stays taken.
+    await expect(
+      repos.projects.rename(second!.id, { name: second!.name, code: first!.code }, 'm1'),
+    ).rejects.toThrow();
+  });
+});
+
 describe('local repositories: sections, items and languages', () => {
   async function alpha() {
     const { db, repos } = setup();

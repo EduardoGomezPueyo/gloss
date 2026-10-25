@@ -32,7 +32,11 @@ function withFixture(repositories: Repositories): Repositories {
     ...repositories,
     workspace: {
       ensureInitialized: () => (loaded ??= workspace.replace(createFixtureData(), [])),
-      replace: (data, files) => workspace.replace(data, files),
+      replace: (data, files, settings) => workspace.replace(data, files, settings),
+      reset: () => workspace.reset(),
+      exportAll: () => workspace.exportAll(),
+      getSettings: () => workspace.getSettings(),
+      updateSettings: (patch) => workspace.updateSettings(patch),
     },
   };
 }

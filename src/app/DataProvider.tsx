@@ -87,13 +87,19 @@ export function DataProvider({
 
   const loadDemo = useCallback(async () => {
     if (!demo) return;
-    const { data, files } = await fetchDemoWorkspace(demo.url);
-    await openWorkspace('demo').workspace.replace(data, files);
+    const { data, files, settings } = await fetchDemoWorkspace(demo.url);
+    await openWorkspace('demo').workspace.replace(data, files, settings);
     open('demo');
   }, [demo, openWorkspace, open]);
 
   const workspace = useMemo(
-    () => ({ kind: active.kind, demo, loadDemo, exitDemo: () => open('own') }),
+    () => ({
+      kind: active.kind,
+      demo,
+      loadDemo,
+      exitDemo: () => open('own'),
+      reload: () => open(active.kind),
+    }),
     [active.kind, demo, loadDemo, open],
   );
 

@@ -22,6 +22,9 @@ export interface MetaRecord {
 /** Set once the workspace is initialized. The key predates D34, when it marked the seed. */
 export const META_INITIALIZED_AT = 'seededAt';
 
+/** The workspace settings as JSON (DECISIONS D41). */
+export const META_SETTINGS = 'settings';
+
 /**
  * An uploaded file. Stored as bytes rather than a Blob so it survives every
  * IndexedDB implementation (and serializes the same for a future backend).

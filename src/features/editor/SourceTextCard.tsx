@@ -9,6 +9,7 @@ import type { ContentItem, LanguageCode, SceneImage } from '@/domain/types';
 import { primaryButton, secondaryButton, textButton } from '@/ui/buttons';
 import { inputClass } from '@/ui/form';
 import { innerCard } from './styles';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 /**
  * "Source text" card. Clicking the text (or "Click to edit") corrects it by hand,
@@ -27,6 +28,7 @@ export function SourceTextCard({
 }) {
   const { t, i18n } = useTranslation();
   const [editing, setEditing] = useState(false);
+  const { canWork } = useProjectAccess();
   const update = useUpdateSource();
   const { currentUser } = useCurrentUser();
   const { source } = image;
@@ -60,7 +62,7 @@ export function SourceTextCard({
         </div>
         <div className="flex items-center gap-2 text-sm text-text-secondary">
           {languageName(sourceLanguage, i18n.resolvedLanguage ?? 'en')}
-          {!editing && (
+          {!editing && canWork && (
             <>
               <span aria-hidden>·</span>
               <button
@@ -84,7 +86,8 @@ export function SourceTextCard({
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="-m-2 flex flex-col gap-3 rounded-lg p-2 text-left outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong"
+          disabled={!canWork}
+          className="-m-2 flex flex-col gap-3 rounded-lg p-2 text-left outline-none hover:bg-fill-subtle focus-visible:ring-2 focus-visible:ring-border-strong disabled:cursor-default disabled:hover:bg-transparent"
         >
           {source.speaker && (
             <span className="text-sm font-semibold text-accent-text">{source.speaker}</span>
@@ -98,7 +101,7 @@ export function SourceTextCard({
         </button>
       )}
 
-      {edited && !editing && (
+      {edited && !editing && canWork && (
         <button
           type="button"
           onClick={restore}

@@ -52,7 +52,8 @@
     "progressTitle": "Progress",
     "progressOf": "{{language}} progress",
     "noTargetLanguages": "No target languages yet.",
-    "noAccess": "You are not part of this project. Ask a manager to add you."
+    "noAccess": "You are not part of this project. Ask a manager to add you.",
+    "viewOnly": "You are not part of this project, so it is view only. Ask a manager to add you to work on it."
   },
   "settings": {
     "title": "Settings"
@@ -570,5 +571,105 @@
     "activeHint": "You are in the demo workspace. Your own data is kept apart.",
     "realImages": "Try with real images",
     "loadError": "Could not load the demo. Try again later."
+  },
+  "general": {
+    "title": "General settings",
+    "appearance": "Appearance",
+    "appearanceNote": "Saved in this browser only.",
+    "theme": "Theme",
+    "themes": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "language": "Interface language",
+    "visibility": "Project visibility",
+    "workersSeeOnlyTheirs": "Workers only see the projects they take part in",
+    "workersSeeOnlyTheirsHelp": "When off, workers also see the other projects, as view only. Managers always see every project.",
+    "managersOnly": "Only managers can change these settings.",
+    "data": "Data",
+    "dataNote": "Everything is stored in this browser. Download a backup to keep a copy or move the workspace to another browser.",
+    "backup": "Backup",
+    "backupHelp": "The whole workspace in one file, images included.",
+    "downloadBackup": "Download backup",
+    "preparing": "Preparing…",
+    "backupError": "The backup could not be made.",
+    "restore": "Restore a backup",
+    "restoreHelp": "Replaces everything in this workspace with the backup.",
+    "restoreButton": "Restore…",
+    "restoreFile": "Backup file",
+    "restoring": "Restoring…",
+    "restoreConfirm": "Replace everything in this workspace with “{{name}}”? This cannot be undone.",
+    "notABackup": "This file is not a workspace backup.",
+    "restoreError": "The backup could not be restored.",
+    "deleteAll": "Delete all data",
+    "deleteAllHelp": "Removes every project, member and file, and starts an empty workspace.",
+    "deleteAllButton": "Delete all data",
+    "deleteTitle": "Delete all data?",
+    "deleteDescription": "Every project, section, translation, comment, glossary entry, member and image in this browser will be deleted. Download a backup first if you may need them. This cannot be undone.",
+    "deleteWord": "delete",
+    "deleteType": "Type “{{word}}” to confirm",
+    "deleteError": "The data could not be deleted.",
+    "demoData": "Demo workspace",
+    "demoDataHelp": "Restoring and deleting work on your own workspace. The demo is kept apart from it.",
+    "about": "About",
+    "appName": "Translator Tool",
+    "appDescription": "A video game translation tool: scenes, glossary and review in one place.",
+    "version": "Version {{version}}",
+    "license": "Open source",
+    "licenseHelp": "Released under the AGPL-3.0 license.",
+    "sourceCode": "Source code"
+  },
+  "workspaceProjects": {
+    "title": "Workspace projects",
+    "count_one": "{{count}} project",
+    "count_other": "{{count}} projects",
+    "searchPlaceholder": "Search by name or project ID",
+    "searchLabel": "Search projects",
+    "readOnly": "Only managers can rename or delete projects.",
+    "selected_one": "{{count}} project selected",
+    "selected_other": "{{count}} projects selected",
+    "selectAll": "Select all projects",
+    "select": "Select {{name}}",
+    "columns": {
+      "project": "Project",
+      "code": "Project ID",
+      "languages": "Languages",
+      "managers": "Managers",
+      "progress": "Progress",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "languages_one": "{{source}} → {{count}} language",
+    "languages_other": "{{source}} → {{count}} languages",
+    "progressOf": "Progress of {{name}}",
+    "empty": "No projects yet.",
+    "noMatches": "No projects match your search.",
+    "rename": "Rename",
+    "renameProject": "Rename {{name}}",
+    "renameTitle": "Rename project",
+    "name": "Name",
+    "code": "Project ID",
+    "codeHelp": "Capital letters, digits and hyphens, e.g. EMB-2026.",
+    "errors": {
+      "name": {
+        "required": "Enter a name.",
+        "tooLong": "Use 80 characters or fewer."
+      },
+      "code": {
+        "required": "Enter a project ID.",
+        "tooLong": "Use 24 characters or fewer.",
+        "format": "Use only letters, digits and single hyphens.",
+        "taken": "Another project already uses this ID."
+      }
+    },
+    "saveError": "The changes could not be saved. The ID may already be in use.",
+    "delete": "Delete",
+    "deleteProject": "Delete {{name}}",
+    "deleteSelected": "Delete",
+    "deleteConfirm_one": "Delete {{names}}? It disappears from every list and link.",
+    "deleteConfirm_other": "Delete {{count}} projects ({{names}})? They disappear from every list and link.",
+    "deleteError": "The projects could not be deleted.",
+    "deleteNote": "Deleted projects keep their data in this browser and in backups, but nobody can open them."
   }
 }

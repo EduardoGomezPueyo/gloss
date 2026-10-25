@@ -9,6 +9,7 @@ import { CheckIcon, PlusIcon } from '@/ui/icons';
 import { CommentComposer } from './CommentComposer';
 import { useCommentLabels } from './useCommentLabels';
 import { innerCard } from './styles';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 const SHOWN = 3;
 
@@ -42,6 +43,7 @@ export function CommentsSummary({
   const threads = comments.data ?? [];
   const open = threads.filter(({ thread }) => !thread.resolvedAt);
   const [composing, setComposing] = useState(false);
+  const { canWork } = useProjectAccess();
   const { currentUser } = useCurrentUser();
   const action = useCommentAction();
 
@@ -52,7 +54,7 @@ export function CommentsSummary({
           {t('editor.comments')}
         </h3>
         <div className="flex items-center gap-4">
-          {!composing && (
+          {!composing && canWork && (
             <button type="button" onClick={() => setComposing(true)} className={textButton}>
               <PlusIcon className="size-3.5" />
               {t('editor.newComment')}
@@ -115,22 +117,24 @@ export function CommentsSummary({
                           {t('editor.replies', { count: replies.length })}
                         </button>
                       )}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          action.mutate({
-                            kind: 'resolve',
-                            imageId,
-                            threadId: thread.id,
-                            by: currentUser?.id ?? null,
-                          })
-                        }
-                        disabled={action.isPending}
-                        className="inline-flex items-center gap-0.5 rounded-sm text-xs text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong disabled:opacity-60"
-                      >
-                        <CheckIcon className="size-3.5" />
-                        {t('editor.resolve')}
-                      </button>
+                      {canWork && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            action.mutate({
+                              kind: 'resolve',
+                              imageId,
+                              threadId: thread.id,
+                              by: currentUser?.id ?? null,
+                            })
+                          }
+                          disabled={action.isPending}
+                          className="inline-flex items-center gap-0.5 rounded-sm text-xs text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong disabled:opacity-60"
+                        >
+                          <CheckIcon className="size-3.5" />
+                          {t('editor.resolve')}
+                        </button>
+                      )}
                     </span>
                   </span>
                 </div>

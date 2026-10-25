@@ -9,6 +9,9 @@ const base =
 /** "Add section", "Add language", "Export to code", "Move to section" (Figma: 36px tall, 14px text). */
 export const neutralButton = `${base} bg-fill-subtle px-3 py-2 text-sm text-text-secondary hover:text-text`;
 
+/** A neutral button for an action that destroys data ("Delete all data", D41). */
+export const dangerNeutralButton = `${base} bg-fill-subtle px-3 py-2 text-sm text-danger hover:opacity-80`;
+
 /** Page header actions "Add project", "Add entry" (Figma: 32px tall, 16px text). */
 export const pageButton = `${base} bg-fill-subtle px-3 py-1 text-base text-text-secondary hover:text-text`;
 

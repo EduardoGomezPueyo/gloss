@@ -14,6 +14,7 @@ import { CheckIcon } from '@/ui/icons';
 import { CommentComposer } from './CommentComposer';
 import { CommentBody, MentionTextarea } from './MentionTextarea';
 import { useCommentLabels } from './useCommentLabels';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 const ALL = 'all';
 const GENERAL = 'general';
@@ -50,6 +51,7 @@ export function CommentsPanel({
   const locale = i18n.resolvedLanguage ?? 'en';
   const comments = useComments(imageId);
   const [filter, setFilter] = useState<string>(ALL);
+  const { canWork } = useProjectAccess();
 
   const threads = (comments.data ?? []).filter(
     ({ thread }) => filter === ALL || (thread.language ?? GENERAL) === filter,
@@ -152,14 +154,16 @@ export function CommentsPanel({
             </Tabs.Root>
           </div>
 
-          <div className="border-t border-border px-5 py-4">
-            <CommentComposer
-              imageId={imageId}
-              languages={languages}
-              defaultLanguage={defaultLanguage}
-              members={members}
-            />
-          </div>
+          {canWork && (
+            <div className="border-t border-border px-5 py-4">
+              <CommentComposer
+                imageId={imageId}
+                languages={languages}
+                defaultLanguage={defaultLanguage}
+                members={members}
+              />
+            </div>
+          )}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
@@ -218,6 +222,7 @@ function OpenThread({
   const labels = useCommentLabels();
   const action = useCommentAction();
   const [reply, setReply] = useState<string | null>(null);
+  const { canWork } = useProjectAccess();
   const by = currentUser?.id ?? null;
   const [first, ...replies] = entry.comments;
 
@@ -240,21 +245,25 @@ function OpenThread({
     >
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm text-accent-text">{labels.language(entry.thread.language)}</span>
-        <button
-          type="button"
-          onClick={() => action.mutate({ kind: 'resolve', imageId, threadId: entry.thread.id, by })}
-          disabled={action.isPending}
-          className={textButton}
-        >
-          <CheckIcon />
-          {t('editor.resolve')}
-        </button>
+        {canWork && (
+          <button
+            type="button"
+            onClick={() =>
+              action.mutate({ kind: 'resolve', imageId, threadId: entry.thread.id, by })
+            }
+            disabled={action.isPending}
+            className={textButton}
+          >
+            <CheckIcon />
+            {t('editor.resolve')}
+          </button>
+        )}
       </div>
       {first && <CommentView comment={first} allMembers={allMembers} />}
       {replies.map((comment) => (
         <CommentView key={comment.id} comment={comment} allMembers={allMembers} reply />
       ))}
-      {reply === null ? (
+      {!canWork ? null : reply === null ? (
         <button
           type="button"
           onClick={() => setReply('')}
@@ -305,6 +314,7 @@ function ResolvedThread({
   const labels = useCommentLabels();
   const action = useCommentAction();
   const [expanded, setExpanded] = useState(false);
+  const { canWork } = useProjectAccess();
   const resolver = allMembers.find((m) => m.id === entry.thread.resolvedBy);
   const [first] = entry.comments;
 
@@ -327,21 +337,23 @@ function ResolvedThread({
         <button type="button" onClick={() => setExpanded((e) => !e)} className={textButton}>
           {expanded ? t('editor.hideThread') : t('editor.viewThread')}
         </button>
-        <button
-          type="button"
-          onClick={() =>
-            action.mutate({
-              kind: 'reopen',
-              imageId,
-              threadId: entry.thread.id,
-              by: currentUser?.id ?? null,
-            })
-          }
-          disabled={action.isPending}
-          className={textButton}
-        >
-          {t('editor.reopen')}
-        </button>
+        {canWork && (
+          <button
+            type="button"
+            onClick={() =>
+              action.mutate({
+                kind: 'reopen',
+                imageId,
+                threadId: entry.thread.id,
+                by: currentUser?.id ?? null,
+              })
+            }
+            disabled={action.isPending}
+            className={textButton}
+          >
+            {t('editor.reopen')}
+          </button>
+        )}
       </div>
     </article>
   );

@@ -2,10 +2,11 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SearchIcon from '@/assets/icons/search.svg?react';
 import { useCurrentUser } from '@/app/currentUser/useCurrentUser';
-import { useMembers, useProjectSummaries } from '@/data/hooks';
+import { useMembers, useProjectSummaries, useWorkspaceSettings } from '@/data/hooks';
 import { EMPTY_FILTERS, filterProjects, hasActiveFilters } from '@/domain/filters';
 import { canSeeProject } from '@/domain/members';
 import { DEFAULT_PROJECT_SORT, sortProjects } from '@/domain/sorting';
+import { DEFAULT_WORKSPACE_SETTINGS } from '@/domain/workspace';
 import { pageButton } from '@/ui/buttons';
 import { PageTitle } from '@/ui/PageTitle';
 import { CreateProjectDialog } from './createProject/CreateProjectDialog';
@@ -19,6 +20,7 @@ export function ProjectsPage() {
   const summaries = useProjectSummaries();
   const { data: members = [] } = useMembers();
   const { currentUser } = useCurrentUser();
+  const settings = useWorkspaceSettings().data ?? DEFAULT_WORKSPACE_SETTINGS;
 
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState(EMPTY_FILTERS);
@@ -26,10 +28,12 @@ export function ProjectsPage() {
   const [creating, setCreating] = useState(false);
 
   const visible = useMemo(() => {
-    // Workers only see the projects they take part in (D32).
-    const mine = (summaries.data ?? []).filter((s) => canSeeProject(currentUser, s.project));
+    // Workers may only see the projects they take part in (D32, D41).
+    const mine = (summaries.data ?? []).filter((s) =>
+      canSeeProject(currentUser, s.project, settings),
+    );
     return sortProjects(filterProjects(mine, filters, query), sort);
-  }, [summaries.data, currentUser, filters, query, sort]);
+  }, [summaries.data, currentUser, settings, filters, query, sort]);
   const narrowed = query.trim() !== '' || hasActiveFilters(filters);
 
   return (

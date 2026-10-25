@@ -26,13 +26,17 @@ describe('App shell', () => {
     expect(await screen.findByRole('heading', { name: 'Lista de proyectos' })).toBeInTheDocument();
   });
 
-  it('opens Settings > Members with its own navigation', async () => {
+  it('opens Settings > General with its own navigation', async () => {
     renderApp('/settings');
     expect(await screen.findByRole('heading', { name: 'Settings' })).toBeInTheDocument();
-    // /settings redirects to /settings/members after the first render.
+    // /settings redirects to /settings/general after the first render.
     await waitFor(() =>
-      expect(screen.getByRole('link', { name: 'Members' })).toHaveAttribute('aria-current', 'page'),
+      expect(screen.getByRole('link', { name: 'General settings' })).toHaveAttribute(
+        'aria-current',
+        'page',
+      ),
     );
+    expect(screen.getByRole('link', { name: 'Members' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Back to translation space/ })).toBeInTheDocument();
   });
 });

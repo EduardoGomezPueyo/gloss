@@ -1,20 +1,30 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useParams } from 'react-router';
-import { useProjectDetail } from '@/data/hooks';
-import { canSeeProject } from '@/domain/members';
+import { useProjectDetail, useWorkspaceSettings } from '@/data/hooks';
+import { canSeeProject, canWorkOnProject } from '@/domain/members';
 import { useCurrentUser } from './currentUser/useCurrentUser';
+import { ProjectAccessContext } from './projectAccess/ProjectAccessContext';
 
 /**
- * Guards every page of a project (detail, sections, editor, glossary): workers
- * only see projects they take part in; managers see all (SPEC 5.6, simulated, D32).
+ * Guards every page of a project (detail, sections, editor, glossary): managers
+ * and the project's people work on it; other workers do not see it, or see it as
+ * view only when the workspace allows it (SPEC 5.6, simulated; D32, D41).
  */
 export function ProjectAccessGate() {
   const { t } = useTranslation();
   const { projectId = '' } = useParams();
   const { currentUser } = useCurrentUser();
   const detail = useProjectDetail(projectId);
+  const settings = useWorkspaceSettings();
+  const project = detail.data?.project;
+  const canWork = !project || canWorkOnProject(currentUser, project);
+  const access = useMemo(() => ({ canWork }), [canWork]);
 
-  if (detail.data && !canSeeProject(currentUser, detail.data.project)) {
+  // Wait for the settings: showing a project for a moment and then hiding it would be worse.
+  if (!settings.data) return null;
+
+  if (project && !canSeeProject(currentUser, project, settings.data)) {
     return (
       <div className="flex flex-col gap-3">
         <p className="text-sm text-text-secondary">{t('projects.noAccess')}</p>
@@ -27,6 +37,19 @@ export function ProjectAccessGate() {
       </div>
     );
   }
+
   // While loading, or for unknown projects, the pages show their own states.
-  return <Outlet />;
+  return (
+    <ProjectAccessContext value={access}>
+      {!canWork && (
+        <p
+          role="note"
+          className="-mb-2 rounded-xl border border-border-strong px-4 py-2.5 text-sm text-text-secondary"
+        >
+          {t('projects.viewOnly')}
+        </p>
+      )}
+      <Outlet />
+    </ProjectAccessContext>
+  );
 }

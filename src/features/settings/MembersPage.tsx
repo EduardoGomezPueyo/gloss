@@ -1,4 +1,4 @@
-import { Checkbox, DropdownMenu } from 'radix-ui';
+import { DropdownMenu } from 'radix-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentUser } from '@/app/currentUser/useCurrentUser';
@@ -15,7 +15,8 @@ import type { Id, Member, MemberCategory } from '@/domain/types';
 import { Avatar } from '@/ui/Avatar';
 import { accentButton, neutralButton, textButton } from '@/ui/buttons';
 import { menuClass, menuItemClass, SelectInput } from '@/ui/form';
-import { CheckIcon, UserMinusIcon, UserPlusIcon } from '@/ui/icons';
+import { UserMinusIcon, UserPlusIcon } from '@/ui/icons';
+import { SelectBox } from '@/ui/SelectBox';
 import { StatusIcon } from '@/ui/StatusIcon';
 import { InviteDialog } from './InviteDialog';
 
@@ -243,29 +244,6 @@ export function MembersPage() {
 
       <InviteDialog open={inviting} onOpenChange={setInviting} members={members} />
     </div>
-  );
-}
-
-function SelectBox({
-  checked,
-  label,
-  onChange,
-}: {
-  checked: boolean;
-  label: string;
-  onChange: (checked: boolean) => void;
-}) {
-  return (
-    <Checkbox.Root
-      checked={checked}
-      onCheckedChange={(value) => onChange(value === true)}
-      aria-label={label}
-      className="inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-text-tertiary outline-none focus-visible:ring-2 focus-visible:ring-border-strong data-[state=checked]:border-accent data-[state=checked]:bg-accent"
-    >
-      <Checkbox.Indicator>
-        <CheckIcon className="size-3 text-accent-foreground" />
-      </Checkbox.Indicator>
-    </Checkbox.Root>
   );
 }
 

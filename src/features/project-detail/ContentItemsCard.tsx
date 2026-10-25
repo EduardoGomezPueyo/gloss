@@ -17,6 +17,7 @@ import { ProgressBar } from '@/ui/ProgressBar';
 import { StatusBadge } from '@/ui/StatusBadge';
 import { MoveToSectionPopover } from './MoveToSectionPopover';
 import { useFormatNumber } from './format';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 const ALL = 'all';
 
@@ -43,6 +44,7 @@ export function ContentItemsCard({
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<Status | null>(null);
   const [selected, setSelected] = useState<Id[]>([]);
+  const { canWork } = useProjectAccess();
 
   const { items } = summary;
   const visible = filterItems(items, query, status);
@@ -58,10 +60,12 @@ export function ContentItemsCard({
           <CardTitle id={titleId}>{t('sectionDetail.contentItems')}</CardTitle>
           <span className="text-[13px] text-text-secondary">{items.length}</span>
         </div>
-        <button type="button" onClick={onAddContent} className={accentButton}>
-          <PlusIcon />
-          {t('sectionDetail.add')}
-        </button>
+        {canWork && (
+          <button type="button" onClick={onAddContent} className={accentButton}>
+            <PlusIcon />
+            {t('sectionDetail.add')}
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col gap-2.5">
@@ -98,11 +102,13 @@ export function ContentItemsCard({
               <button type="button" onClick={() => setSelected([])} className={textButton}>
                 {t('sectionDetail.clearSelection')}
               </button>
-              <MoveToSectionPopover
-                items={selection}
-                destinations={sections.filter((s) => s.id !== summary.section.id)}
-                onMoved={() => setSelected([])}
-              />
+              {canWork && (
+                <MoveToSectionPopover
+                  items={selection}
+                  destinations={sections.filter((s) => s.id !== summary.section.id)}
+                  onMoved={() => setSelected([])}
+                />
+              )}
             </div>
           </div>
         )}
@@ -225,6 +231,7 @@ function OcrStatusLine({ itemId, ocr }: { itemId: Id; ocr: ItemSummary['ocr'] })
   const { t } = useTranslation();
   const retry = useRetryOcr();
   const ocrQueue = useOcrQueue();
+  const { canWork } = useProjectAccess();
 
   if (ocr.pending > 0) {
     return (
@@ -241,15 +248,17 @@ function OcrStatusLine({ itemId, ocr }: { itemId: Id; ocr: ItemSummary['ocr'] })
     return (
       <p className="flex items-center gap-3 text-sm text-danger">
         {t('ocr.failed', { count: ocr.failed })}
-        <button
-          type="button"
-          disabled={retry.isPending}
-          onClick={() => retry.mutate(itemId, { onSuccess: () => ocrQueue.run() })}
-          // Above the stretched link, so it does not open the item.
-          className={`${textButton} relative z-10 underline`}
-        >
-          {t('ocr.retry')}
-        </button>
+        {canWork && (
+          <button
+            type="button"
+            disabled={retry.isPending}
+            onClick={() => retry.mutate(itemId, { onSuccess: () => ocrQueue.run() })}
+            // Above the stretched link, so it does not open the item.
+            className={`${textButton} relative z-10 underline`}
+          >
+            {t('ocr.retry')}
+          </button>
+        )}
       </p>
     );
   }

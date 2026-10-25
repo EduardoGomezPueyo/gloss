@@ -26,6 +26,7 @@ import { GalleryEditor, TagEditor } from './EntryFields';
 import { glossaryPaths } from './format';
 import { MarkdownEditor } from './MarkdownEditor';
 import { VersionHistory } from './VersionHistory';
+import { useProjectAccess } from '@/app/projectAccess/ProjectAccessContext';
 
 /**
  * "Edit entry - <name>" (Figma 370:6480) and "New entry". Save changes stores a
@@ -36,7 +37,10 @@ export function EntryEditPage() {
   const { projectId = '', entryId } = useParams();
   const glossary = useGlossary(projectId);
   const entry = useGlossaryEntry(entryId ?? '');
+  const { canWork } = useProjectAccess();
 
+  // View only (D41): the gate already says why.
+  if (!canWork) return null;
   if (glossary.isPending || (entryId && entry.isPending)) {
     return <p className="text-sm text-text-tertiary">{t('glossary.loading')}</p>;
   }
