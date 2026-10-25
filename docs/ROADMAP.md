@@ -51,7 +51,7 @@ Vertical phases; the app stays runnable after each one.
   - [x] Assigned to me (D44, with assignments per item and language and the managers' To review tab), 2026-10-25
   - [x] Notifications (D45, an activity log with a read state per person and an unread count in the navigation), 2026-10-25
   - [x] Settings > General (with the project visibility setting, D41) and Settings > Workspace projects (D42), 2026-10-25
-  - [ ] Final demo pass and redeploy
+  - [x] Final demo pass and redeploy (2026-10-25): the demo repository adds comment threads with replies and @mentions, assignments per item and language, and notifications derived with the app's rules; images no longer carry a context note
 
 ## Verification
 
