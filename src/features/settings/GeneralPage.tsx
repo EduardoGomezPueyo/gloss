@@ -27,7 +27,7 @@ const REPOSITORY_URL = 'https://github.com/EduardoGomezPueyo/translator-tool';
 export function GeneralPage() {
   const { t } = useTranslation();
   return (
-    <div className="flex max-w-3xl flex-col gap-8">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
       <h2 className="font-heading text-lg leading-tight font-bold text-text">
         {t('general.title')}
       </h2>
