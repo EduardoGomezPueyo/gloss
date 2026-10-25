@@ -671,5 +671,26 @@
     "deleteConfirm_other": "¿Eliminar {{count}} proyectos ({{names}})? Desaparecen de todas las listas y enlaces.",
     "deleteError": "No se pudieron eliminar los proyectos.",
     "deleteNote": "Los proyectos eliminados conservan sus datos en este navegador y en las copias de seguridad, pero nadie puede abrirlos."
+  },
+  "comments": {
+    "title": "Comentarios",
+    "count_one": "{{count}} hilo",
+    "count_other": "{{count}} hilos",
+    "scope": "Qué hilos",
+    "involvingMe": "Me implican",
+    "all": "Todos",
+    "state": "Estado del hilo",
+    "open": "Abiertos",
+    "resolved": "Resueltos",
+    "languageFilter": "Filtrar por idioma",
+    "projectFilter": "Filtrar por proyecto",
+    "allProjects": "Todos los proyectos",
+    "emptyMine": "Aquí no hay hilos que te impliquen. Verás aquellos en los que escribas o te @mencionen.",
+    "emptyAll": "Ningún hilo coincide con estos filtros.",
+    "nothingSelected": "Selecciona un hilo para verlo junto a su imagen."
+  },
+  "inbox": {
+    "location": "Ubicación",
+    "openInEditor": "Abrir en el editor"
   }
 }

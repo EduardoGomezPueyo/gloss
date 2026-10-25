@@ -94,7 +94,7 @@ The **glossary is per project**: it is reached from the _Glossary_ card on the p
 
 > Some screenshots (project list with filters and the glossary) show the **old navigation** (Projects, Glossary). What is described here is current; on the glossary screens the active item must be _Projects_.
 
-**No design:** Notifications, Assigned to me, Comments, General settings and Workspace projects. They are built in phase 10 from short specs the author approves (DECISIONS D37); until then an entry stays disabled. General settings (5.7) and Workspace projects (5.8) are built; `/settings` opens General settings.
+**No design:** Notifications, Assigned to me, Comments, General settings and Workspace projects. They are built in phase 10 from short specs the author approves (DECISIONS D37); until then an entry stays disabled. General settings (5.7), Workspace projects (5.8) and Comments (5.9) are built; `/settings` opens General settings.
 
 Requirements:
 
@@ -247,6 +247,13 @@ Redesigned by the author (DECISIONS D40): two columns, one language at a time.
 - A table built like Members: Project (link), Project ID, Languages ("English → 3 languages"), Managers, Progress, Created and Actions; search by name or ID; the projects the current user can see.
 - **Managers:** _Rename_ (name and project ID; the ID is unique, in capitals, letters, digits and hyphens) and _Delete_, per row or for the selected projects, after a confirmation that names them. Deleting is a soft delete: the project disappears from every list and link, its data and ID are kept.
 - **Workers:** the table read-only.
+
+### 5.9 Comments (no design, DECISIONS D43)
+
+- **Inbox layout** (shared with Assigned to me and Notifications): a list on the left, newest first, with filters as chips and the selected entry highlighted; on the right, the entry's image (zoom, full screen), a breadcrumb _Project › Section › Item_ with **Open in editor**, and the entry's content. The selection is in the URL (`?id=`); ↑/↓ and J/K move through the list.
+- **Entries:** comment threads of the projects the user can see, by latest activity (a reply or the resolution). Each shows the author of the first comment, the thread's language, an excerpt, the time, the project and item, and the reply count.
+- **Filters:** _Involving me / All_ (managers only; they start on _Involving me_), _Open / Resolved_, language (with _General_) and project. **Workers** only see the threads involving them. A thread involves you if you wrote in it or are @mentioned in it.
+- **Right side:** the whole thread with its replies, _Reply to thread_, _Resolve_ and _Reopen_ (view only in projects the user is not part of, D41).
 
 ## 6. Business rules and vocabulary
 

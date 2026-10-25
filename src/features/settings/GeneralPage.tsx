@@ -1,4 +1,4 @@
-import { Switch, ToggleGroup } from 'radix-ui';
+import { Switch } from 'radix-ui';
 import { useId, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -11,6 +11,7 @@ import { useRepositories } from '@/data/RepositoryContext';
 import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '@/data/hooks';
 import { canManageMembers } from '@/domain/members';
 import { UI_LANGUAGES } from '@/i18n';
+import { Segmented } from '@/ui/Segmented';
 import { dangerNeutralButton, neutralButton } from '@/ui/buttons';
 import { downloadBackup } from './backup';
 import { DeleteDataDialog } from './DeleteDataDialog';
@@ -76,39 +77,6 @@ function Row({
       </div>
       <div className="flex shrink-0 items-center gap-3">{children}</div>
     </div>
-  );
-}
-
-function Segmented<T extends string>({
-  value,
-  options,
-  onChange,
-  labelledBy,
-}: {
-  value: T;
-  options: { value: T; label: string }[];
-  onChange: (value: T) => void;
-  labelledBy: string;
-}) {
-  return (
-    <ToggleGroup.Root
-      type="single"
-      value={value}
-      // Radix sends '' when the active item is clicked again: keep it.
-      onValueChange={(next) => next && onChange(next as T)}
-      aria-labelledby={labelledBy}
-      className="flex rounded-full border border-border-strong p-0.5"
-    >
-      {options.map((option) => (
-        <ToggleGroup.Item
-          key={option.value}
-          value={option.value}
-          className="rounded-full px-3 py-1 text-sm text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong data-[state=on]:bg-fill-subtle data-[state=on]:text-text"
-        >
-          {option.label}
-        </ToggleGroup.Item>
-      ))}
-    </ToggleGroup.Root>
   );
 }
 

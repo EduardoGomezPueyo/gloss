@@ -70,6 +70,7 @@ import type {
   PendingOcr,
   ReviewDecision,
   SectionRepository,
+  CommentInboxEntry,
   ThreadWithComments,
   TranslationRepository,
   WorkspaceRepository,
@@ -576,6 +577,50 @@ class LocalCommentRepository implements CommentRepository {
             .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
         }));
     });
+  }
+
+  async listInbox(): Promise<CommentInboxEntry[]> {
+    const db = this.db;
+    return db.transaction(
+      'r',
+      [db.commentThreads, db.comments, db.images, db.contentItems, db.sections, db.projects],
+      async () => {
+        const [threads, comments, images, items, sections, projects] = await Promise.all([
+          db.commentThreads.toArray(),
+          db.comments.toArray(),
+          db.images.toArray(),
+          db.contentItems.toArray(),
+          db.sections.toArray(),
+          db.projects.toArray(),
+        ]);
+        const byId = <T extends { id: Id }>(list: T[]) => new Map(list.map((x) => [x.id, x]));
+        const [imageMap, itemMap, sectionMap, projectMap] = [
+          byId(images),
+          byId(items),
+          byId(sections),
+          byId(projects),
+        ];
+        return threads.flatMap((thread) => {
+          const image = imageMap.get(thread.imageId);
+          const item = image && itemMap.get(image.contentItemId);
+          const section = item && sectionMap.get(item.sectionId);
+          const project = projectMap.get(thread.projectId);
+          if (!image || !item || !section || !project || isProjectDeleted(project)) return [];
+          return [
+            {
+              thread,
+              comments: comments
+                .filter((c) => c.threadId === thread.id)
+                .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+              image,
+              item,
+              section,
+              project,
+            },
+          ];
+        });
+      },
+    );
   }
 
   async startThread(imageId: Id, language: LanguageCode | null, body: string, by: Id | null) {

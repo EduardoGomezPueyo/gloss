@@ -31,6 +31,13 @@ export const routes: RouteObject[] = [
         ),
       },
       {
+        path: 'comments',
+        lazy: page(
+          () => import('@/features/comments/CommentsPage'),
+          (m) => m.CommentsPage,
+        ),
+      },
+      {
         path: 'projects/:projectId',
         element: <ProjectAccessGate />,
         children: [

@@ -216,7 +216,13 @@ export function useComments(imageId: Id | undefined) {
   });
 }
 
-/** Starts a thread, replies, resolves or reopens; refreshes that image's comments. */
+/** Every thread with its context, for the Comments page (DECISIONS D43). */
+export function useCommentInbox() {
+  const { comments } = useRepositories();
+  return useQuery({ queryKey: queryKeys.commentInbox, queryFn: () => comments.listInbox() });
+}
+
+/** Starts a thread, replies, resolves or reopens; refreshes the comments everywhere. */
 export function useCommentAction() {
   const { comments } = useRepositories();
   const queryClient = useQueryClient();
@@ -238,8 +244,8 @@ export function useCommentAction() {
           return comments.reopen(action.threadId, action.by);
       }
     },
-    onSuccess: (_, action) =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.comments(action.imageId) }),
+    // Every comment query: that image's, and the Comments page's.
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments'] }),
   });
 }
 

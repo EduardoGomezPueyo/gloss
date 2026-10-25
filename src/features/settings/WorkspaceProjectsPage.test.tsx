@@ -45,7 +45,9 @@ describe('Settings > Workspace projects', () => {
 
   it('renames a project and validates its ID', async () => {
     const { user, table } = await openProjects();
-    await user.click(within(table).getByRole('button', { name: 'Rename Sample Project Alpha' }));
+    await user.click(
+      await within(table).findByRole('button', { name: 'Rename Sample Project Alpha' }),
+    );
     const dialog = await screen.findByRole('dialog', { name: 'Rename project' });
     const code = within(dialog).getByLabelText('Project ID');
     await user.clear(code);
@@ -68,7 +70,10 @@ describe('Settings > Workspace projects', () => {
   it('deletes selected projects after confirming', async () => {
     const { user, table, router } = await openProjects();
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    await user.click(within(table).getByRole('checkbox', { name: 'Select Sample Project Alpha' }));
+    // Manager controls appear once the current user is known.
+    await user.click(
+      await within(table).findByRole('checkbox', { name: 'Select Sample Project Alpha' }),
+    );
     await user.click(within(table).getByRole('checkbox', { name: 'Select Sample Project Beta' }));
     expect(screen.getByText('2 projects selected')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Delete' }));

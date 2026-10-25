@@ -167,9 +167,19 @@ export interface ThreadWithComments {
   comments: Comment[];
 }
 
+/** A thread with where it lives, for the Comments page (DECISIONS D43). */
+export interface CommentInboxEntry extends ThreadWithComments {
+  image: SceneImage;
+  item: ContentItem;
+  section: Section;
+  project: Project;
+}
+
 export interface CommentRepository {
   /** Threads about an image, newest first. */
   listForImage(imageId: Id): Promise<ThreadWithComments[]>;
+  /** Every thread of the projects that were not deleted, with its context. */
+  listInbox(): Promise<CommentInboxEntry[]>;
   startThread(
     imageId: Id,
     language: LanguageCode | null,

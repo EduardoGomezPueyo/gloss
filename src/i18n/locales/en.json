@@ -671,5 +671,26 @@
     "deleteConfirm_other": "Delete {{count}} projects ({{names}})? They disappear from every list and link.",
     "deleteError": "The projects could not be deleted.",
     "deleteNote": "Deleted projects keep their data in this browser and in backups, but nobody can open them."
+  },
+  "comments": {
+    "title": "Comments",
+    "count_one": "{{count}} thread",
+    "count_other": "{{count}} threads",
+    "scope": "Which threads",
+    "involvingMe": "Involving me",
+    "all": "All",
+    "state": "Thread state",
+    "open": "Open",
+    "resolved": "Resolved",
+    "languageFilter": "Filter by language",
+    "projectFilter": "Filter by project",
+    "allProjects": "All projects",
+    "emptyMine": "No threads involve you here. You will see the ones you write in or are @mentioned in.",
+    "emptyAll": "No threads match these filters.",
+    "nothingSelected": "Select a thread to see it with its image."
+  },
+  "inbox": {
+    "location": "Location",
+    "openInEditor": "Open in editor"
   }
 }

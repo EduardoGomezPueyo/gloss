@@ -225,6 +225,19 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Rename** edits the name and the project ID together (the Overview keeps them read-only, D38). The ID is stored in capitals, uses letters, digits and single hyphens, up to 24 characters, and must not be used by any other project, deleted ones included.
 - **Delete** is a soft delete (`deletedAt`, like members' `removedAt`, D21) after a `window.confirm` naming the projects: deleted projects are left out of the list, the detail and the export, and their pages say "not found". Data from before the field existed has no `deletedAt` and counts as not deleted. No archiving.
 
+### D43. Inbox pages and Comments (2026-10-25) — *spec approved by the author (D37), layout from the author's Linear-style mockup*
+- **Shared inbox layout** for Comments, Assigned to me and Notifications: a list on the left (newest first, filters as chips, the selected entry highlighted with theme tokens) and, on the right, the entry's image with zoom and full screen, a breadcrumb with *Open in editor*, and the entry's content and actions. The selection lives in the URL (`?id=`); ↑/↓ and J/K move through the list. Only projects the user can see (D41); actions follow the view-only rule. Entries without an image show the project instead.
+- **Comments:** threads across projects, ordered by latest activity, with Open / Resolved, language and project filters. **Managers** start on *Involving me* and can switch to *All*; **workers** only see the threads involving them, with no option. A thread involves you if you wrote in it or are @mentioned in it. The right side shows the whole thread with replies, the reply box, Resolve and Reopen.
+
+### D44. Assigned to me (2026-10-25) — *spec approved by the author (D37)*
+- **Assignments:** managers assign a **content item, for one language,** to a person, from the section detail. A new record per item and language.
+- **The page:** the items assigned to you (name, language, status, x/N), by project priority and then latest assignment; the right side shows the item's first image, the source text, your translation and its status, and *Open in editor*. **Managers** also get a **To review** tab with the translations under review in the projects they manage. The demo gets assignments.
+
+### D45. Notifications (2026-10-25) — *spec approved by the author (D37)*
+- **Activity log:** the repository records events as things happen, with a read state per person, and the navigation shows the unread count. Events: you are @mentioned; someone replies in a thread you are in; a thread you are in is resolved; your translation is approved or sent back; a content item is assigned to you; a section is submitted for review (to that project's managers); you are added to a project. Your own actions never notify you.
+- **The page:** the inbox layout with All / Unread / Mentions and *Mark all as read*; opening an entry marks it read. The right side shows the image and the event (the comment in its thread, or the translation with its status change).
+- **Order:** built after Comments and Assigned to me, since it reports on both.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:

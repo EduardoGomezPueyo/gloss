@@ -27,7 +27,7 @@ export function AppLayout() {
           {/* No design yet (open decision 6): shown disabled. */}
           <SidebarNavItem icon={NotificationsIcon} label={t('nav.notifications')} />
           <SidebarNavItem icon={AssignedIcon} label={t('nav.assignedToMe')} />
-          <SidebarNavItem icon={CommentsIcon} label={t('nav.comments')} />
+          <SidebarNavItem icon={CommentsIcon} label={t('nav.comments')} to="/comments" />
           <SidebarNavItem icon={SettingsIcon} label={t('nav.settings')} to="/settings" />
         </div>
         <div className="flex items-center gap-2">
