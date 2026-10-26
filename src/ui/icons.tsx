@@ -62,3 +62,11 @@ export const UserMinusIcon = (p: GlyphProps) => (
     d="M6.5 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM2 13.5c0-2.2 2-4 4.5-4s4.5 1.8 4.5 4M10.5 7h4"
   />
 );
+
+export const SidebarCollapseIcon = (p: GlyphProps) => (
+  <Glyph {...p} d="M2.5 3.5h11v9h-11v-9ZM6 3.5v9M10.5 6.5 9 8l1.5 1.5" />
+);
+
+export const SidebarExpandIcon = (p: GlyphProps) => (
+  <Glyph {...p} d="M2.5 3.5h11v9h-11v-9ZM6 3.5v9M9 6.5 10.5 8 9 9.5" />
+);

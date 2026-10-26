@@ -240,6 +240,10 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Built (2026-10-25)** after Comments and Assigned to me. The navigation entries no longer have a disabled state (D11 is fully superseded).
 - **Demo (2026-10-25):** the demo repository's generator derives its notifications from its threads, assignments and reviews with these same rules (older than two days: read). Its assigned translations are written by their assignees, and the default user (a manager) has a few assignments in progress.
 
+### D46. Collapsible sidebar (2026-10-26) — *requested by the author in D27; look and behaviour chosen by the author*
+- **Collapsed look:** the general navigation shrinks from 182px to a 52px icon rail. Each link keeps its accessible name and shows its label in a tooltip on hover or focus; unread notifications become an accent dot on the icon. The theme switch, the EN / ES toggle and the demo controls move into the avatar menu (Theme, Interface language, Demo sections).
+- **Behaviour:** a button at the top of the navigation (aligned with the icons when collapsed) and **Ctrl+B** (⌘B on macOS; ignored while typing in a field) toggle it. The choice is stored per browser in localStorage (`translator.sidebarCollapsed`) and applies on every page. Settings keeps its own navigation inside the panel and does not collapse.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
@@ -247,4 +251,3 @@ Decisions that are still open, with the phase they block:
 | Topic | Blocks | Status |
 |---|---|---|
 | `docs/design/` screenshots (FFVII art) | Public repo | Excluded from git (D16); replace with original material if they should be versioned |
-| Collapsible sidebar (D27) | — | Requested by the author for a later iteration |

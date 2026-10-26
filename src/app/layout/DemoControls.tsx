@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useWorkspace } from '../workspace/WorkspaceContext';
+import { useDemoActions } from './useDemoActions';
 
 const actionClass =
   'w-fit rounded-sm text-xs leading-none text-nav-unselected transition-colors outline-none hover:text-nav-selected focus-visible:ring-2 focus-visible:ring-border-strong disabled:cursor-wait';
@@ -12,31 +10,9 @@ const actionClass =
  */
 export function DemoControls() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { kind, demo, loadDemo, exitDemo } = useWorkspace();
-  const [loading, setLoading] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const { kind, demo, loading, failed, load, exit } = useDemoActions();
 
   if (!demo) return null;
-
-  const load = async () => {
-    setLoading(true);
-    setFailed(false);
-    // Leave any page of the current workspace: its ids do not exist in the demo.
-    await navigate('/projects');
-    try {
-      await loadDemo();
-    } catch (error) {
-      console.error('Could not load the demo', error);
-      setFailed(true);
-      setLoading(false);
-    }
-  };
-
-  const exit = async () => {
-    await navigate('/projects');
-    exitDemo();
-  };
 
   return (
     <div className="flex flex-col gap-1.5">

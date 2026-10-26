@@ -16,11 +16,17 @@
   },
   "userMenu": {
     "open": "Abrir menú de usuario",
-    "currentUser": "Usuario actual"
+    "currentUser": "Usuario actual",
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro"
   },
   "sidebar": {
     "darkMode": "Modo oscuro",
-    "language": "Idioma de la interfaz"
+    "language": "Idioma de la interfaz",
+    "collapse": "Contraer barra lateral",
+    "expand": "Expandir barra lateral",
+    "shortcutHint": "{{action}} (Ctrl+B)"
   },
   "languages": {
     "en": "English",
