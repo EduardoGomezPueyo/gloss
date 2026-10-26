@@ -46,7 +46,7 @@ Vertical phases; the app stays runnable after each one.
   - [x] C. Code-splitting: every page is lazy; React, data, UI and CodeMirror in separate chunks (first load ~236 kB gzip, was 277 kB in one file).
   - [x] E. Vercel deployment at https://translator-tool-six.vercel.app (redeploys on every push to `main`; `VITE_DEMO_URL` set in the project settings).
   - [x] D. Screen-by-screen fidelity review against Figma, with the author (2026-10-24): project list, project and section detail, Add content, glossary (5 frames) and Settings > Members. Also added on request: editing project details from the Overview (D38) and a two-column "Add new project" modal (D39). **Exception:** the Translator view was redesigned by the author instead and rebuilt from their mockup on 2026-10-25 (D40).
-- [ ] **10. Pages without a design** (D37), each designed in code from a short spec the author approves, and added to the demo data:
+- [x] **10. Pages without a design** (D37), each designed in code from a short spec the author approves, and added to the demo data:
   - [x] Comments (D43, with the shared inbox layout), 2026-10-25
   - [x] Assigned to me (D44, with assignments per item and language and the managers' To review tab), 2026-10-25
   - [x] Notifications (D45, an activity log with a read state per person and an unread count in the navigation), 2026-10-25

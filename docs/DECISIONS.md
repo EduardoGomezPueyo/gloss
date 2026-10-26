@@ -28,10 +28,10 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Scope:** interface texts only. Project content (source texts, glossary) is not translated by i18n.
 
 ### D5. Light and dark theme (2026-10-18)
-- **Decision:** the dark theme comes from Figma. The light one is a **proposal** with no design: the same semantic tokens with their own values (pending the author's review). By default it follows `prefers-color-scheme`; a script in `index.html` applies the theme before first paint.
+- **Decision:** the dark theme comes from Figma. The light one has no design: the same semantic tokens with their own values (confirmed by the author on 2026-10-26). By default it follows `prefers-color-scheme`; a script in `index.html` applies the theme before first paint.
 - **Light theme adjustments:** text in the accent color uses a dark yellow (`--accent-text`) to keep contrast, and the PC platform color is darkened because the original light blue is not visible on white. Hovered list rows use their own `--row-hover` token, because the popup colour is white too and the hover was invisible (reported by the author).
 
-### D6. User menu on the avatar (2026-10-18) — *proposal, no design*
+### D6. User menu on the avatar (2026-10-18) — *no design; confirmed by the author on 2026-10-26*
 - **Decision:** the avatar at the bottom left opens a menu with **Theme** (System / Light / Dark) and **Language** (English / Español). *Superseded by D26: theme and language moved out of the menu.* In phase 1 the simulated current-user selector is added to it.
 - **Reason:** the avatar already exists in the design and has no assigned function, so no new elements are added to the navigation.
 
@@ -98,13 +98,13 @@ Log of technical and design decisions and the reasons behind them. Product decis
 
 ### D22. Project list filters and search (2026-10-20) — *phase 2*
 - **Decision:** categories combine with AND; several values inside one category combine with OR (the SPEC 5.1 proposal; confirmed by the author). Applied filters show **one chip per category** ("Status is Not started, In progress ×"); × clears that category. The search matches the project name **or code**, ignoring case and accents. *Managers* lists members whose category is manager; *Workers* lists workers (invited ones included) and matches the project's team members.
-- **Undesigned states (proposal):** a ticked checkbox is a filled square with a check; the filter button gets a stronger circle and a subtle fill while any filter is active; with no matches, the list shows a message and **Clear all filters**. Menus stay open while ticking so several values can be picked in a row.
+- **Undesigned states (confirmed by the author on 2026-10-26):** a ticked checkbox is a filled square with a check; the filter button gets a stronger circle and a subtle fill while any filter is active; with no matches, the list shows a message and **Clear all filters**. Menus stay open while ticking so several values can be picked in a row.
 - **Implementation:** pure functions in `src/domain/filters.ts`, with tests. Filters, search and sort are page state (not in the URL) for now.
 
 ### D23. Add new project: rules not in the design (2026-10-20) — *extends D8*
 - **Decision:** required fields are *Project name*, *Original language* and **at least one manager** (SPEC: a project has one or more managers); these rules, the manager preselection and the manager/team member exclusion are confirmed by the author. The current user is preselected as manager when they are one. *Team members* offers workers; a person cannot be both manager and team member of the same project. Target languages exclude the original language and changing it removes it from the targets. Default priority: *None*. Errors are shown after the first submit.
 - **Generated fields:** the identifier is generated from the name (up to three word initials, or the first four letters of a single word, plus the year, with `-2`, `-3`… if taken: "The Lantern Keeper" → `TLK-2026`; confirmed by the author). The release date starts empty. The project starts with no sections (progress 0 %, *Not started*).
-- **Look:** *Managers* reuses the *Team members* picker, *Original language* is a dropdown styled like the name input and *Target languages* reuses the *Platforms* chips. The modal body scrolls when it does not fit.
+- **Look (confirmed by the author on 2026-10-26):** *Managers* reuses the *Team members* picker, *Original language* is a dropdown styled like the name input and *Target languages* reuses the *Platforms* chips. The modal body scrolls when it does not fit.
 
 ### D24. Languages, flags and avatars (2026-10-20)
 - **Languages:** a fixed catalog of 16 languages in `src/domain/languages.ts` (BCP 47 codes). Names come from `Intl.DisplayNames` in the interface language, so they need no i18n keys ("Japanese" / "Japonés").
@@ -116,20 +116,20 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Decision:** the name is a link stretched over the whole row (keyboard and screen-reader friendly); the status icon sits above it so hovering it opens the progress popover instead. `/projects/:projectId` shows a placeholder until phase 3.
 
 ### D26. Theme switch and language toggle next to the avatar (2026-10-20) — *replaces part of D6*
-- **Decision:** at the author's request, the theme is a **light/dark switch** to the right of the avatar instead of a menu option. The switch shows the theme in use; until it is flipped the app follows the system preference, so the explicit *System* option is gone. The interface language follows the same idea as a compact **EN / ES** toggle beside it (proposal: with more languages it would go back to a menu). The avatar menu keeps the current user and the demo reset.
+- **Decision:** at the author's request, the theme is a **light/dark switch** to the right of the avatar instead of a menu option. The switch shows the theme in use; until it is flipped the app follows the system preference, so the explicit *System* option is gone. The interface language follows the same idea as a compact **EN / ES** toggle beside it (with more languages it would go back to a menu) (confirmed by the author on 2026-10-26). The avatar menu keeps the current user and the demo reset.
 
 ### D27. Project and section detail: undesigned flows (2026-10-22) — *phase 3, confirmed by the author*
 - **Add section:** a dialog with *Section name* (required) and *Description* (optional), styled like Add new project. **Create section** adds it at the end and stays on the project; **Create and add content** creates it and opens the new section (from phase 4 it also opens "Add content to section"; the intent is passed as router state `addContent`).
 - **Edit section:** a pencil next to the title on the section card opens the same dialog, filled in, with **Save changes**.
 - **Add language:** a popover above the button with one language dropdown (the catalog minus the original language and the languages already added) and **Add**. The new language starts at 0 % / *Not started*. Removing a language is out of scope.
-- **Section Progress interaction (proposal):** the triangle expands or collapses a section (the first one starts expanded, several can be open); the section name is a link to its detail.
+- **Section Progress interaction (confirmed by the author on 2026-10-26):** the triangle expands or collapses a section (the first one starts expanded, several can be open); the section name is a link to its detail.
 - **Not built yet, shown disabled with a tooltip:** *Export to code* (phase 8), the Glossary link (phase 6) and **+ Add** content (phase 4). The arrow of each content item opens `/projects/:id/items/:itemId`, a placeholder until the editor (phase 5).
 - **Sidebar:** kept on the section detail (the Figma frame omits it). Making it collapsible is noted for a later iteration.
 
 ### D28. Section detail numbers (2026-10-22)
 - **Languages Progress in the section detail** shows that section's own per-language progress (confirmed by the author), computed with the same rules as the project's (D18).
 - **Managers and priority** on the section card are the project's (SPEC 3, inherited); the language counter is the project's target languages.
-- **Labels (proposal for SPEC minor open decisions):** the overview says *Manager* with one manager and *Managers* with several; "Not-started" is written *Not started*; an empty release date shows *Not set*. "Updated 2h ago" uses the most recent change to the item, its images or translations, with its author's avatar.
+- **Labels (SPEC minor open decisions, confirmed by the author on 2026-10-26):** the overview says *Manager* with one manager and *Managers* with several; "Not-started" is written *Not started*; an empty release date shows *Not set*. "Updated 2h ago" uses the most recent change to the item, its images or translations, with its author's avatar.
 - **Move to section** appends the items after the destination's last item, in their current order; nothing else about them changes, so translations and progress are kept. Selected items that leave the section drop out of the selection.
 
 ### D29. Add content to section and OCR (2026-10-22) — *phase 4, resolves SPEC open decision 3 (confirmed by the author)*
@@ -147,7 +147,7 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Source text (open 2):** clicking the text (or the pencil) edits text, speaker, type and context note together. When the text differs from what OCR read, an **edited** label and **Restore OCR text** appear. Text typed where OCR found nothing is not "edited".
 - **Glossary panel:** built in phase 6 with the glossary; phase 5 shows the card with a short note and *Full glossary* disabled. Proposal for phase 6: a match is an entry whose title appears in the source text or the translation (whole words, ignoring case).
 - **Comments:** threads per image with a language (or *General*), replies, Resolve / Reopen, and Open / Resolved tabs with a language filter. **No categories** for now (the author may add them later). `@` suggests the project's people and inserts "@Full Name"; mentions are only highlighted, nobody is notified. The demo seeds one open and one resolved thread on the first image of the first project.
-- **Defaults (proposal):** autosave a short pause after typing (and when leaving the field, image or language), with "Saving… / All changes saved" in the header; the current image and language live in the URL (`?image=2&lang=es`); "Images in this item" (the design says "section"), with images named "<item> - <n>" (D29); demo images without a file show a placeholder; zoom steps 100–300 % and full screen; the **Note for translators** can be written or changed by managers; the comparison card starts on the first other language with text, and *Edit <language>* switches the editor to it.
+- **Defaults (confirmed by the author on 2026-10-26; the comparison card and the managers-only note were superseded by D40):** autosave a short pause after typing (and when leaving the field, image or language), with "Saving… / All changes saved" in the header; the current image and language live in the URL (`?image=2&lang=es`); "Images in this item" (the design says "section"), with images named "<item> - <n>" (D29); demo images without a file show a placeholder; zoom steps 100–300 % and full screen; the **Note for translators** can be written or changed by managers; the comparison card starts on the first other language with text, and *Edit <language>* switches the editor to it.
 - **Storage:** IndexedDB v3 adds comment threads and comments and the `ready` flag.
 
 ### D31. Glossary (2026-10-22) — *phase 6, confirmed by the author unless marked*
@@ -157,7 +157,7 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Links and references:** `[[Title]]` or `[[Title|text]]` link to another entry by title (ignoring case and accents); links to entries that do not exist yet are dimmed. Typing `[[` in the editor suggests titles. References are Markdown footnotes (`text[^1]` and `[^1]: source`), rendered as numbered links to a visible **References** list. The body is rendered to React elements (react-markdown + GFM), never raw HTML; images inside the body are not rendered.
 - **Images:** a gallery block above the body in Edit entry ("+ Image", × to remove; PNG/JPEG/WebP up to 15 MB); the first image is shown large. Images are part of every version.
 - **Versions:** every *Save changes* stores a numbered version with author and time (no version when nothing changed); *Restore version* saves the older content as a new version, so history is never lost. The diff is word by word: added text on `--diff-added`, removed text struck through on `--diff-removed`, a bar beside changed paragraphs, and tags compared too.
-- **Defaults (proposal):** each project gets Characters, Factions, Locations and Lore (new projects too; IndexedDB v4 adds them to existing ones); *Create new category* asks for a unique name; the overview rows show the three most viewed entries per category, and opening an entry counts a view; *View all* selects that category; anyone in the project can edit; the title of the screen is "<Project> - Glossary" with a book icon (the project has no image); only *Add entry* is kept (the "+ New entry" of one frame duplicates it). Images uploaded and then discarded stay stored (no cleanup yet).
+- **Defaults (confirmed by the author on 2026-10-26):** each project gets Characters, Factions, Locations and Lore (new projects too; IndexedDB v4 adds them to existing ones); *Create new category* asks for a unique name; the overview rows show the three most viewed entries per category, and opening an entry counts a view; *View all* selects that category; anyone in the project can edit; the title of the screen is "<Project> - Glossary" with a book icon (the project has no image); only *Add entry* is kept (the "+ New entry" of one frame duplicates it). Images uploaded and then discarded stay stored (no cleanup yet).
 - **Editor panel (D30):** without a search, it lists the entries whose title appears in the image's source text or translation (whole words, ignoring case and accents), and the translation editor shows "N glossary match"; with a search, it searches the whole glossary.
 - **Libraries:** CodeMirror 6 (MIT) for the live Markdown editor, loaded only on the edit page; react-markdown and remark-gfm (MIT); jsdiff (BSD-3-Clause), loaded only on the compare page.
 - **Demo:** original fictional entries for the first project (characters, factions, places and lore of a placeholder river city), with older versions on "Mira Vale" to show the comparison.
@@ -167,7 +167,7 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Invite members to workspace:** a dialog with one row per person (Name, Email, Category — Worker by default) and *Add another*. Emails must be valid, not already in the workspace and not repeated; empty rows are ignored. People are added as *Invited*; no email is sent (the dialog says so).
 - **Selection:** with people selected, a bar shows "N selected", *Clear selection*, **Change category** and **Remove**.
 - **Visibility (SPEC 5.6, simulated):** workers only see the projects they take part in, in the list and through direct links (one guard route for every project page); managers see everything. Switch the current user in the avatar menu to try it. A workspace setting can let workers see the other projects as view only (D41).
-- **Defaults (proposal):** only active managers can invite, change categories or remove; workers see the table read-only with a note. You cannot remove yourself, and the workspace always keeps at least one active manager (removing or demoting the last ones is refused with a message). Remove asks for confirmation and is a soft delete (D21). Invited members stay *Invited* (no real sign-up); removing one cancels the invitation.
+- **Defaults (confirmed by the author on 2026-10-26):** only active managers can invite, change categories or remove; workers see the table read-only with a note. You cannot remove yourself, and the workspace always keeps at least one active manager (removing or demoting the last ones is refused with a message). Remove asks for confirmation and is a soft delete (D21). Invited members stay *Invited* (no real sign-up); removing one cancels the invitation.
 
 ### D33. Export to code (2026-10-22) — *phase 8, resolves SPEC open decision 5 (confirmed by the author)*
 - **Where:** *Export to code* on the project page opens a dialog: **format** (JSON or CSV — this is where the CSV lives), **languages** (all target languages ticked) and **"Include translations that are not completed yet"** (off by default: only *Completed* translations go in, so the game ships reviewed text). It shows how many strings and translations the file will have, then *Download* saves `<CODE>-translations.json|csv`.
@@ -247,13 +247,4 @@ Decisions that are still open, with the phase they block:
 | Topic | Blocks | Status |
 |---|---|---|
 | `docs/design/` screenshots (FFVII art) | Public repo | Excluded from git (D16); replace with original material if they should be versioned |
-| Light theme review (D5) | — | Proposal, pending the author's review |
-| User menu on the avatar (D6, D20) | — | Proposal, pending confirmation |
-| EN / ES toggle next to the avatar (D26) | — | Proposal, pending the author's review |
 | Collapsible sidebar (D27) | — | Requested by the author for a later iteration |
-| Section Progress interaction and detail labels (D27, D28) | — | Proposal, pending the author's review |
-| Pages without a design (SPEC open 6) | Phase 10 | Will be built (D37); each page's spec is approved before building |
-| Undesigned list and modal looks (D22 checkbox, active filter button, empty state; D23 look) | — | Proposal, pending the author's review (filter logic, required fields and project ID confirmed) |
-| Editor defaults and comment look (D30) | — | Proposal, pending the author's review |
-| Glossary defaults and looks (D31) | — | Proposal, pending the author's review |
-| Member permission rules (D32) | — | Proposal, pending the author's review |
