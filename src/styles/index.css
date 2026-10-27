@@ -76,3 +76,28 @@
     @apply bg-app font-sans text-text antialiased;
   }
 }
+
+/* Loading screen: the two dots of the Gloss mark pulse in turn (D48). */
+@keyframes gloss-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.gloss-pulse {
+  animation: gloss-pulse 1.4s ease-in-out infinite;
+}
+
+.gloss-pulse-late {
+  animation-delay: 0.7s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gloss-pulse {
+    animation: none;
+  }
+}

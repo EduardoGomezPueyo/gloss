@@ -244,6 +244,18 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Collapsed look:** the general navigation shrinks from 182px to a 52px icon rail. Each link keeps its accessible name and shows its label in a tooltip on hover or focus; unread notifications become an accent dot on the icon. The theme switch, the EN / ES toggle and the demo controls move into the avatar menu (Theme, Interface language, Demo sections).
 - **Behaviour:** a button at the top of the navigation (aligned with the icons when collapsed) and **Ctrl+B** (⌘B on macOS; ignored while typing in a field) toggle it. The choice is stored per browser in localStorage (`translator.sidebarCollapsed`) and applies on every page. Settings keeps its own navigation inside the panel and does not collapse.
 
+### D47. Name and logo: Gloss (2026-10-27) — *name and logo from the author's Claude Design session; the app's yellow chosen by the author*
+- **Name:** the app is called **Gloss** (a gloss is a translation note written beside a text, and it points at the per-project glossary). It is a proper noun and is not translated (`general.appName` is "Gloss" in both languages).
+- **Mark:** two text lines and two dots. The dots use the app's accent instead of the logo's original yellow (`#F2CE2B` → `--accent` `#e9ca1b`; on light backgrounds `--accent-text` `#8a7400` instead of `#B8920F`). In the app it is `src/ui/GlossMark.tsx`, drawn with theme tokens, beside the name in Inter at the top of the expanded sidebar; the collapsed rail shows only the expand button.
+- **Files:** favicons, app icons and `site.webmanifest` in `public/`; the clean mark SVGs and the logo with the name (Geist SemiBold, PNG, for the README) in `docs/brand/`. The originals from Claude Design stay in `docs/design/` (not in git).
+- **Kept as they are:** internal identifiers that hold user data (the IndexedDB names `translator` / `translator-demo`, the `translator.*` localStorage keys, `TranslatorDb`), so renaming does not lose anyone's workspace or preferences. The GitHub repository and the Vercel URL are renamed separately, if at all.
+
+### D48. Loading screen (2026-10-27) — *requested by the author; layout, timing and scope confirmed by the author*
+- **Look:** full screen, without the sidebar: the Gloss mark at 72px with its two dots pulsing in turn (still with reduced motion), "Gloss", and "Loading your workspace…" / "Cargando tu espacio de trabajo…". Theme tokens, so it follows light and dark.
+- **When:** from the first paint (a static copy in `index.html`, picking the language and workspace from localStorage; a test keeps its texts equal to `loadingScreen.*`), while the workspace opens, and every time a workspace is opened again (leaving the demo, restoring a backup, deleting all data). Loading the demo shows it with "Loading the demo workspace…" while the demo downloads and opens; if the download fails, the app stays as it was and the demo controls show their error (D34).
+- **Timing, faked on purpose for the showcase:** opening local data takes milliseconds, so the screen stays at least 900ms and then fades out over 300ms instead of flashing. Tests pass `minLoadingMs={0}`.
+- **Error:** the same screen with "Your workspace could not be loaded." and *Try again*, which retries opening the workspace.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:

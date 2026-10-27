@@ -1,4 +1,4 @@
-# Translator Software — Specification (v4)
+# Gloss — Specification (v4)
 
 > Derived from the Obsidian design notes and the Figma screenshots.
 > **Integrated:** project list (filters, progress, create project), project detail, section detail (with moving items and adding content), translation editor, glossary (overview, category, detail, editing, history and comparison) and member settings.

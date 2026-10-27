@@ -7,6 +7,7 @@ import NotificationsIcon from '@/assets/icons/nav-notifications.svg?react';
 import ProjectsIcon from '@/assets/icons/nav-projects.svg?react';
 import SettingsIcon from '@/assets/icons/nav-settings.svg?react';
 import { useNotifications } from '@/data/hooks';
+import { GlossMark } from '@/ui/GlossMark';
 import { SidebarCollapseIcon, SidebarExpandIcon } from '@/ui/icons';
 import { Tooltip } from '@/ui/Tooltip';
 import { useCurrentUser } from '../currentUser/useCurrentUser';
@@ -44,7 +45,18 @@ export function AppLayout() {
             162px of content minus the 32px button when expanded; collapsed, it lines up
             with the nav icons.
           */}
-          <div className="flex">
+          <div className="relative flex">
+            <div
+              aria-hidden={collapsed}
+              className={`absolute inset-y-0 left-0 flex items-center gap-2 pl-2 transition-opacity duration-200 ${
+                collapsed ? 'pointer-events-none opacity-0' : 'opacity-100'
+              }`}
+            >
+              <GlossMark />
+              <span className="text-base font-semibold tracking-tight text-text">
+                {t('general.appName')}
+              </span>
+            </div>
             <Tooltip content={t('sidebar.shortcutHint', { action: toggleLabel })}>
               <button
                 type="button"

@@ -1,4 +1,4 @@
-# Translator Software
+# Gloss (translator software)
 
 A video game translation tool that brings together the visual side (game scenes), world knowledge (a per-project glossary) and teamwork with peer review. The source text of each scene comes in through OCR on the images.
 

@@ -64,7 +64,7 @@ export function renderApp(
 
   const result = render(
     <ThemeProvider>
-      <DataProvider openWorkspace={openWorkspace} demo={demo}>
+      <DataProvider openWorkspace={openWorkspace} demo={demo} minLoadingMs={0}>
         <OcrQueueProvider provider={ocr}>
           <CurrentUserProvider>
             <RouterProvider router={router} />

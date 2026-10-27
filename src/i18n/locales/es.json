@@ -77,6 +77,12 @@
   "data": {
     "loadError": "No se pudieron cargar los datos locales. Prueba a recargar la página."
   },
+  "loadingScreen": {
+    "workspace": "Cargando tu espacio de trabajo…",
+    "demo": "Cargando el espacio de trabajo de la demo…",
+    "error": "No se pudo cargar tu espacio de trabajo.",
+    "retry": "Intentar de nuevo"
+  },
   "filterCategory": {
     "platforms": "Plataformas",
     "managers": "Managers",
@@ -618,7 +624,7 @@
     "demoData": "Espacio de demo",
     "demoDataHelp": "Restaurar y borrar actúan sobre tu propio espacio de trabajo. La demo se guarda aparte.",
     "about": "Acerca de",
-    "appName": "Translator Tool",
+    "appName": "Gloss",
     "appDescription": "Una herramienta de traducción de videojuegos: escenas, glosario y revisión en un mismo sitio.",
     "version": "Versión {{version}}",
     "license": "Código abierto",

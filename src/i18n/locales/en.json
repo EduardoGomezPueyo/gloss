@@ -77,6 +77,12 @@
   "data": {
     "loadError": "The local data could not be loaded. Try reloading the page."
   },
+  "loadingScreen": {
+    "workspace": "Loading your workspace…",
+    "demo": "Loading the demo workspace…",
+    "error": "Your workspace could not be loaded.",
+    "retry": "Try again"
+  },
   "filterCategory": {
     "platforms": "Platforms",
     "managers": "Managers",
@@ -618,7 +624,7 @@
     "demoData": "Demo workspace",
     "demoDataHelp": "Restoring and deleting work on your own workspace. The demo is kept apart from it.",
     "about": "About",
-    "appName": "Translator Tool",
+    "appName": "Gloss",
     "appDescription": "A video game translation tool: scenes, glossary and review in one place.",
     "version": "Version {{version}}",
     "license": "Open source",

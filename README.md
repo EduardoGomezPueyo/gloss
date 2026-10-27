@@ -1,4 +1,11 @@
-# Translator
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/brand/gloss-logo-on-dark.png">
+    <img src="docs/brand/gloss-logo-on-light.png" alt="Gloss" width="260">
+  </picture>
+</p>
+
+# Gloss
 
 A video game translation tool that brings together the **game scene** (images with the original text, read by OCR), **world knowledge** (a per-project Markdown glossary) and **peer review**.
 
@@ -65,6 +72,6 @@ src/
 
 ## License
 
-Translator Tool is free software, licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0-only). You can use, study, change and share it; if you distribute a modified version, or run one as a service that others use over a network, you must make its source code available under the same license.
+Gloss is free software, licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0-only). You can use, study, change and share it; if you distribute a modified version, or run one as a service that others use over a network, you must make its source code available under the same license.
 
 The demo content lives in a [separate repository](https://github.com/EduardoGomezPueyo/translator-tool-demo) with its own terms, and real game screenshots linked from the app belong to their respective owners.
