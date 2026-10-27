@@ -157,7 +157,7 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Links and references:** `[[Title]]` or `[[Title|text]]` link to another entry by title (ignoring case and accents); links to entries that do not exist yet are dimmed. Typing `[[` in the editor suggests titles. References are Markdown footnotes (`text[^1]` and `[^1]: source`), rendered as numbered links to a visible **References** list. The body is rendered to React elements (react-markdown + GFM), never raw HTML; images inside the body are not rendered.
 - **Images:** a gallery block above the body in Edit entry ("+ Image", × to remove; PNG/JPEG/WebP up to 15 MB); the first image is shown large. Images are part of every version.
 - **Versions:** every *Save changes* stores a numbered version with author and time (no version when nothing changed); *Restore version* saves the older content as a new version, so history is never lost. The diff is word by word: added text on `--diff-added`, removed text struck through on `--diff-removed`, a bar beside changed paragraphs, and tags compared too.
-- **Defaults (confirmed by the author on 2026-10-26):** each project gets Characters, Factions, Locations and Lore (new projects too; IndexedDB v4 adds them to existing ones); *Create new category* asks for a unique name; the overview rows show the three most viewed entries per category, and opening an entry counts a view; *View all* selects that category; anyone in the project can edit; the title of the screen is "<Project> - Glossary" with a book icon (the project has no image); only *Add entry* is kept (the "+ New entry" of one frame duplicates it). Images uploaded and then discarded stay stored (no cleanup yet).
+- **Defaults (confirmed by the author on 2026-10-26):** each project gets Characters, Factions, Locations and Lore (new projects too; IndexedDB v4 adds them to existing ones); *Create new category* asks for a unique name; the overview rows show the three most viewed entries per category, and opening an entry counts a view; *View all* selects that category; anyone in the project can edit; the title of the screen is "<Project> - Glossary" with a book icon (the project has no image); only *Add entry* is kept (the "+ New entry" of one frame duplicates it). Images uploaded and then discarded are deleted later (D49).
 - **Editor panel (D30):** without a search, it lists the entries whose title appears in the image's source text or translation (whole words, ignoring case and accents), and the translation editor shows "N glossary match"; with a search, it searches the whole glossary.
 - **Libraries:** CodeMirror 6 (MIT) for the live Markdown editor, loaded only on the edit page; react-markdown and remark-gfm (MIT); jsdiff (BSD-3-Clause), loaded only on the compare page.
 - **Demo:** original fictional entries for the first project (characters, factions, places and lore of a placeholder river city), with older versions on "Mira Vale" to show the comparison.
@@ -256,10 +256,16 @@ Log of technical and design decisions and the reasons behind them. Product decis
 - **Timing, faked on purpose for the showcase:** opening local data takes milliseconds, so the screen stays at least 900ms and then fades out over 300ms instead of flashing. Tests pass `minLoadingMs={0}`.
 - **Error:** the same screen with "Your workspace could not be loaded." and *Try again*, which retries opening the workspace.
 
+### D49. Deleting unused images (2026-10-27) — *requested by the author*
+- **Problem:** stored files are only deleted with the whole workspace. Images added to a glossary entry and then removed before saving, or added to an entry that is never saved, stayed in the browser for good and went into every backup (D31).
+- **Rule:** when a workspace opens, files that no scene image, glossary entry or **glossary version** refers to are deleted (`WorkspaceRepository.deleteUnusedFiles`). Versions count, so restoring or comparing an older version still shows its images.
+- **Grace period:** only files more than a day old are deleted, so an entry being edited in another tab keeps the images it has just added. It runs in the background of opening and never blocks it; a failure is only logged.
+- **Not added:** a manual "clean up" button or a storage readout in Settings. The cleanup is invisible and needs no decision from the user.
+
 ## Pending
 
 Decisions that are still open, with the phase they block:
 
 | Topic | Blocks | Status |
 |---|---|---|
-| `docs/design/` screenshots (FFVII art) | Public repo | Excluded from git (D16); replace with original material if they should be versioned |
+| — | — | Nothing open. The last row (the `docs/design/` screenshots blocking a public repo) was closed on 2026-10-27: they are git-ignored and were never committed (D16), so the history is safe to publish. |

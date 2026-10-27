@@ -32,6 +32,7 @@ function withFixture(repositories: Repositories): Repositories {
     ...repositories,
     workspace: {
       ensureInitialized: () => (loaded ??= workspace.replace(createFixtureData(), [])),
+      deleteUnusedFiles: (before) => workspace.deleteUnusedFiles(before),
       replace: (data, files, settings) => workspace.replace(data, files, settings),
       reset: () => workspace.reset(),
       exportAll: () => workspace.exportAll(),

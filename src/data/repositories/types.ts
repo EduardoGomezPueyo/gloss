@@ -106,6 +106,13 @@ export interface WorkspaceRepository {
    */
   ensureInitialized(): Promise<void>;
   /**
+   * Deletes stored files that nothing refers to (a scene image, a glossary entry or
+   * any of its versions) and that were created before `before`: images added to a
+   * glossary entry and then removed before saving, or never saved (D49). Returns
+   * how many were deleted.
+   */
+  deleteUnusedFiles(before: Date): Promise<number>;
+  /**
    * Deletes all data and stores `data` and `files` in its place (loading the demo
    * or restoring a backup). Settings fall back to the defaults when not given.
    */

@@ -1201,6 +1201,35 @@ class LocalWorkspaceRepository implements WorkspaceRepository {
     });
   }
 
+  async deleteUnusedFiles(before: Date): Promise<number> {
+    const db = this.db;
+    return db.transaction(
+      'rw',
+      [db.files, db.images, db.glossaryEntries, db.glossaryVersions],
+      async () => {
+        const [fileIds, images, entries, versions] = await Promise.all([
+          db.files.toCollection().primaryKeys(),
+          db.images.toArray(),
+          db.glossaryEntries.toArray(),
+          db.glossaryVersions.toArray(),
+        ]);
+        const used = new Set<Id>();
+        for (const image of images) if (image.fileId) used.add(image.fileId);
+        for (const content of [...entries, ...versions]) {
+          for (const id of content.imageFileIds) used.add(id);
+        }
+        // Only the unreferenced files are read in full, to check their age.
+        const candidates = await db.files.bulkGet(fileIds.filter((id) => !used.has(id)));
+        const cutoff = before.toISOString();
+        const unused = candidates
+          .filter((file): file is StoredFile => !!file && file.createdAt < cutoff)
+          .map((file) => file.id);
+        await db.files.bulkDelete(unused);
+        return unused.length;
+      },
+    );
+  }
+
   async replace(
     data: WorkspaceData,
     files: WorkspaceFile[],

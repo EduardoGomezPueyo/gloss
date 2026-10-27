@@ -53,6 +53,18 @@ Vertical phases; the app stays runnable after each one.
   - [x] Settings > General (with the project visibility setting, D41) and Settings > Workspace projects (D42), 2026-10-25
   - [x] Final demo pass and redeploy (2026-10-25): the demo repository adds comment threads with replies and @mentions, assignments per item and language, and notifications derived with the app's rules; images no longer carry a context note
 
+## Beyond v1: open for contributors
+
+v1 is complete and the author has no plans to build these. They are left as notes for anyone who wants to take them on; the code is laid out so each one plugs in without rewriting the UI.
+
+- **A real backend.** Implement the repository interfaces in `src/data/repositories/types.ts` and select them with `VITE_DATA_SOURCE=remote` (`src/app/dataSource.ts` throws a "not implemented" error until then). Supabase was the planned reference (D2): Postgres, auth, file storage and realtime, open source and self-hostable.
+- **Teams for real** (needs the backend): sign-in, email invitations, permissions enforced on the server instead of the simulated current-user selector, notifications and live sync between people (SPEC, v2).
+- **More file formats.** PO and XLIFF export as new `TranslationExporter` adapters in `src/export/registry.ts` (D33), and importing those formats (SPEC, v2).
+- **Other OCR engines.** A new `OcrProvider` (`src/ocr`); the position of each text box is already stored, though v1 does not use it.
+- **Further out** (SPEC, Future): Kanban and Timeline views in project management, and media other than video games.
+
+AI translation and showing the translated text over the image were discarded, not postponed.
+
 ## Verification
 
 - Per phase: `npm run dev` and walk through the phase's flow against the Figma frame. `npm test`, `npm run lint` and `npm run build` pass.

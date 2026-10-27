@@ -646,6 +646,37 @@ describe('local repositories: glossary', () => {
     });
     expect(await (await repos.images.getFile(id))!.text()).toBe('map');
   });
+
+  it('deletes old files that no image, entry or version uses', async () => {
+    const { db, repos, projectId } = await fixture();
+    const store = (name: string) =>
+      repos.glossary.storeImage({ name, data: new Blob([name], { type: 'image/png' }) });
+    const [kept, inOldVersion, discarded, scene] = await Promise.all(
+      ['kept', 'old', 'discarded', 'scene'].map(store),
+    );
+    const [category] = await repos.glossary.listCategories(projectId);
+    const content = {
+      categoryId: category!.id,
+      title: 'Old Mill',
+      description: '',
+      tags: [],
+      imageFileIds: [kept!, inOldVersion!],
+      body: '',
+    };
+    const entry = await repos.glossary.createEntry(projectId, content, 'w1');
+    await repos.glossary.updateEntry(entry.id, { ...content, imageFileIds: [kept!] }, 'w1');
+    const [image] = await db.images.toArray();
+    await db.images.update(image!.id, { fileId: scene! });
+
+    // Too recent: an entry being edited elsewhere may still save it.
+    expect(await repos.workspace.deleteUnusedFiles(new Date(0))).toBe(0);
+
+    expect(await repos.workspace.deleteUnusedFiles(new Date(Date.now() + 1000))).toBe(1);
+    expect(await db.files.get(discarded!)).toBeUndefined();
+    expect((await db.files.toCollection().primaryKeys()).sort()).toEqual(
+      [kept!, inOldVersion!, scene!].sort(),
+    );
+  });
 });
 
 describe('local repositories: members', () => {

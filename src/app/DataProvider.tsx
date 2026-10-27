@@ -41,6 +41,11 @@ function createQueryClient() {
  * milliseconds, so without it the screen would only flash.
  */
 const MIN_LOADING_MS = 900;
+/**
+ * Unused files are deleted on opening only once they are a day old (D49), so an
+ * entry still being edited in another tab keeps the images it has just added.
+ */
+const UNUSED_FILE_GRACE_MS = 24 * 60 * 60 * 1000;
 /** The loading screen's fade-out, as its `duration-300`. */
 const FADE_OUT_MS = 300;
 
@@ -74,6 +79,10 @@ function WorkspaceGate({
     queryKey: ['bootstrap'],
     queryFn: async () => {
       await workspace.ensureInitialized();
+      // Housekeeping that never blocks opening the workspace.
+      await workspace
+        .deleteUnusedFiles(new Date(Date.now() - UNUSED_FILE_GRACE_MS))
+        .catch((error: unknown) => console.warn('Could not delete unused files', error));
       return true;
     },
   });

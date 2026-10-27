@@ -70,6 +70,10 @@ src/
   assets/     icons exported from the design
 ```
 
+## Future work
+
+v1 is complete. Ideas that are open for anyone to pick up (a real backend, teams, PO/XLIFF, other OCR engines) are listed in [`docs/ROADMAP.md`](docs/ROADMAP.md#beyond-v1-open-for-contributors), with where each one plugs in.
+
 ## License
 
 Gloss is free software, licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0-only). You can use, study, change and share it; if you distribute a modified version, or run one as a service that others use over a network, you must make its source code available under the same license.
