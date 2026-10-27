@@ -39,7 +39,7 @@ The app is **local-first**: everything is stored in your browser (IndexedDB). It
 
 ### Demo
 
-The demo is kept in a separate repository, [translator-tool-demo](https://github.com/EduardoGomezPueyo/translator-tool-demo), so forks start clean. Set `VITE_DEMO_URL` (see `.env.example`) and a **Load demo** button appears below the avatar: it opens the demo in a workspace of its own, without touching your data, and **Exit demo** brings you back. The demo's project names are real game titles used as labels only; everything inside them is original.
+The demo is kept in a separate repository, [gloss-demo](https://github.com/EduardoGomezPueyo/gloss-demo), so forks start clean. Set `VITE_DEMO_URL` (see `.env.example`) and a **Load demo** button appears below the avatar: it opens the demo in a workspace of its own, without touching your data, and **Exit demo** brings you back. The demo's project names are real game titles used as labels only; everything inside them is original.
 
 `VITE_DEMO_IMAGES_URL` adds a **Try with real images** link to a separate collection of real game screenshots you can upload yourself. Those images belong to their owners and are not covered by this project's license.
 
@@ -74,4 +74,4 @@ src/
 
 Gloss is free software, licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0-only). You can use, study, change and share it; if you distribute a modified version, or run one as a service that others use over a network, you must make its source code available under the same license.
 
-The demo content lives in a [separate repository](https://github.com/EduardoGomezPueyo/translator-tool-demo) with its own terms, and real game screenshots linked from the app belong to their respective owners.
+The demo content lives in a [separate repository](https://github.com/EduardoGomezPueyo/gloss-demo) with its own terms, and real game screenshots linked from the app belong to their respective owners.

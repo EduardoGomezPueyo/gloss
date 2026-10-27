@@ -18,7 +18,7 @@ import { DeleteDataDialog } from './DeleteDataDialog';
 
 const THEMES: ThemePreference[] = ['system', 'light', 'dark'];
 
-const REPOSITORY_URL = 'https://github.com/EduardoGomezPueyo/translator-tool';
+const REPOSITORY_URL = 'https://github.com/EduardoGomezPueyo/gloss';
 
 /**
  * Settings > General (no design, spec approved by the author, DECISIONS D37,
