@@ -51,7 +51,6 @@ Priority: the whole flow should look polished and faithful to the Figma design. 
 - Backend, authentication, real email invitations.
 - Real permissions (managers / workers, project visibility).
 - Notifications and synchronization.
-- AI translation with mandatory human review (a requirement from the notes; **the designed editor has no interface for it**).
 - Import of additional formats (PO, XLIFF).
 
 ### Future
@@ -73,7 +72,7 @@ Hierarchy: **Workspace > Project > Section > Content item > Image**. Each image 
 - **Section**: name, description, order, progress (%), status. Shows the project's managers and priority **[Proposal: they are inherited]**.
 - **Content item**: name, **type** (in the design, "Mission dialogue" and "Character dialogue"), status, progress, word count, language count, last update (who and when), ordered images, note for translators.
 - **Image**: file, short title ("Station rendezvous"), order within the content item, and its **source text block**: text (from OCR, editable), _speaker_, type (e.g. "Dialogue"), context (e.g. "After the reactor escape"; stored on the content item, D40), character count, and the **edited** mark if the text has been changed from the OCR result.
-- **Translation**: per image and language; text, status, author, last edit date, reviewer (peer review), AI flag pending human review (v2). The speaker is inherited from the source and is read-only.
+- **Translation**: per image and language; text, status, author, last edit date, reviewer (peer review). The speaker is inherited from the source and is read-only.
 - **TranslatorNote**: style instruction attached to the content item or to the image.
 - **CommentThread**: belongs to an image; language, category (e.g. "Terminology"), status (`open` | `resolved`), who resolved it, replies, `@` mentions.
 - **GlossaryCategory**: Characters, Factions, Locations, Lore and any created with "New category".
@@ -330,7 +329,7 @@ Redesigned by the author (DECISIONS D40): two columns, one language at a time.
 
 ## 8. Out of scope in v1
 
-Real authentication, real email invitations, email or push notifications (in-app ones are built, 5.11), synchronization between users, AI translation, Kanban and Timeline views, PO/XLIFF import, pages without a design (see section 4), and **preview of the translated text over the game image**: the tool cannot rewrite the text inside the scene without rendering it with the game's own font and text box, so it is not considered even for the future.
+Real authentication, real email invitations, email or push notifications (in-app ones are built, 5.11), synchronization between users, Kanban and Timeline views, PO/XLIFF import, pages without a design (see section 4), and **preview of the translated text over the game image**: the tool cannot rewrite the text inside the scene without rendering it with the game's own font and text box, so it is not considered even for the future. **AI translation** is discarded too, not postponed.
 
 ## 9. Design references
 
