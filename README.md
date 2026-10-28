@@ -13,6 +13,22 @@ A video game translation tool that brings together the **game scene** (images wi
 
 > Status: early development (v1, local-first showcase). See [`docs/SPEC.md`](docs/SPEC.md) for the specification and [`docs/DECISIONS.md`](docs/DECISIONS.md) for technical decisions.
 
+![The translation editor: the scene image with its comments, the source text read by OCR, and a Spanish translation waiting for review](docs/screenshots/editor.jpeg)
+
+## Screenshots
+
+**Project detail:** progress per section, content item and language.
+
+![Project detail with section and language progress](docs/screenshots/project.jpeg)
+
+**Glossary:** the world of the game in Markdown entries, by category.
+
+![Project glossary in list view](docs/screenshots/glossary.jpeg)
+
+**Notifications:** mentions, replies and submissions, opened next to their scene.
+
+![Notifications inbox with a selected comment thread](docs/screenshots/inbox.jpeg)
+
 ## Getting started
 
 Requires Node.js 20 or later.
