@@ -43,6 +43,9 @@ export function NotificationsPage() {
   const { data: members = [] } = useMembers();
   const markRead = useMarkNotificationsRead();
   const [filter, setFilter] = useState<NotificationFilter>('all');
+  // Unread when the Unread filter was chosen: they stay listed once read, or opening
+  // the first one (which marks it read) would empty the list one by one.
+  const [unreadOnEntry, setUnreadOnEntry] = useState<ReadonlySet<string>>(new Set());
 
   // The projects this person can see, newest first (D41, D45).
   const all = useMemo(() => {
@@ -58,8 +61,18 @@ export function NotificationsPage() {
       filter,
     ).map((n) => n.id),
   );
-  const entries = all.filter((e) => kept.has(e.notification.id));
+  const entries = all.filter(
+    (e) =>
+      kept.has(e.notification.id) ||
+      (filter === 'unread' && unreadOnEntry.has(e.notification.id)),
+  );
   const unread = all.filter((e) => !e.notification.readAt).length;
+  const changeFilter = (next: NotificationFilter) => {
+    setUnreadOnEntry(
+      new Set(all.filter((e) => !e.notification.readAt).map((e) => e.notification.id)),
+    );
+    setFilter(next);
+  };
   const { selectedId, select } = useInboxSelection(entries.map((e) => e.notification.id));
   const selected = entries.find((e) => e.notification.id === selectedId);
 
@@ -93,7 +106,7 @@ export function NotificationsPage() {
           size="sm"
           label={t('notifications.filter')}
           value={filter}
-          onChange={setFilter}
+          onChange={changeFilter}
           options={[
             { value: 'all', label: t('notifications.all') },
             { value: 'unread', label: t('notifications.unread', { count: unread }) },

@@ -59,6 +59,37 @@ describe('Notifications', () => {
     await user.click(screen.getByRole('radio', { name: 'All' }));
   });
 
+  it('keeps unread notifications listed under Unread once they are opened', async () => {
+    const user = userEvent.setup();
+    const { router } = renderApp('/comments');
+    // Two notifications for Chloé: a reply and a resolution.
+    await user.click(await screen.findByRole('button', { name: 'Reply to thread' }));
+    await user.type(screen.getByRole('combobox', { name: 'Reply to thread' }), 'Noted.');
+    await user.click(screen.getByRole('button', { name: 'Reply' }));
+    await screen.findByText(/2 replies/);
+    await user.click(screen.getByRole('button', { name: 'Resolve' }));
+
+    await switchUser(user, 'Chloé Martin');
+    await router.navigate('/notifications');
+    await screen.findByRole('list', { name: 'Notifications' });
+    await user.click(screen.getByRole('radio', { name: /Unread/ }));
+    // Opening the first one marks it read, but neither leaves the list.
+    await waitFor(() =>
+      expect(within(nav()).getByRole('link', { name: /1 unread/ })).toBeInTheDocument(),
+    );
+    const list = screen.getByRole('list', { name: 'Notifications' });
+    expect(within(list).getAllByRole('listitem')).toHaveLength(2);
+
+    // ↓ from the filter moves through the list, not the filter, and leaves it.
+    const filter = screen.getByRole('radio', { name: /Unread/ });
+    const entries = within(list).getAllByRole('button');
+    expect(filter).toHaveFocus();
+    await user.keyboard('{ArrowDown}');
+    expect(entries[1]).toHaveAttribute('aria-current', 'true');
+    expect(filter).toHaveAttribute('aria-checked', 'true');
+    expect(document.activeElement).toBe(document.body);
+  });
+
   it('marks everything read at once', async () => {
     const user = userEvent.setup();
     const { router } = renderApp('/comments');
