@@ -4,7 +4,8 @@ import { useSearchParams } from 'react-router';
 /**
  * The selected entry of an inbox page lives in the URL (`?id=`), so a link opens
  * it again (DECISIONS D43). Without one, or when it left the list, the first entry
- * is shown. ↑/↓ and J/K move through the list unless the user is typing.
+ * is shown. ↑/↓ and J/K move through the list from anywhere but a text field;
+ * the filters above it keep ←/→.
  */
 export function useInboxSelection(ids: string[]) {
   const [params, setParams] = useSearchParams();
@@ -39,6 +40,9 @@ export function useInboxSelection(ids: string[]) {
             : 0;
       if (step === 0) return;
       event.preventDefault();
+      // The arrows drive the list only: drop focus from the filter or an entry,
+      // so no focus ring lingers on what was last clicked.
+      if (target instanceof HTMLElement && target !== document.body) target.blur();
       const index = selectedId ? ids.indexOf(selectedId) : -1;
       const next = ids[Math.min(Math.max(index + step, 0), ids.length - 1)];
       if (next && next !== selectedId) {

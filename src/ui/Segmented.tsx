@@ -1,4 +1,5 @@
 import { ToggleGroup } from 'radix-ui';
+import { SlidingPill } from './SlidingPill';
 
 const SIZES = {
   /** Filter chips (inbox pages). */
@@ -27,18 +28,21 @@ export function Segmented<T extends string>({
   return (
     <ToggleGroup.Root
       type="single"
+      // ←/→ move between options; ↑/↓ are left to the page (inbox lists).
+      orientation="horizontal"
       value={value}
       // Radix sends '' when the active item is clicked again: keep it.
       onValueChange={(next) => next && onChange(next as T)}
       aria-label={label}
       aria-labelledby={labelledBy}
-      className={`flex items-center rounded-full border border-border-strong p-0.5 ${SIZES[size].root}`}
+      className={`relative flex items-center rounded-full border border-border-strong p-0.5 ${SIZES[size].root}`}
     >
+      <SlidingPill value={value} />
       {options.map((option) => (
         <ToggleGroup.Item
           key={option.value}
           value={option.value}
-          className={`rounded-full text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong data-[state=on]:bg-fill-subtle data-[state=on]:text-text ${SIZES[size].item}`}
+          className={`relative rounded-full text-text-secondary outline-none hover:text-text focus-visible:ring-2 focus-visible:ring-border-strong data-[state=on]:text-text ${SIZES[size].item}`}
         >
           {option.label}
         </ToggleGroup.Item>
