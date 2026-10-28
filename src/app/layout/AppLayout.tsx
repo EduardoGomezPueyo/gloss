@@ -17,7 +17,7 @@ import { LanguageToggle } from './LanguageToggle';
 import { SidebarNavItem } from './SidebarNavItem';
 import { ThemeSwitch } from './ThemeSwitch';
 import { UserMenu } from './UserMenu';
-import { useSidebarCollapsed } from './useSidebarCollapsed';
+import { SIDEBAR_SHORTCUT, useSidebarCollapsed } from './useSidebarCollapsed';
 
 /**
  * Translation space: general navigation on the left, content panel on the right.
@@ -57,7 +57,7 @@ export function AppLayout() {
                 {t('general.appName')}
               </span>
             </div>
-            <Tooltip content={t('sidebar.shortcutHint', { action: toggleLabel })}>
+            <Tooltip content={t('sidebar.shortcutHint', { action: toggleLabel, shortcut: SIDEBAR_SHORTCUT })}>
               <button
                 type="button"
                 aria-label={toggleLabel}

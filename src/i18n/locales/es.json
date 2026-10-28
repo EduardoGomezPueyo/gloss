@@ -26,7 +26,7 @@
     "language": "Idioma de la interfaz",
     "collapse": "Contraer barra lateral",
     "expand": "Expandir barra lateral",
-    "shortcutHint": "{{action}} (Ctrl+B)"
+    "shortcutHint": "{{action}} ({{shortcut}})"
   },
   "languages": {
     "en": "English",

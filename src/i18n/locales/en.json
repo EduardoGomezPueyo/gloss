@@ -26,7 +26,7 @@
     "language": "Interface language",
     "collapse": "Collapse sidebar",
     "expand": "Expand sidebar",
-    "shortcutHint": "{{action}} (Ctrl+B)"
+    "shortcutHint": "{{action}} ({{shortcut}})"
   },
   "languages": {
     "en": "English",

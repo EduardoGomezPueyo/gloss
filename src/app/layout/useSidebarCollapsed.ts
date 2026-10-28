@@ -19,6 +19,13 @@ function writeCollapsed(collapsed: boolean): void {
   }
 }
 
+/** Apple platforms name the shortcut with ⌘; both Ctrl and ⌘ work everywhere. */
+const IS_APPLE =
+  typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/i.test(navigator.platform);
+
+/** The shortcut as shown in the toggle's tooltip. */
+export const SIDEBAR_SHORTCUT = IS_APPLE ? '⌘B' : 'Ctrl+B';
+
 /** Ctrl+B in a text field belongs to the field (e.g. bold in the Markdown editor). */
 function isEditable(target: EventTarget | null): boolean {
   return (

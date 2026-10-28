@@ -242,7 +242,7 @@ Log of technical and design decisions and the reasons behind them. Product decis
 
 ### D46. Collapsible sidebar (2026-10-26) — *requested by the author in D27; look and behaviour chosen by the author*
 - **Collapsed look:** the general navigation shrinks from 182px to a 52px icon rail. Each link keeps its accessible name and shows its label in a tooltip on hover or focus; unread notifications become an accent dot on the icon. The theme switch, the EN / ES toggle and the demo controls move into the avatar menu (Theme, Interface language, Demo sections).
-- **Behaviour:** a button at the top of the navigation (aligned with the icons when collapsed) and **Ctrl+B** (⌘B on macOS; ignored while typing in a field) toggle it. The choice is stored per browser in localStorage (`translator.sidebarCollapsed`) and applies on every page. Settings keeps its own navigation inside the panel and does not collapse.
+- **Behaviour:** a button at the top of the navigation (aligned with the icons when collapsed) and **Ctrl+B** (⌘B on macOS; ignored while typing in a field) toggle it; the tooltip names the shortcut for the user's platform. The choice is stored per browser in localStorage (`translator.sidebarCollapsed`) and applies on every page. Settings keeps its own navigation inside the panel and does not collapse.
 
 ### D47. Name and logo: Gloss (2026-10-27) — *name and logo from the author's Claude Design session; the app's yellow chosen by the author*
 - **Name:** the app is called **Gloss** (a gloss is a translation note written beside a text, and it points at the per-project glossary). It is a proper noun and is not translated (`general.appName` is "Gloss" in both languages).
